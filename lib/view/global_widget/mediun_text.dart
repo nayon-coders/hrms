@@ -6,7 +6,8 @@ import 'package:sizer/sizer.dart';
 class MediunText extends StatelessWidget {
   String text;
   double? size;
-  MediunText({required this.text, this.size = 10});
+  Color ? color;
+  MediunText({required this.text, this.size = 10, this.color = appColors.white});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +15,7 @@ class MediunText extends StatelessWidget {
       style: TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: size?.sp,
-          color: appColors.white
+          color: color
       ),
     );
   }

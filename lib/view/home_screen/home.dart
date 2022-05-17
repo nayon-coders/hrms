@@ -1,7 +1,10 @@
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
+import 'package:HRMS/view/home_screen/widget/home-reports.dart';
+import 'package:HRMS/view/home_screen/widget/list-of-menu.dart';
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: appColors.white,
       body: Column(
         children: [
           Stack(
@@ -87,12 +91,73 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
 
-          Container(
-            color: appColors.white,
-            child: Column(
-              children: [
 
-              ],
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 1.h),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ListOfMenu(
+                            text: 'Employee \n Attendance',
+                            image: 'assets/images/attendance.png',
+                          ),
+                        ),
+                        SizedBox(width: 20,),
+                        Expanded(
+                          child:ListOfMenu(
+                            text: 'Attendance \nList',
+                            image: 'assets/images/calander.png',
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20,),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ListOfMenu(
+                            text: 'Pay Slip',
+                            image: 'assets/images/payslip.png',
+                          ),
+                        ),
+                        SizedBox(width: 20,),
+                        Expanded(
+                          child:ListOfMenu(
+                            text: 'Attendance \nRegulizetion',
+                            TextSize: 12,
+                            image: 'assets/images/listattendance.png',
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20,),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ListOfMenu(
+                            text: 'Apply For \nLeave',
+                            image: 'assets/images/applyforleav.png',
+                          ),
+                        ),
+                        SizedBox(width: 20,),
+                        Expanded(
+                          child:ListOfMenu(
+                            text: 'Leave List',
+                            image: 'assets/images/leavelist.png',
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10,),
+HomeReports()
+
+                  ],
+                ),
+              )
             ),
           ),
 
