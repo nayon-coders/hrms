@@ -1,4 +1,4 @@
-import 'package:HRMS/view.flash_screen/flash-screen.dart';
+import 'package:HRMS/view/flash_screen/flash-screen.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 

@@ -1,5 +1,5 @@
 import 'package:HRMS/utility/colors.dart';
-import 'package:HRMS/view.flash_screen/login_screen/login.dart';
+import 'package:HRMS/view/login_screen/login.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
@@ -66,7 +66,6 @@ class _FlashScreenState extends State<FlashScreen> with TickerProviderStateMixin
                 ),
               ),
             Spacer(),
-
             Container(
               margin: EdgeInsets.only(bottom: 3.h),
               child: (

@@ -1,4 +1,5 @@
 import 'package:HRMS/utility/colors.dart';
+import 'package:HRMS/view/home_screen/home.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 class LoginScreen extends StatefulWidget {
@@ -119,20 +120,27 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       ),
                       SizedBox(height: 3.h,),
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.only(top: 15, bottom: 15),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(100),
-                          color: appColors.secondColor
-                        ),
-                        child: Center(child: Text("Login",
-                          style: TextStyle(
-                            color: appColors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16.sp
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.push(context,
+                          MaterialPageRoute(builder: (context)=>HomeScreen())
+                          );
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.only(top: 15, bottom: 15),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            color: appColors.secondColor
                           ),
-                        )),
+                          child: Center(child: Text("Login",
+                            style: TextStyle(
+                              color: appColors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.sp
+                            ),
+                          )),
+                        ),
                       )
                     ],
                   )
