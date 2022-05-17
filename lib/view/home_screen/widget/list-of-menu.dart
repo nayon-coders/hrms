@@ -10,13 +10,13 @@ class ListOfMenu extends StatelessWidget {
   ListOfMenu({Key? key,
     required this.text,
     required this.image,
-    this.TextSize = 13,
+    this.TextSize = 10,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 3.h),
+      padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 2.h),
       decoration: BoxDecoration(
         color: appColors.listOfMenuColor,
         borderRadius: BorderRadius.circular(10),

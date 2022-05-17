@@ -79,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                  padding: const EdgeInsets.only(top: 180),
                  child: Container(
                       height: 50,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           color: appColors.white,
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(30),
@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Expanded(
                           child: ListOfMenu(
-                            text: 'Employee \n Attendance',
+                            text: 'Employee \nAttendance',
                             image: 'assets/images/attendance.png',
                           ),
                         ),
@@ -128,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Expanded(
                           child:ListOfMenu(
                             text: 'Attendance \nRegulizetion',
-                            TextSize: 12,
+                            TextSize: 10,
                             image: 'assets/images/listattendance.png',
                           ),
                         ),
@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     const SizedBox(height: 10,),
-HomeReports()
+                    HomeReports()
 
                   ],
                 ),

@@ -1,10 +1,16 @@
 import 'package:HRMS/utility/colors.dart';
-import 'package:d_chart/d_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:pie_chart/pie_chart.dart';
 import 'package:sizer/sizer.dart';
 
 class HomeReports extends StatelessWidget {
-  const HomeReports({Key? key}) : super(key: key);
+   HomeReports({Key? key}) : super(key: key);
+
+  final colorList = [
+    [appColors.successColor],
+    [appColors.dangerColor],
+    [appColors.secondColor],
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -22,37 +28,28 @@ class HomeReports extends StatelessWidget {
               ),
             ],
           ),
-      child: Expanded(
         child: Column(
           children: [
-            DChartGauge(
-              data: [
-                {'domain': 'Off', 'measure': 30},
-                {'domain': 'Warm', 'measure': 30},
-                {'domain': 'Hot', 'measure': 30},
-              ],
-              fillColor: (pieData, index) {
-                switch (pieData['domain']) {
-                  case 'Off':
-                    return Colors.green;
-                  case 'Warm':
-                    return Colors.orange;
-                  default:
-                    return Colors.red;
-                }
+            PieChart(
+              centerText: "Attendance",
+              dataMap: {
+                "Present": 5,
+                "Absent": 3,
+                "Late": 2,
               },
-              showLabelLine: false,
-              pieLabel: (pieData, index) {
-                return "${pieData['domain']}";
-              },
-              labelPosition: PieLabelPosition.inside,
-              labelPadding: 0,
-              labelColor: Colors.white,
-            ),
+                ringStrokeWidth: 15,
+                chartLegendSpacing: 180,
+              chartType: ChartType.ring,
+              baseChartColor: Colors.grey[300]!,
+              chartValuesOptions: ChartValuesOptions(
+                  showChartValues: false,
+                showChartValuesOutside: false
+              ),
 
+
+            ),
           ],
         ),
-      ),
     );
   }
 }

@@ -6,4 +6,6 @@ class appColors{
   static const Color secondColor = Color(0xffFE5709);
   static const Color listOfMenuColor = Color(0xffEDF6FF);
   static const Color black = Color(0xff333333);
+  static const Color successColor = Color(0xff0CAE91);
+  static const Color dangerColor = Color(0xffBE0000);
 }
