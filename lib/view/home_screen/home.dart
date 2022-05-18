@@ -1,9 +1,11 @@
 import 'package:HRMS/utility/colors.dart';
+import 'package:HRMS/view/attendance/attendance.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
 import 'package:HRMS/view/home_screen/widget/home-leave-report.dart';
 import 'package:HRMS/view/home_screen/widget/home-attendance-reports.dart';
 import 'package:HRMS/view/home_screen/widget/list-of-menu.dart';
+import 'package:HRMS/view/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
@@ -102,9 +104,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: ListOfMenu(
-                            text: 'Employee \nAttendance',
-                            image: 'assets/images/attendance.png',
+                          child: GestureDetector(
+                            onTap:(){
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context)=>Attendance()));
+                            },
+                            child: ListOfMenu( 
+                              text: 'Employee \nAttendance',
+                              image: 'assets/images/attendance.png', 
+                            ),
                           ),
                         ),
                         SizedBox(width: 20,),
@@ -167,6 +175,108 @@ class _HomeScreenState extends State<HomeScreen> {
 
         ],
       ),
+
+
+
+      //navigation bar
+      floatingActionButton: FloatingActionButton(
+        child: Container(
+          width: 80,
+          height: 80,
+          decoration:  BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              gradient:
+              LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[
+                  Color(0xff00315E),
+                  Color(0xff580082),
+                ],
+              )
+          ),
+          child: const Icon(Icons.add),
+        ),
+        onPressed: () {
+          setState(() {
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>Attendance()));
+          });
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        notchMargin: 10,
+        child: Container(
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  MaterialButton(
+                    minWidth: 40,
+                    onPressed: () {
+                      setState(() {
+                        // Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+                      });
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.dashboard,
+                          color:  appColors.secondColor,
+                        ),
+                        Text(
+                          'Dashboard',
+                          style: TextStyle(
+                            color: appColors.secondColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              // Right Tab bar icons
+
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  MaterialButton(
+                    minWidth: 40,
+                    onPressed: () {
+                      setState(() {
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>Profile()));
+                      });
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.supervised_user_circle,
+                          color: appColors.mainColor,
+                        ),
+                        Text(
+                          'Profile',
+                          style: TextStyle(
+                            color: appColors.mainColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+
+            ],
+          ),
+        ),
+      ),
+
     );
   }
 }

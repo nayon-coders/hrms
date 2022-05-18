@@ -1,4 +1,3 @@
-import 'package:HRMS/index.dart';
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/home_screen/home.dart';
 import 'package:flutter/material.dart';
@@ -124,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       GestureDetector(
                         onTap: (){
                           Navigator.push(context,
-                          MaterialPageRoute(builder: (context)=>IndexScreen())
+                          MaterialPageRoute(builder: (context)=>HomeScreen())
                           );
                         },
                         child: Container(
