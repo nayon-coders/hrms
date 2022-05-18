@@ -1,6 +1,7 @@
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
+import 'package:HRMS/view/home_screen/widget/home-leave-report.dart';
 import 'package:HRMS/view/home_screen/widget/home-reports.dart';
 import 'package:HRMS/view/home_screen/widget/list-of-menu.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
                Container(
                   width: double.infinity,
-                  height: 220,
+                  height: MediaQuery.of(context).size.height/3.7,
                   decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
@@ -38,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                Padding(
-                   padding: EdgeInsets.only(left: 20, right: 20, top: 90, bottom: 10),
+                   padding: EdgeInsets.only(left: 20, right: 20, top: 70, bottom: 10),
                  child: Row(
                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                    crossAxisAlignment: CrossAxisAlignment.center,
@@ -58,9 +59,9 @@ class _HomeScreenState extends State<HomeScreen> {
                          Column(
                            crossAxisAlignment: CrossAxisAlignment.start,
                            children: [
-                             BigText(text: "Hi, Good Morning", ),
+                             BigText(text: "Hi, Good Morning", color: appColors.white, ),
                              SizedBox(height: 5,),
-                             MediunText(text: "Nayon Talukder", size: 15,),
+                             MediunText(text: "Nayon Talukder", size: 15, color: appColors.white,),
                            ],
                          ),
                        ],
@@ -75,10 +76,10 @@ class _HomeScreenState extends State<HomeScreen> {
                  ),
                ),
 
-               Padding(
+               Container(
                  padding: const EdgeInsets.only(top: 180),
                  child: Container(
-                      height: 50,
+                      height: 40,
                       decoration: const BoxDecoration(
                           color: appColors.white,
                           borderRadius: BorderRadius.only(
@@ -94,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           Expanded(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.h),
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -152,9 +153,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10,),
-                    HomeReports()
-
+                    const SizedBox(height: 30,),
+                    HomeAttendanceReports(),
+                    const SizedBox(height: 30,),
+                    HomeLeaveReports(),
+                    const SizedBox(height: 30,),
                   ],
                 ),
               )

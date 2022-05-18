@@ -6,7 +6,8 @@ import 'package:sizer/sizer.dart';
 class BigText extends StatelessWidget {
   String text;
   double? size;
-   BigText({required this.text, this.size = 16});
+  Color? color;
+   BigText({required this.text, this.size = 16, this.color = appColors.black});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +15,7 @@ class BigText extends StatelessWidget {
       style: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: size?.sp,
-        color: appColors.white
+        color: color
       ),
     );
   }

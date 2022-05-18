@@ -7,7 +7,7 @@ class MediunText extends StatelessWidget {
   String text;
   double? size;
   Color ? color;
-  MediunText({required this.text, this.size = 10, this.color = appColors.white});
+  MediunText({required this.text, this.size = 10, this.color = appColors.black});
 
   @override
   Widget build(BuildContext context) {
