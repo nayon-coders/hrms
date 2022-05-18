@@ -35,7 +35,16 @@ class _IndexScreenState extends State<IndexScreen> {
           decoration:  BoxDecoration(
             borderRadius: BorderRadius.circular(100),
               gradient:
-              currentTab != 0 ?
+              currentTab == 3 ?
+              LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[
+                  Color(0xffFE5709),
+                  Color(0xffFE5709),
+                ],
+              )
+              :
               LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -43,22 +52,16 @@ class _IndexScreenState extends State<IndexScreen> {
                   Color(0xff00315E),
                   Color(0xff580082),
                 ],
-              ):
-              LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: <Color>[
-                  Color(0xffFE5709),
-                  Color(0xffFE5709),
-                ],
-              )),
+              )
+              ),
           child: const Icon(Icons.add),
         ),
         onPressed: () {
           setState(() {
+            print(currentTab);
             currentScreen =
                 const Attendance(); // if user taps on this dashboard tab will be active
-            currentTab = 0;
+            currentTab = 3;
           });
         },
       ),
@@ -80,7 +83,7 @@ class _IndexScreenState extends State<IndexScreen> {
                       setState(() {
                         currentScreen =
                             HomeScreen(); // if user taps on this dashboard tab will be active
-                        currentTab = 1;
+                        currentTab = 0;
                       });
                     },
                     child: Column(
@@ -88,12 +91,12 @@ class _IndexScreenState extends State<IndexScreen> {
                       children: <Widget>[
                         Icon(
                           Icons.dashboard,
-                          color: currentTab == 1 ? appColors.secondColor : appColors.mainColor,
+                          color: currentTab == 0 ? appColors.secondColor : appColors.mainColor,
                         ),
                         Text(
                           'Dashboard',
                           style: TextStyle(
-                            color: currentTab == 1 ? appColors.secondColor : appColors.mainColor,
+                            color: currentTab == 0 ? appColors.secondColor : appColors.mainColor,
                           ),
                         ),
                       ],
@@ -113,7 +116,7 @@ class _IndexScreenState extends State<IndexScreen> {
                       setState(() {
                         currentScreen =
                             Profile(); // if user taps on this dashboard tab will be active
-                        currentTab = 2;
+                        currentTab = 1;
                       });
                     },
                     child: Column(
@@ -121,12 +124,12 @@ class _IndexScreenState extends State<IndexScreen> {
                       children: <Widget>[
                         Icon(
                           Icons.supervised_user_circle,
-                          color: currentTab == 2 ? appColors.secondColor : appColors.mainColor,
+                          color: currentTab == 1 ? appColors.secondColor : appColors.mainColor,
                         ),
                         Text(
                           'Profile',
                           style: TextStyle(
-                            color: currentTab == 2 ? appColors.secondColor : appColors.mainColor,
+                            color: currentTab == 1 ? appColors.secondColor : appColors.mainColor,
                           ),
                         ),
                       ],

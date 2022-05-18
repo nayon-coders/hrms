@@ -32,7 +32,7 @@ class ListOfMenu extends StatelessWidget {
       child: Row(
         children: [
           Image.asset(image,
-            width: 60,
+            width: 5.h,
             fit: BoxFit.cover,
           ),
           SizedBox(width: 10,),

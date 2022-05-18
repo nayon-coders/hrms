@@ -35,13 +35,13 @@ class HomeAttendanceReports extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              MediunText(text: "Attendance", size: 12.sp,),
+              MediunText(text: "Attendance", size: 11.sp,),
               const SizedBox(height: 10,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    width: 100,
+                    width: 70,
                     child: PieChart(
                       legendOptions: LegendOptions(
                         showLegends: false
@@ -68,19 +68,19 @@ class HomeAttendanceReports extends StatelessWidget {
                   Column(
                     children: [
                       BigText(text: "27", color: appColors.successColor, size: 12.sp,),
-                      MediunText(text: "Present", color: appColors.black, size: 10.sp,)
+                      MediunText(text: "Present", color: appColors.black, size: 9.sp,)
                     ],
                   ),
                   Column(
                     children: [
                       BigText(text: "01", color: appColors.dangerColor, size: 12.sp,),
-                      MediunText(text: "Absent", color: appColors.black, size: 10.sp,)
+                      MediunText(text: "Absent", color: appColors.black, size: 9.sp,)
                     ],
                   ),
                   Column(
                     children: [
                       BigText(text: "01", color: appColors.secondColor, size: 12.sp,),
-                      MediunText(text: "Late", color: appColors.black, size: 10.sp,)
+                      MediunText(text: "Late", color: appColors.black, size: 9.sp,)
                     ],
                   )
                 ],

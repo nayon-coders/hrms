@@ -2,7 +2,7 @@ import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
 import 'package:HRMS/view/home_screen/widget/home-leave-report.dart';
-import 'package:HRMS/view/home_screen/widget/home-reports.dart';
+import 'package:HRMS/view/home_screen/widget/home-attendance-reports.dart';
 import 'package:HRMS/view/home_screen/widget/list-of-menu.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
                Container(
                   width: double.infinity,
-                  height: MediaQuery.of(context).size.height/3.7,
+                  height: MediaQuery.of(context).size.height/4,
                   decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
@@ -50,8 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
                              borderRadius: BorderRadius.circular(100),
                              child: Image.asset("assets/images/user.jpg",
                                fit: BoxFit.cover,
-                               height: 60,
-                               width: 60,
+                               height: 50,
+                               width: 50,
                              )
 
                          ),
@@ -59,9 +59,9 @@ class _HomeScreenState extends State<HomeScreen> {
                          Column(
                            crossAxisAlignment: CrossAxisAlignment.start,
                            children: [
-                             BigText(text: "Hi, Good Morning", color: appColors.white, ),
+                             BigText(text: "Hi, Good Morning", color: appColors.white, size: 13, ),
                              SizedBox(height: 5,),
-                             MediunText(text: "Nayon Talukder", size: 15, color: appColors.white,),
+                             MediunText(text: "Nayon Talukder", size: 10, color: appColors.white, ),
                            ],
                          ),
                        ],
@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                      Icon(
                        Icons.menu,
                        color: appColors.white,
-                       size: 40,
+                       size: 30,
                      )
 
                    ],
@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                ),
 
                Container(
-                 padding: const EdgeInsets.only(top: 180),
+                 padding: const EdgeInsets.only(top: 162),
                  child: Container(
                       height: 40,
                       decoration: const BoxDecoration(
@@ -155,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 30,),
                     HomeAttendanceReports(),
-                    const SizedBox(height: 30,),
+                    const SizedBox(height: 20,),
                     HomeLeaveReports(),
                     const SizedBox(height: 30,),
                   ],
