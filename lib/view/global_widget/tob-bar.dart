@@ -20,7 +20,7 @@ class TopBar extends StatelessWidget {
       children: [
         Container(
           width: double.infinity,
-          height: MediaQuery.of(context).size.height/4,
+          height: MediaQuery.of(context).size.height/6,
           decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -33,7 +33,7 @@ class TopBar extends StatelessWidget {
         ),
 
         Padding(
-          padding: EdgeInsets.only(left: 20, right: 20, top: 9.h, bottom: 10),
+          padding: EdgeInsets.only(left: 20, right: 20, top: 6.h, bottom: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -67,9 +67,9 @@ class TopBar extends StatelessWidget {
         ),
 
         Container(
-          padding: const EdgeInsets.only(top: 163),
+          padding:  EdgeInsets.only(top: 14.h),
           child: Container(
-            height: 40,
+            height: 22,
             decoration:  BoxDecoration(
                 color: bottomRoundedColor,
                 borderRadius: BorderRadius.only(

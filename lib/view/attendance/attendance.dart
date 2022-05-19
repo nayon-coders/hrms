@@ -39,7 +39,7 @@ class _AttendanceState extends State<Attendance> {
                 bottomRoundedColor: appColors.bg,
 
             ),
-
+            const SizedBox(height: 30,),
             Expanded(
                 child: SingleChildScrollView(
                   child: Column(

@@ -53,7 +53,7 @@ class _AttendaceListState extends State<AttendaceList> {
               ),
 
               Padding(
-                padding: EdgeInsets.only(left: 20, right: 20, top: 9.h, bottom: 10),
+                padding: EdgeInsets.only(left: 20, right: 20, top: 6.h, bottom: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -64,7 +64,7 @@ class _AttendaceListState extends State<AttendaceList> {
                             onPressed: (){
                               Navigator.pop(context);
                             },
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.arrow_back_ios,
                               color: appColors.white,
                             )
@@ -90,7 +90,7 @@ class _AttendaceListState extends State<AttendaceList> {
 
               //calendar
               Container(
-                margin: EdgeInsets.only(top: 15.h, left: 2.h, right: 2.h),
+                margin: EdgeInsets.only(top: 13.h, left: 2.h, right: 2.h),
                 child: TableCalendar(
                   firstDay: DateTime.utc(2010),
                   lastDay:  DateTime.utc(2500),
@@ -181,9 +181,9 @@ class _AttendaceListState extends State<AttendaceList> {
               ),
 
               Container(
-                padding: EdgeInsets.only(top: 49.h),
+                padding: EdgeInsets.only(top: 50.h),
                 child: Container(
-                  height: 40,
+                  height: 22,
                   decoration:  BoxDecoration(
                       color: appColors.bg,
                       borderRadius: BorderRadius.only(
@@ -204,7 +204,7 @@ class _AttendaceListState extends State<AttendaceList> {
                   children: [
                     Container(
                       width: MediaQuery.of(context).size.width,
-                      padding: EdgeInsets.all(20),
+                      padding: EdgeInsets.all(5),
                       decoration: BoxDecoration(
                         color: appColors.gray200,
                         borderRadius: BorderRadius.circular(10),
@@ -251,29 +251,29 @@ class _AttendaceListState extends State<AttendaceList> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  BigText(text: "Clock In", color: appColors.gray, size: 10.sp,),
-                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 9.sp,)
+                                  BigText(text: "Clock In", color: appColors.gray, size: 8.sp,),
+                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 8.sp,)
                                 ],
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  BigText(text: "Clock Out", color: appColors.gray, size: 10.sp,),
-                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 9.sp,)
+                                  BigText(text: "Clock Out", color: appColors.gray, size: 8.sp,),
+                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 8.sp,)
                                 ],
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  BigText(text: "Late", color: appColors.gray, size: 10.sp,),
-                                  MediunText(text: "06:50:50", color: appColors.black, size: 9.sp,)
+                                  BigText(text: "Late", color: appColors.gray, size: 8.sp,),
+                                  MediunText(text: "06:50:50", color: appColors.black, size: 8.sp,)
                                 ],
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  BigText(text: "Early Leave", color: appColors.gray, size: 10.sp,),
-                                  MediunText(text: "06:50:50", color: appColors.black, size: 9.sp,)
+                                  BigText(text: "Early Leave", color: appColors.gray, size: 8.sp,),
+                                  MediunText(text: "06:50:50", color: appColors.black, size: 8.sp,)
                                 ],
                               ),
                             ],
@@ -317,29 +317,29 @@ class _AttendaceListState extends State<AttendaceList> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  BigText(text: "Clock In", color: appColors.gray, size: 10.sp,),
-                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 9.sp,)
+                                  BigText(text: "Clock In", color: appColors.gray, size: 8.sp,),
+                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 8.sp,)
                                 ],
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  BigText(text: "Clock Out", color: appColors.gray, size: 10.sp,),
-                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 9.sp,)
+                                  BigText(text: "Clock Out", color: appColors.gray, size: 8.sp,),
+                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 8.sp,)
                                 ],
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  BigText(text: "Late", color: appColors.gray, size: 10.sp,),
-                                  MediunText(text: "06:50:50", color: appColors.black, size: 9.sp,)
+                                  BigText(text: "Late", color: appColors.gray, size: 8.sp,),
+                                  MediunText(text: "06:50:50", color: appColors.black, size: 8.sp,)
                                 ],
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  BigText(text: "Early Leave", color: appColors.gray, size: 10.sp,),
-                                  MediunText(text: "06:50:50", color: appColors.black, size: 9.sp,)
+                                  BigText(text: "Early Leave", color: appColors.gray, size: 8.sp,),
+                                  MediunText(text: "06:50:50", color: appColors.black, size: 8.sp,)
                                 ],
                               ),
                             ],
@@ -383,29 +383,29 @@ class _AttendaceListState extends State<AttendaceList> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  BigText(text: "Clock In", color: appColors.gray, size: 10.sp,),
-                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 9.sp,)
+                                  BigText(text: "Clock In", color: appColors.gray, size: 8.sp,),
+                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 8.sp,)
                                 ],
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  BigText(text: "Clock Out", color: appColors.gray, size: 10.sp,),
-                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 9.sp,)
+                                  BigText(text: "Clock Out", color: appColors.gray, size: 8.sp,),
+                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 8.sp,)
                                 ],
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  BigText(text: "Late", color: appColors.gray, size: 10.sp,),
-                                  MediunText(text: "06:50:50", color: appColors.black, size: 9.sp,)
+                                  BigText(text: "Late", color: appColors.gray, size: 8.sp,),
+                                  MediunText(text: "06:50:50", color: appColors.black, size: 8.sp,)
                                 ],
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  BigText(text: "Early Leave", color: appColors.gray, size: 10.sp,),
-                                  MediunText(text: "06:50:50", color: appColors.black, size: 9.sp,)
+                                  BigText(text: "Early Leave", color: appColors.gray, size: 8.sp,),
+                                  MediunText(text: "06:50:50", color: appColors.black, size: 8.sp,)
                                 ],
                               ),
                             ],
