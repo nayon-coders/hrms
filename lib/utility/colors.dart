@@ -10,4 +10,5 @@ class appColors{
   static const Color dangerColor = Color(0xffBE0000);
   static const Color bg = Color(0xffF1F8FF);
   static const Color gray = Color(0xff7E7E7E);
+  static const Color gray200 = Color(0xffdddddd);
 }

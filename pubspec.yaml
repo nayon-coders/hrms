@@ -36,7 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   sizer: ^2.0.15
   pie_chart: ^5.3.0
-
+  table_calendar: ^3.0.5
+  intl: ^0.16.1
 
 dev_dependencies:
   flutter_test:

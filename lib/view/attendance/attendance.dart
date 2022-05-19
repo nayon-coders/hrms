@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
+import '../global_widget/tob-bar.dart';
 import '../home_screen/home.dart';
 import '../profile/profile.dart';
 
@@ -22,130 +23,85 @@ class _AttendanceState extends State<Attendance> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: appColors.white,
+      backgroundColor: appColors.bg,
         body: Column(
           children: [
-            Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                Container(
-                  width: double.infinity,
-                  height: MediaQuery.of(context).size.height/6,
-                  decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: <Color>[
-                          Color(0xff00315E),
-                          Color(0xff580082),
-                        ],
-                      )),
-                ),
+            TopBar(
+                text: "Employee Attendance",
+                goToBack: (){
+                  Navigator.pop(context);
+                },
 
-                Padding(
-                  padding: EdgeInsets.only(left: 20, right: 20, top: 35, bottom: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          IconButton(
-                              onPressed: (){
-                                // Navigator.push(context, MaterialPageRoute(builder: (context)=>IndexScreen(pageNumber: 0,)));
-                              },
-                              icon: Icon(
-                                Icons.arrow_back_ios,
-                                color: appColors.white,
-                              )
-                          ),
-                          MediunText(text: "Employee Attendance", size: 10.sp, color: appColors.white,),
-                        ],
-                      ),
-                      IconButton(
-                          onPressed: (){
-                            // Navigator.push(context, MaterialPageRoute(builder: (context)=>IndexScreen(pageNumber: 0,)));
-                          },
-                          icon: Icon(
-                            Icons.info_outline,
-                            color: appColors.white,
-                          )
-                      ),
+              iconNavigate: (){
+                Navigator.pop(context);
+              },
+              icon:Icons.info_outline,
+                bottomRoundedColor: appColors.bg,
 
-                    ],
-                  ),
-                ),
-
-                Container(
-                  padding: const EdgeInsets.only(top: 100),
-                  child: Container(
-                    height: 40,
-                    decoration: const BoxDecoration(
-                        color: appColors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
-                        )
-                    ),
-                  ),
-                ),
-              ],
             ),
 
-            //body part
-            BigText(text: "Good Morning", size: 20.sp, color: appColors.secondColor,),
-            MediunText(text: "Nayon Talukder",size: 12.sp, color: appColors.mainColor),
-            
-            const SizedBox(height: 30,),
-            MediunText(text: "Friday , May 14 2022", color: appColors.gray, size: 9.sp,),
-            BigText(text: "9:00 AM", size: 25.sp, color: appColors.black,),
+            Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      //body part
+                      BigText(text: "Good Morning", size: 20.sp, color: appColors.secondColor,),
+                      MediunText(text: "Nayon Talukder",size: 12.sp, color: appColors.mainColor),
+
+                      const SizedBox(height: 30,),
+                      MediunText(text: "Friday , May 14 2022", color: appColors.gray, size: 9.sp,),
+                      BigText(text: "9:00 AM", size: 25.sp, color: appColors.black,),
 
 
-            const SizedBox(height: 70,),
-            GestureDetector(
-              onTap: (){
-                setState(() {
-                  isClock = false;
-                });
-              },
-              child: isClock ? Container(
-                height: 17.h,
-                width: 17.h,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  color: appColors.successColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: appColors.successColor.withOpacity(0.3),
-                      spreadRadius: 18,
-                      blurRadius: 0,
-                      offset: Offset(0, 0), // changes position of shadow
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: MediunText(text: "Clock In", size: 10.sp, color: appColors.white,),
-                )
-              )
-              : Container(
-                  height: 17.h,
-                  width: 17.h,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100),
-                    color: appColors.secondColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: appColors.secondColor.withOpacity(0.3),
-                        spreadRadius: 18,
-                        blurRadius: 0,
-                        offset: Offset(0, 0), // changes position of shadow
-                      ),
+                      const SizedBox(height: 70,),
+                      GestureDetector(
+                        onTap: (){
+                          setState(() {
+                            isClock = false;
+                          });
+                        },
+                        child: isClock ? Container(
+                            height: 17.h,
+                            width: 17.h,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              color: appColors.successColor,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: appColors.successColor.withOpacity(0.3),
+                                  spreadRadius: 18,
+                                  blurRadius: 0,
+                                  offset: Offset(0, 0), // changes position of shadow
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: MediunText(text: "Clock In", size: 10.sp, color: appColors.white,),
+                            )
+                        )
+                            : Container(
+                            height: 17.h,
+                            width: 17.h,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              color: appColors.secondColor,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: appColors.secondColor.withOpacity(0.3),
+                                  spreadRadius: 18,
+                                  blurRadius: 0,
+                                  offset: Offset(0, 0), // changes position of shadow
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: MediunText(text: "Clock out", size: 10.sp, color: appColors.white,),
+                            )
+                        ),
+                      )
                     ],
                   ),
-                  child: Center(
-                    child: MediunText(text: "Clock out", size: 10.sp, color: appColors.white,),
-                  )
-              ),
+                )
             )
           ],
         ),

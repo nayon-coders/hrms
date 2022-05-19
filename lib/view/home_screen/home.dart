@@ -1,4 +1,5 @@
 import 'package:HRMS/utility/colors.dart';
+import 'package:HRMS/view/attendance/attendance-list/attendance-list.dart';
 import 'package:HRMS/view/attendance/attendance.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
@@ -48,14 +49,19 @@ class _HomeScreenState extends State<HomeScreen> {
                    children: [
                      Row(
                        children: [
-                         ClipRRect(
-                             borderRadius: BorderRadius.circular(100),
-                             child: Image.asset("assets/images/user.jpg",
-                               fit: BoxFit.cover,
-                               height: 50,
-                               width: 50,
-                             )
+                         GestureDetector(
+                           onTap: (){
+                             Navigator.push(context, MaterialPageRoute(builder: (context)=>Profile()));
+                           },
+                           child: ClipRRect(
+                               borderRadius: BorderRadius.circular(100),
+                               child: Image.asset("assets/images/user.jpg",
+                                 fit: BoxFit.cover,
+                                 height: 50,
+                                 width: 50,
+                               )
 
+                           ),
                          ),
                          const SizedBox(width: 10,),
                          Column(
@@ -117,9 +123,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         SizedBox(width: 20,),
                         Expanded(
-                          child:ListOfMenu(
-                            text: 'Attendance \nList',
-                            image: 'assets/images/calander.png',
+                          child:GestureDetector(
+                            onTap: ()=> Navigator.push(context,MaterialPageRoute(builder: (context)=>AttendaceList())),
+                            child: ListOfMenu(
+                              text: 'Attendance \nList',
+                              image: 'assets/images/calander.png',
+                            ),
                           ),
                         ),
                       ],
