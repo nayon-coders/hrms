@@ -1,11 +1,14 @@
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/attendance/attendance-list/attendance-list.dart';
 import 'package:HRMS/view/attendance/attendance.dart';
+import 'package:HRMS/view/attendnace-regularization/appy-attendnace-regularization/apply-attendnace-regularization.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
 import 'package:HRMS/view/home_screen/widget/home-leave-report.dart';
 import 'package:HRMS/view/home_screen/widget/home-attendance-reports.dart';
 import 'package:HRMS/view/home_screen/widget/list-of-menu.dart';
+import 'package:HRMS/view/leave/leave-apply/leave-apply.dart';
+import 'package:HRMS/view/leave/leave-list/leave-list.dart';
 import 'package:HRMS/view/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
@@ -144,10 +147,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         SizedBox(width: 20,),
                         Expanded(
-                          child:ListOfMenu(
-                            text: 'Attendance \nRegulizetion',
-                            TextSize: 10,
-                            image: 'assets/images/listattendance.png',
+                          child:GestureDetector(
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>ApplyAttendanceRegularization()));
+                            },
+                            child: ListOfMenu(
+                              text: 'Attendance \nRegulizetion',
+                              TextSize: 10,
+                              image: 'assets/images/listattendance.png',
+                            ),
                           ),
                         ),
                       ],
@@ -156,16 +164,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: ListOfMenu(
-                            text: 'Apply For \nLeave',
-                            image: 'assets/images/applyforleav.png',
+                          child: GestureDetector(
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>LeaveApply()));
+                            },
+                            child: ListOfMenu(
+                              text: 'Apply For \nLeave',
+                              image: 'assets/images/applyforleav.png',
+                            ),
                           ),
                         ),
                         SizedBox(width: 20,),
                         Expanded(
-                          child:ListOfMenu(
-                            text: 'Leave List',
-                            image: 'assets/images/leavelist.png',
+                          child:GestureDetector(
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>LeaveList()));
+                            },
+                            child: ListOfMenu(
+                              text: 'Leave List',
+                              image: 'assets/images/leavelist.png',
+                            ),
                           ),
                         ),
                       ],
@@ -185,37 +203,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
 
-
-
-      //navigation bar
-      floatingActionButton: FloatingActionButton(
-        child: Container(
-          width: 80,
-          height: 80,
-          decoration:  BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              gradient:
-              LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: <Color>[
-                  Color(0xff00315E),
-                  Color(0xff580082),
-                ],
-              )
-          ),
-          child: const Icon(Icons.add),
-        ),
-        onPressed: () {
-          setState(() {
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>Attendance()));
-          });
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
-        notchMargin: 10,
+
         child: Container(
           height: 60,
           child: Row(
@@ -228,23 +218,60 @@ class _HomeScreenState extends State<HomeScreen> {
                     minWidth: 40,
                     onPressed: () {
                       setState(() {
-                        // Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
                       });
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
+                      children: const <Widget>[
                         Icon(
                           Icons.dashboard,
                           color:  appColors.secondColor,
                         ),
                         Text(
-                          'Dashboard',
+                          'Home',
                           style: TextStyle(
                             color: appColors.secondColor,
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Attendance()));
+                    },
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      transform: Matrix4.translationValues(0.0, -20.0, 0.0),
+                      decoration:  BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              spreadRadius: 5,
+                              blurRadius: 5,
+                              offset: Offset(0, 0), // changes position of shadow
+                            ),
+                          ],
+
+                          borderRadius: BorderRadius.circular(100),
+                          gradient:
+                          LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: <Color>[
+                              Color(0xff00315E),
+                              Color(0xff580082),
+                            ],
+                          )
+                      ),
+                      child: const Icon(Icons.add, color: appColors.white,),
                     ),
                   ),
                 ],
