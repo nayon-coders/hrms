@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/attendance/attendance-list/attendance-list.dart';
 import 'package:HRMS/view/attendance/attendance.dart';
@@ -11,6 +13,7 @@ import 'package:HRMS/view/leave/leave-apply/leave-apply.dart';
 import 'package:HRMS/view/leave/leave-list/leave-list.dart';
 import 'package:HRMS/view/profile/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,6 +24,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  var Name;
+  var Email;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _UserInfo();
+  }
+  void _UserInfo() async{
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var name = localStorage.getString("name");
+    var email = localStorage.getString("email");
+
+    setState(() {
+      Name = name;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                            children: [
                              BigText(text: "Hi, Good Morning", color: appColors.white, size: 13, ),
                              SizedBox(height: 5,),
-                             MediunText(text: "Nayon Talukder", size: 10, color: appColors.white, ),
+                             MediunText(text: "${Name}", size: 10, color: appColors.white, ),
                            ],
                          ),
                        ],

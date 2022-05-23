@@ -45,8 +45,8 @@ class _ApplyAttendanceRegularizationState extends State<ApplyAttendanceRegulariz
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width/2,
-                      padding: EdgeInsets.only(bottom: 15),
-                      decoration: BoxDecoration(
+                      padding: const EdgeInsets.only(bottom: 15),
+                      decoration: const BoxDecoration(
                           border: Border(
                               bottom: BorderSide(width: 3, color: appColors.secondColor)
                           )
@@ -63,8 +63,8 @@ class _ApplyAttendanceRegularizationState extends State<ApplyAttendanceRegulariz
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width/2,
-                      padding: EdgeInsets.only(bottom: 15),
-                      decoration: BoxDecoration(
+                      padding: const EdgeInsets.only(bottom: 15),
+                      decoration: const BoxDecoration(
                           border: Border(
                               bottom: BorderSide(width: 3, color: appColors.gray)
                           )
@@ -85,7 +85,7 @@ class _ApplyAttendanceRegularizationState extends State<ApplyAttendanceRegulariz
                 padding: EdgeInsets.symmetric(horizontal: 2.h, vertical: 2.h),
 
                 child: ListView(
-                  children: [
+                  children: const [
                     LeaveForm(),
                   ],
                 )
@@ -100,7 +100,7 @@ class _ApplyAttendanceRegularizationState extends State<ApplyAttendanceRegulariz
 
 
 
-      bottomNavigationBar: BottomNavigation(),
+      bottomNavigationBar: const BottomNavigation(),
 
     );
   }

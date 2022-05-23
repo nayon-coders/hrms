@@ -39,6 +39,9 @@ dependencies:
   table_calendar: ^3.0.5
   dropdown_button2: ^1.5.2
   datetime_picker_formfield: ^2.0.0
+  http: ^0.13.4
+  shared_preferences: ^2.0.15
+  another_flushbar: ^1.10.29
 
 
 dev_dependencies:

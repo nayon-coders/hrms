@@ -1,10 +1,13 @@
+import 'package:HRMS/model/attendance-list-model.dart';
 import 'package:HRMS/utility/colors.dart';
+import 'package:HRMS/view/attendance/attendance-list/attendance-list.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../controller/attendance-list/attenandce-list-controller.dart';
 import '../global_widget/tob-bar.dart';
 import '../home_screen/home.dart';
 import '../profile/profile.dart';
@@ -18,10 +21,18 @@ class Attendance extends StatefulWidget {
 
 class _AttendanceState extends State<Attendance> {
 
-
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    AttedanceListController _attendancList = AttedanceListController();
+  }
   bool isClock = true;
+
+
   @override
   Widget build(BuildContext context) {
+    AttedanceListController attendancList = AttedanceListController();
     return Scaffold(
       backgroundColor: appColors.bg,
         body: Column(
@@ -54,6 +65,20 @@ class _AttendanceState extends State<Attendance> {
 
 
                       const SizedBox(height: 70,),
+
+                      FutureBuilder(
+                        future: attendancList.fromAttendance(),
+                          builder: (context, AsyncSnapshot<AttendanceEmployeeModel> snapshot){
+                          if(snapshot.hasData){
+                            return Text("yes");
+                          }else{
+                            return Text("not");
+                          }
+
+    }
+
+                      ),
+
                       GestureDetector(
                         onTap: (){
                           setState(() {
@@ -220,3 +245,4 @@ class _AttendanceState extends State<Attendance> {
     );
   }
 }
+

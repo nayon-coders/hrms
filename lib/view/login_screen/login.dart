@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:HRMS/controller/login/login-controller.dart';
+import 'package:HRMS/view/global_widget/notify.dart';
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/home_screen/home.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -10,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool isLogin = true;
   //form key
   final _loginFormKey = GlobalKey<FormState>();
   late bool _passwordVisible;
@@ -122,11 +128,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(height: 3.h,),
                       GestureDetector(
                         onTap: (){
-                          Navigator.push(context,
-                          MaterialPageRoute(builder: (context)=>HomeScreen())
-                          );
+                          login();
                         },
-                        child: Container(
+                        child: isLogin ? Container(
                           width: double.infinity,
                           padding: EdgeInsets.only(top: 15, bottom: 15),
                           decoration: BoxDecoration(
@@ -140,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               fontSize: 16.sp
                             ),
                           )),
-                        ),
+                        ): loadingBtn(),
                       )
                     ],
                   )
@@ -152,4 +156,74 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+  //loading wdiget
+  Widget loadingBtn(){
+    return Container(
+      width: 60,
+      height: 60,
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100),
+          color: appColors.secondColor
+      ),
+      child: Center(child:
+      CircularProgressIndicator(
+        color: appColors.white,
+        strokeWidth: 3,
+      ), ),
+    );
+  }
+
+  void login() async{
+    if(_loginFormKey.currentState!.validate()){
+      setState(() {
+        isLogin = false;
+      });
+      var loginInfo = {
+        "email":_email.text,
+        "password": _pass.text,
+      };
+
+      try {
+        var response = await http.post(Uri.parse("https://asia.net.in/api/login"),
+          body: {
+            "email": _email.text,
+            "password": _pass.text,
+          },
+        );
+        var body = jsonDecode(response.body);
+        if (response.statusCode == 201) {
+          SharedPreferences localStorage = await SharedPreferences.getInstance();
+          localStorage.setString('token', body['api_token']);
+          localStorage.setString('name', body['name']);
+          localStorage.setString('email', body['email']);
+           Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+
+          print(body['email']);
+
+          Notify(
+            title: 'Login Success',
+            body: 'Your are login successfully',
+            color: appColors.successColor,
+          ).notify(context);
+        } else {
+          Notify(
+            title: 'Login Faild',
+            body: 'Sorry, Something was wrong',
+            color: appColors.secondColor,
+          ).notify(context);
+          print(response.statusCode);
+        }
+        setState(() {
+          isLogin = true;
+        });
+
+      }catch(e){
+
+      }
+     }
+    }//end login method
+
+
+
 }
