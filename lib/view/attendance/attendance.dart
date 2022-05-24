@@ -1,13 +1,19 @@
-import 'package:HRMS/model/attendance-list-model.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:HRMS/model/TodayAttendanceModel.dart';
 import 'package:HRMS/utility/colors.dart';
-import 'package:HRMS/view/attendance/attendance-list/attendance-list.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
+import 'package:HRMS/view/global_widget/notify.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-
-import '../../controller/attendance-list/attenandce-list-controller.dart';
+import 'package:intl/intl.dart';
+import '../../controller/attendance-list/today-attendance-list-controller.dart';
+import '../../controller/employee-attendance/clocking-controller.dart';
+import '../../service/api-service.dart';
 import '../global_widget/tob-bar.dart';
 import '../home_screen/home.dart';
 import '../profile/profile.dart';
@@ -21,18 +27,63 @@ class Attendance extends StatefulWidget {
 
 class _AttendanceState extends State<Attendance> {
 
+  var Name;
 @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    AttedanceListController _attendancList = AttedanceListController();
+    _UserInfo();
+
+    Timer.periodic(Duration(seconds: 1), (timer){
+      if(_timeOfDay.minute != TimeOfDay.now().minute){
+        setState(() {
+          _timeOfDay = TimeOfDay.now();
+        });
+      }
+    });
   }
+
+  //###### User information #########
+  void _UserInfo() async{
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var name = localStorage.getString("name");
+    setState(() {
+      Name = name!;
+    });
+  }
+  ///////////////// User information end = ///////////////
+
+
+  //////////// timer ////////////
+  TimeOfDay _timeOfDay = TimeOfDay.now();
+  //////////// timer ////////////
+
+
+  //////////// Date Format ////////////
+  String formattedDate = DateFormat('yMMMMEEEEd').format(DateTime.now());
+  String todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+  //////////// Date Format ////////////
+
+  //////////// Dynamic greeting ////////////
+  String greeting() {
+    var hour = DateTime.now().hour;
+    if (hour <= 12) {
+      return 'Good Morning';
+    }
+    if (hour <= 17) {
+      return 'Good Afternoon';
+    }
+    return 'Good Evening';
+  }
+
   bool isClock = true;
 
 
   @override
   Widget build(BuildContext context) {
-    AttedanceListController attendancList = AttedanceListController();
+    TodayAttendanceController _todayAttendance = TodayAttendanceController();
+      String _priod = _timeOfDay.period == DayPeriod.am ? "AM" : "PM";
     return Scaffold(
       backgroundColor: appColors.bg,
         body: Column(
@@ -56,74 +107,127 @@ class _AttendanceState extends State<Attendance> {
                   child: Column(
                     children: [
                       //body part
-                      BigText(text: "Good Morning", size: 20.sp, color: appColors.secondColor,),
-                      MediunText(text: "Nayon Talukder",size: 12.sp, color: appColors.mainColor),
+                      BigText(text: greeting(), size: 20.sp, color: appColors.secondColor,),
+                      MediunText(text: Name!,size: 12.sp, color: appColors.mainColor),
 
                       const SizedBox(height: 30,),
-                      MediunText(text: "Friday , May 14 2022", color: appColors.gray, size: 9.sp,),
-                      BigText(text: "9:00 AM", size: 25.sp, color: appColors.black,),
+                      MediunText(text: formattedDate, color: appColors.gray, size: 9.sp,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          BigText(text: "${_timeOfDay.hour}:${_timeOfDay.minute}", size: 25.sp, color: appColors.black,),
+                          const SizedBox(width: 5,),
+                          BigText(text: _priod, size: 25.sp, color: appColors.black,),
+                        ],
+                      ),
 
 
                       const SizedBox(height: 70,),
 
                       FutureBuilder(
-                        future: attendancList.fromAttendance(),
-                          builder: (context, AsyncSnapshot<AttendanceEmployeeModel> snapshot){
-                          if(snapshot.hasData){
-                            return Text("yes");
-                          }else{
-                            return Text("not");
-                          }
+                        future: _todayAttendance.fromTodayAttendance(),
+                          builder: (context, AsyncSnapshot<TodaysAttendanceModel> snapshot){
+                          if(snapshot.connectionState == ConnectionState.waiting){
+                            return Container(
+                                height: 17.h,
+                                width: 17.h,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  color: appColors.mainColor,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: appColors.mainColor.withOpacity(0.3),
+                                      spreadRadius: 18,
+                                      blurRadius: 0,
+                                      offset: Offset(0, 0), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: appColors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                )
+                            );
+                          }else if(snapshot.hasData){
+                            var APIDate = snapshot.data!.todaysAttendance!.date;
+                            var clock_in = snapshot.data!.todaysAttendance!.clockIn;
+                            var clock_out = snapshot.data!.todaysAttendance!.clockOut;
+                            String APIdateFormet = DateFormat('yyyy-MM-dd').format(APIDate);
+                            if(APIdateFormet == todayDate){
+                              //not clock_in
+                              // return clock in
+                              if(clock_in == "00:00:00"){
+                                return attendanceButton(
+                                    "Clock In",
+                                    appColors.successColor,
+                                    ()=>_clockIn(),
+                                );
+                              }else if(clock_out == "00:00:00"){
+                                return attendanceButton(
+                                  "Clock Out",
+                                  appColors.secondColor,
+                                      ()=> _clockOut(),
+                                );
+                              }else{
 
-    }
+                                return Column(
+                                  children: [
+                                    Container(
+                                        height: 17.h,
+                                        width: 17.h,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(100),
+                                          color: appColors.gray,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: appColors.gray.withOpacity(0.3),
+                                              spreadRadius: 18,
+                                              blurRadius: 0,
+                                              offset: Offset(0, 0), // changes position of shadow
+                                            ),
+                                          ],
+                                        ),
+                                        child: Center(
+                                          child: MediunText(
+                                            size: 13.sp,
+                                            text: "Done",
+                                            color: appColors.black,
+                                          ),
+                                        ),
+                                    ),
+                                    const SizedBox(height: 45,),
+                                    Center(
+                                      child: BigText(
+                                        size: 11.sp,
+                                        text: "Today attendance is complete.",
+                                        color: appColors.black,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                               }
+
+                            }else{
+                              //today no data
+                              // return clock in
+                              return  attendanceButton("Clock In", appColors.successColor, ()=>_clockIn(),);
+                            }
+                          }else{
+                            //today no data
+                            // return clock in
+                            return  attendanceButton("Clock In", appColors.successColor, ()=>_clockIn(),);
+                          }
+                          return Center();
+
+                        }
 
                       ),
 
-                      GestureDetector(
-                        onTap: (){
-                          setState(() {
-                            isClock = false;
-                          });
-                        },
-                        child: isClock ? Container(
-                            height: 17.h,
-                            width: 17.h,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              color: appColors.successColor,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: appColors.successColor.withOpacity(0.3),
-                                  spreadRadius: 18,
-                                  blurRadius: 0,
-                                  offset: Offset(0, 0), // changes position of shadow
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: MediunText(text: "Clock In", size: 10.sp, color: appColors.white,),
-                            )
-                        )
-                            : Container(
-                            height: 17.h,
-                            width: 17.h,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              color: appColors.secondColor,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: appColors.secondColor.withOpacity(0.3),
-                                  spreadRadius: 18,
-                                  blurRadius: 0,
-                                  offset: Offset(0, 0), // changes position of shadow
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: MediunText(text: "Clock out", size: 10.sp, color: appColors.white,),
-                            )
-                        ),
-                      )
+
                     ],
                   ),
                 )
@@ -244,5 +348,94 @@ class _AttendanceState extends State<Attendance> {
       ),
     );
   }
+
+
+  Widget attendanceButton(String text, Color color, VoidCallback? onTap){
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+          height: 17.h,
+          width: 17.h,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100),
+            color: color,
+            boxShadow: [
+              BoxShadow(
+                color: color.withOpacity(0.3),
+                spreadRadius: 18,
+                blurRadius: 0,
+                offset: Offset(0, 0), // changes position of shadow
+              ),
+            ],
+          ),
+          child: Center(
+            child: MediunText(text: text, size: 10.sp, color: appColors.white,),
+          )
+      ),
+    );
+  }
+
+
+
+  void _clockIn() async{
+      setState(() {
+        isClock = false;
+        print(isClock);
+      });
+
+
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+      //Store Data
+      var token = localStorage.getString('token');
+      var url = Uri.parse(APIService.clockInUrl);
+      final response =  await http.post(url,
+          headers: {
+            "Authorization" : "Bearer $token"
+          }
+      );
+      if(response.statusCode == 201){
+        Notify(
+            title: "Clock In Success",
+            body: "You're Present. Your Attendance successfully Clock In",
+            color: appColors.successColor);
+      }else{
+        _waring();
+      }
+
+  }
+  void _clockOut() async{
+    setState(() {
+      print(isClock);
+      isClock = true;
+    });
+
+
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    //Store Data
+    var token = localStorage.getString('token');
+    var url = Uri.parse(APIService.clockOutUrl);
+    final response =  await http.post(url,
+        headers: {
+          "Authorization" : "Bearer $token"
+        }
+    );
+    if(response.statusCode == 201){
+      Notify(
+          title: "Clock Out Success",
+          body: "You're Leave. Your Attendance successfully Clock Out",
+          color: appColors.successColor);
+    }else{
+      _waring();
+    }
+  }
+
+
+  void _waring(){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: appColors.dangerColor,
+        padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+          content: MediunText(text: "Access to this resource on the server is denied!", color: appColors.white, size: 9.sp,)));
+  }
+
 }
 

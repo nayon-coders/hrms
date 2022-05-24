@@ -1,31 +1,31 @@
 // To parse this JSON data, do
 //
-//     final attendanceEmployee = attendanceEmployeeFromJson(jsonString);
+//     final todaysAttendance = todaysAttendanceFromJson(jsonString);
 
 import 'dart:convert';
 
-AttendanceEmployeeModel attendanceEmployeeFromJson(String str) => AttendanceEmployeeModel.fromJson(json.decode(str));
+TodaysAttendanceModel todaysAttendanceFromJson(String str) => TodaysAttendanceModel.fromJson(json.decode(str));
 
-String attendanceEmployeeToJson(AttendanceEmployeeModel data) => json.encode(data.toJson());
+String todaysAttendanceToJson(TodaysAttendanceModel data) => json.encode(data.toJson());
 
-class AttendanceEmployeeModel {
-  AttendanceEmployeeModel({
-    required this.attendanceEmployee,
+class TodaysAttendanceModel {
+  TodaysAttendanceModel({
+    required this.todaysAttendance,
   });
 
-  List<AttendanceEmployeeElement> attendanceEmployee;
+  TodaysAttendanceClass todaysAttendance;
 
-  factory AttendanceEmployeeModel.fromJson(Map<String, dynamic> json) => AttendanceEmployeeModel(
-    attendanceEmployee: List<AttendanceEmployeeElement>.from(json["attendanceEmployee"].map((x) => AttendanceEmployeeElement.fromJson(x))),
+  factory TodaysAttendanceModel.fromJson(Map<String, dynamic> json) => TodaysAttendanceModel(
+    todaysAttendance: TodaysAttendanceClass.fromJson(json["todaysAttendance"]),
   );
 
   Map<String, dynamic> toJson() => {
-    "attendanceEmployee": List<dynamic>.from(attendanceEmployee.map((x) => x.toJson())),
+    "todaysAttendance": todaysAttendance.toJson(),
   };
 }
 
-class AttendanceEmployeeElement {
-  AttendanceEmployeeElement({
+class TodaysAttendanceClass {
+  TodaysAttendanceClass({
     required this.id,
     required this.employeeId,
     required this.date,
@@ -55,7 +55,7 @@ class AttendanceEmployeeElement {
   DateTime createdAt;
   DateTime updatedAt;
 
-  factory AttendanceEmployeeElement.fromJson(Map<String, dynamic> json) => AttendanceEmployeeElement(
+  factory TodaysAttendanceClass.fromJson(Map<String, dynamic> json) => TodaysAttendanceClass(
     id: json["id"],
     employeeId: json["employee_id"],
     date: DateTime.parse(json["date"]),
