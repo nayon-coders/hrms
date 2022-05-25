@@ -1,6 +1,8 @@
 import 'package:HRMS/utility/colors.dart';
+import 'package:HRMS/view/home_screen/home.dart';
 import 'package:HRMS/view/login_screen/login.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 class FlashScreen extends StatefulWidget {
@@ -11,12 +13,27 @@ class FlashScreen extends StatefulWidget {
 }
 
 class _FlashScreenState extends State<FlashScreen> with TickerProviderStateMixin {
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(
-        const Duration(seconds: 3),() => Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginScreen())));
+    _UserInfo();
+
+
+  }
+  void _UserInfo() async{
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var token = localStorage.getString("token");
+    setState(() {
+      print(token);
+      Future.delayed(
+          const Duration(seconds: 3),() =>
+      token == null ?
+      Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginScreen())):
+      Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()))
+      );
+    });
   }
 
 

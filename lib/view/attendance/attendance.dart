@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:HRMS/model/TodayAttendanceModel.dart';
 import 'package:HRMS/utility/colors.dart';
@@ -153,13 +154,11 @@ class _AttendanceState extends State<Attendance> {
                                 )
                             );
                           }else if(snapshot.hasData){
-                            var APIDate = snapshot.data!.todaysAttendance!.date;
+                            //var APIDate = snapshot.data!.todaysAttendance!.date;
                             var clock_in = snapshot.data!.todaysAttendance!.clockIn;
                             var clock_out = snapshot.data!.todaysAttendance!.clockOut;
-                            String APIdateFormet = DateFormat('yyyy-MM-dd').format(APIDate);
-                            if(APIdateFormet == todayDate){
-                              //not clock_in
-                              // return clock in
+                            //String APIdateFormet = DateFormat('yyyy-MM-dd').format(APIDate);
+
                               if(clock_in == "00:00:00"){
                                 return attendanceButton(
                                     "Clock In",
@@ -173,7 +172,6 @@ class _AttendanceState extends State<Attendance> {
                                       ()=> _clockOut(),
                                 );
                               }else{
-
                                 return Column(
                                   children: [
                                     Container(
@@ -211,11 +209,7 @@ class _AttendanceState extends State<Attendance> {
                                 );
                                }
 
-                            }else{
-                              //today no data
-                              // return clock in
-                              return  attendanceButton("Clock In", appColors.successColor, ()=>_clockIn(),);
-                            }
+
                           }else{
                             //today no data
                             // return clock in
@@ -378,11 +372,6 @@ class _AttendanceState extends State<Attendance> {
 
 
   void _clockIn() async{
-      setState(() {
-        isClock = false;
-        print(isClock);
-      });
-
 
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       //Store Data
@@ -394,13 +383,35 @@ class _AttendanceState extends State<Attendance> {
           }
       );
       if(response.statusCode == 201){
-        Notify(
-            title: "Clock In Success",
-            body: "You're Present. Your Attendance successfully Clock In",
-            color: appColors.successColor);
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => super.widget));
+        Flushbar(
+          title: "Clock In Success",
+          titleColor: appColors.white,
+          message: "You're Present. Your Attendance successfully Clock In",
+          icon:  Icon(
+            Icons.done,
+            size: 28.0,
+            color: appColors.successColor,
+          ),
+          messageSize: 12.sp,
+          messageColor: appColors.successColor,
+          borderWidth: 1,
+          borderColor: Colors.grey,
+          margin: EdgeInsets.all(6.0),
+          flushbarStyle: FlushbarStyle.FLOATING,
+          flushbarPosition: FlushbarPosition.TOP,
+          textDirection: Directionality.of(context),
+          borderRadius: BorderRadius.circular(12),
+          duration: Duration(seconds: 4),
+          leftBarIndicatorColor: appColors.successColor,
+        ).show(context);
       }else{
         _waring();
       }
+
 
   }
   void _clockOut() async{
@@ -420,10 +431,31 @@ class _AttendanceState extends State<Attendance> {
         }
     );
     if(response.statusCode == 201){
-      Notify(
-          title: "Clock Out Success",
-          body: "You're Leave. Your Attendance successfully Clock Out",
-          color: appColors.successColor);
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => super.widget));
+      Flushbar(
+        title: "Clock Out Success",
+        titleColor: appColors.white,
+        message: "You're Leave. Your Attendance successfully Clock Out",
+        icon:  Icon(
+          Icons.done,
+          size: 28.0,
+          color: appColors.secondColor,
+        ),
+        messageSize: 12.sp,
+        messageColor: appColors.secondColor,
+        borderWidth: 1,
+        borderColor: Colors.grey,
+        margin: EdgeInsets.all(6.0),
+        flushbarStyle: FlushbarStyle.FLOATING,
+        flushbarPosition: FlushbarPosition.TOP,
+        textDirection: Directionality.of(context),
+        borderRadius: BorderRadius.circular(12),
+        duration: Duration(seconds: 4),
+        leftBarIndicatorColor: appColors.secondColor,
+      ).show(context);
     }else{
       _waring();
     }

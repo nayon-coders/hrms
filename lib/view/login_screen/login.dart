@@ -1,6 +1,7 @@
 import 'dart:convert';
+import 'package:HRMS/service/api-service.dart';
 import 'package:http/http.dart' as http;
-import 'package:HRMS/controller/login/login-controller.dart';
+import 'package:HRMS/controller/auth-controller/login-controller.dart';
 import 'package:HRMS/view/global_widget/notify.dart';
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/home_screen/home.dart';
@@ -185,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
       };
 
       try {
-        var response = await http.post(Uri.parse("https://asia.net.in/api/login"),
+        var response = await http.post(Uri.parse(APIService.loginUrl),
           body: {
             "email": _email.text,
             "password": _pass.text,

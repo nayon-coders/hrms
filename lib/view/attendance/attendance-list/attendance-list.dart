@@ -1,10 +1,18 @@
+import 'dart:convert';
+import 'package:HRMS/model/MonthlyAttendModel.dart';
+import 'package:http/http.dart' as http;
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
+import 'package:HRMS/view/global_widget/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import '../../../model/TodayAttendanceModel.dart';
+import '../../../service/api-service.dart';
 import '../../global_widget/mediun_text.dart';
 import '../../home_screen/home.dart';
 import '../../profile/profile.dart';
@@ -209,212 +217,28 @@ class _AttendaceListState extends State<AttendaceList> {
                         color: appColors.gray200,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      //child: selectDate ? MediunText(text: toDay.toString()) : MediunText(text: monthOfTheYear.toString()),
-
                       child: Center(
                         child: selectDate ? MediunText(text: toDay.toString(), size: 10.sp, color: appColors.gray,) : MediunText(text: monthOfTheYear.toString(), size: 10.sp, color: appColors.gray,),
                       ),
                     ),
                     const SizedBox(height: 10,),
 
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 2.h),
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                        color: appColors.white,
-                        border: const Border(
-                          left: BorderSide(width: 10.0, color: appColors.successColor),
-                        ),
-                        //borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            spreadRadius: 1,
-                            blurRadius: 5,
-                            offset: const Offset(0, 1), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              MediunText(text: "Dec 23, 2018", size: 9, color: appColors.gray,), 
-                              BigText(text: "Present", size: 12, color: appColors.successColor,)
-                            ],
-                          ),
-                          const SizedBox(height: 10,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  BigText(text: "Clock In", color: appColors.gray, size: 8.sp,),
-                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 8.sp,)
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  BigText(text: "Clock Out", color: appColors.gray, size: 8.sp,),
-                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 8.sp,)
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  BigText(text: "Late", color: appColors.gray, size: 8.sp,),
-                                  MediunText(text: "06:50:50", color: appColors.black, size: 8.sp,)
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  BigText(text: "Early Leave", color: appColors.gray, size: 8.sp,),
-                                  MediunText(text: "06:50:50", color: appColors.black, size: 8.sp,)
-                                ],
-                              ),
-                            ],
-                          )
-                          
-                        ],
-                      ),
+                    FutureBuilder(
+                        future: fromMonthlyAttendance(),
+                        builder: (context, AsyncSnapshot<MonthlyAttendanceModel> snapshot){
+                          if(snapshot.connectionState == ConnectionState.waiting){
+                            return _loading();
+                          }else if(snapshot.hasData){
+                            return Text("${ snapshot.data!.attendanceEmployee!.length}");
+                          }else{
+                             return Center(
+                               child: MediunText(text: "No Data Found"),
+                             );
+                          }
+                        }
                     ),
-                    const SizedBox(height: 10,),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 2.h),
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                        color: appColors.white,
-                        border: const Border(
-                          left: BorderSide(width: 10.0, color: appColors.successColor),
-                        ),
-                        //borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            spreadRadius: 1,
-                            blurRadius: 5,
-                            offset: const Offset(0, 1), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              MediunText(text: "Dec 23, 2018", size: 9, color: appColors.gray,),
-                              BigText(text: "Present", size: 12, color: appColors.successColor,)
-                            ],
-                          ),
-                          const SizedBox(height: 10,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  BigText(text: "Clock In", color: appColors.gray, size: 8.sp,),
-                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 8.sp,)
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  BigText(text: "Clock Out", color: appColors.gray, size: 8.sp,),
-                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 8.sp,)
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  BigText(text: "Late", color: appColors.gray, size: 8.sp,),
-                                  MediunText(text: "06:50:50", color: appColors.black, size: 8.sp,)
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  BigText(text: "Early Leave", color: appColors.gray, size: 8.sp,),
-                                  MediunText(text: "06:50:50", color: appColors.black, size: 8.sp,)
-                                ],
-                              ),
-                            ],
-                          )
 
-                        ],
-                      ),
-                    ),
                     const SizedBox(height: 10,),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 2.h),
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                        color: appColors.white,
-                        border: const Border(
-                          left: BorderSide(width: 10.0, color: appColors.successColor),
-                        ),
-                        //borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            spreadRadius: 1,
-                            blurRadius: 5,
-                            offset: const Offset(0, 1), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              MediunText(text: "Dec 23, 2018", size: 9, color: appColors.gray,),
-                              BigText(text: "Present", size: 12, color: appColors.successColor,)
-                            ],
-                          ),
-                          const SizedBox(height: 10,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  BigText(text: "Clock In", color: appColors.gray, size: 8.sp,),
-                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 8.sp,)
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  BigText(text: "Clock Out", color: appColors.gray, size: 8.sp,),
-                                  MediunText(text: "5:50 PM	", color: appColors.black, size: 8.sp,)
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  BigText(text: "Late", color: appColors.gray, size: 8.sp,),
-                                  MediunText(text: "06:50:50", color: appColors.black, size: 8.sp,)
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  BigText(text: "Early Leave", color: appColors.gray, size: 8.sp,),
-                                  MediunText(text: "06:50:50", color: appColors.black, size: 8.sp,)
-                                ],
-                              ),
-                            ],
-                          )
-
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 55,),
                   ],
                 ),
               ),
@@ -527,4 +351,198 @@ class _AttendaceListState extends State<AttendaceList> {
       ),
     );
   }
+
+  ///loding
+  Widget _loading(){
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 2.h),
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+        color: appColors.white,
+        //borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 1), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ShimmerLoading(width: 70, height: 10,),
+              ShimmerLoading(width: 70, height: 10,),
+            ],
+          ),
+          const SizedBox(height: 10,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ShimmerLoading(width: 50, height: 10,),
+                  SizedBox(height: 3,),
+                  ShimmerLoading(width: 50, height: 10,),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ShimmerLoading(width: 50, height: 10,),
+                  SizedBox(height: 3,),
+                  ShimmerLoading(width: 50, height: 10,),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ShimmerLoading(width: 50, height: 10,),
+                  SizedBox(height: 3,),
+                  ShimmerLoading(width: 50, height: 10,),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ShimmerLoading(width: 50, height: 10,),
+                  SizedBox(height: 3,),
+                  ShimmerLoading(width: 50, height: 10,),
+                ],
+              ),
+            ],
+          )
+
+        ],
+      ),
+    );
+  }
+
+
+  Future<MonthlyAttendanceModel> fromMonthlyAttendance() async{
+
+        SharedPreferences localStorage = await SharedPreferences.getInstance();
+    //Store Data
+    var token = localStorage.getString('token');
+
+    var data={
+      "month" : "2022-05",
+      "type" : "monthly",
+    };
+
+    final response = await http.post(Uri.parse(APIService.attendanceListURL),
+        body:jsonEncode(data),
+        headers: {
+          "Authorization" : "Bearer $token"
+        }
+    );
+    var body = jsonDecode(response.body);
+    if(response.statusCode == 201){
+      var data = jsonDecode(response.body);
+      print(data);
+      return MonthlyAttendanceModel.fromJson(data);
+
+    }else{
+      print("error");
+      print(response.statusCode);
+      throw Exception("Error");
+    }
+
+  }
+
+
 }
+
+class ListAttendace extends StatelessWidget {
+  final Color color;
+  final String date;
+  final String status;
+  final String clockin;
+  final String clockout;
+  final String late;
+  final String earlyLeave;
+
+  ListAttendace({
+    required this.color,
+    required this.date,
+    required this.status,
+    required this.clockin,
+    required this.clockout,
+    required this.late,
+    required this.earlyLeave
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 2.h),
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+        color: appColors.white,
+        border: Border(
+          left: BorderSide(width: 10.0, color: color),
+        ),
+        //borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 1), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              MediunText(text: date, size: 9, color: appColors.gray,),
+              BigText(text: status, size: 12, color: appColors.successColor,)
+            ],
+          ),
+          const SizedBox(height: 10,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  BigText(text: "Clock In", color: appColors.gray, size: 8.sp,),
+                  MediunText(text: clockin, color: appColors.black, size: 8.sp,)
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  BigText(text: "Clock Out", color: appColors.gray, size: 8.sp,),
+                  MediunText(text: clockout, color: appColors.black, size: 8.sp,)
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  BigText(text: "Late", color: appColors.gray, size: 8.sp,),
+                  MediunText(text: late, color: appColors.black, size: 8.sp,)
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  BigText(text: "Early Leave", color: appColors.gray, size: 8.sp,),
+                  MediunText(text: earlyLeave, color: appColors.black, size: 8.sp,)
+                ],
+              ),
+            ],
+          )
+
+        ],
+      ),
+    );
+  }
+}
+
