@@ -15,7 +15,8 @@ class ShimmerLoading extends StatelessWidget {
     return Shimmer.fromColors(
       baseColor: appColors.gray200,
       highlightColor: appColors.white,
-      child: Container(width: width,height: height, 
+      child: Container(width: width,height: height,
+        margin: EdgeInsets.only(bottom: 5),
         decoration: BoxDecoration(
           color: appColors.white,
           borderRadius: BorderRadius.circular(1)

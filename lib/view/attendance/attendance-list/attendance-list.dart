@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:HRMS/model/MonthlyAttendModel.dart';
+import 'package:HRMS/model/monthly-attedance-model.dart';
 import 'package:http/http.dart' as http;
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
@@ -26,16 +26,29 @@ class AttendaceList extends StatefulWidget {
 }
 
 class _AttendaceListState extends State<AttendaceList> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fromMonthlyAttendance();
+  }
+
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
   final dateFormate = DateFormat.yMMMMd('en_US');
   final monthOfTheYear = DateFormat.yMMM().format(DateTime.now());
+  var monthFormat = DateFormat("yyyy-MM");
   dynamic toDay;
-  dynamic month;
-  dynamic year;
+  dynamic month = DateFormat("yyyy-MM").format(DateTime.now());
+  dynamic SearchDay;
   bool selectDate = false;
+  bool selectMonth = false;
+  var currentMonthYear = DateTime.now().month;
+
+  dynamic monthlyAtteandanceList;
 
   @override
   Widget build(BuildContext context) {
@@ -162,15 +175,16 @@ class _AttendaceListState extends State<AttendaceList> {
                   selectedDayPredicate: (day) {
                     return isSameDay(_selectedDay, day);
                   },
+
                   onDaySelected: (selectedDay, focusedDay) {
                       setState(() {
                         _selectedDay = selectedDay;
                         _focusedDay = focusedDay;
                         selectDate = true;
                       });
+                      SearchDay = (DateFormat("yyyy-MM-dd").format(_selectedDay!));
                       toDay = (dateFormate.format(_selectedDay!));
-                      print(toDay);
-                      print(toDay);
+                      print(SearchDay);
                   },
                   onFormatChanged: (format) {
                     if (_calendarFormat != format) {
@@ -182,7 +196,11 @@ class _AttendaceListState extends State<AttendaceList> {
                   },
                   onPageChanged: (focusedDay) {
                     // No need to call `setState()` here
+                    setState(() {
+                      selectMonth = true;
+                    });
                     _focusedDay = focusedDay;
+                    month = monthFormat.format(_focusedDay);
                   },
                 ),
 
@@ -205,7 +223,6 @@ class _AttendaceListState extends State<AttendaceList> {
           ),
 
           Expanded(
-            child: SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 2.h),
                 child: Column(
@@ -225,14 +242,66 @@ class _AttendaceListState extends State<AttendaceList> {
 
                     FutureBuilder(
                         future: fromMonthlyAttendance(),
-                        builder: (context, AsyncSnapshot<MonthlyAttendanceModel> snapshot){
+                        builder: (context, AsyncSnapshot<dynamic> snapshot){
                           if(snapshot.connectionState == ConnectionState.waiting){
+                            return Expanded(
+                              child: ListView.builder(
+                                  itemCount: 5,
+                                  itemBuilder: (context, index){
+                                    return _loading();
+                                  }
+                              ),
+                            );
                             return _loading();
                           }else if(snapshot.hasData){
-                            return Text("${ snapshot.data!.attendanceEmployee!.length}");
+                            return Expanded(
+                              child: ListView.builder(
+                                itemCount: monthlyAtteandanceList['attendanceEmployee'].length,
+                                  itemBuilder: (context, index){
+                                  var data = monthlyAtteandanceList['attendanceEmployee'][index];
+                                    var status = data['status'];
+                                    var atteDate =  dateFormate.format(DateTime.parse(data['date']));
+                                    if(status == 'Late'){
+                                      return ListAttendace(
+                                          color: appColors.secondColor,
+                                          date:  atteDate.toString(),
+                                          status: status.toString(),
+                                          clockin: data["clock_in"].toString(),
+                                          clockout: data["clock_out"].toString(),
+                                          late: data["late"].toString(),
+                                          earlyLeave: data["early_leaving"].toString(),
+                                      );
+                                    }else if(status == 'Present'){
+                                      return ListAttendace(
+                                        color: appColors.successColor,
+                                        date: atteDate.toString(),
+                                        status: status.toString(),
+                                        clockin: data["clock_in"].toString(),
+                                        clockout: data["clock_out"].toString(),
+                                        late: data["late"].toString(),
+                                        earlyLeave: data["early_leaving"].toString(),
+                                      );
+                                    }else{
+                                      return ListAttendace(
+                                        color: appColors.dangerColor,
+                                        date:atteDate.toString(),
+                                        status: status.toString(),
+                                        clockin: data["clock_in"].toString(),
+                                        clockout: data["clock_out"].toString(),
+                                        late: data["late"].toString(),
+                                        earlyLeave: data["early_leaving"].toString(),
+                                      );
+                                    }
+
+                                  }
+                              ),
+                            );
+                            return Text("dsafds");
                           }else{
-                             return Center(
-                               child: MediunText(text: "No Data Found"),
+                             return Expanded(
+                               child: Center(
+                                 child: MediunText(text: "No Data Found"),
+                               ),
                              );
                           }
                         }
@@ -243,7 +312,6 @@ class _AttendaceListState extends State<AttendaceList> {
                 ),
               ),
             ),
-          )
         ],
       ),
 
@@ -355,6 +423,7 @@ class _AttendaceListState extends State<AttendaceList> {
   ///loding
   Widget _loading(){
     return Container(
+      margin: const EdgeInsets.only(bottom: 20),
       padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 2.h),
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
@@ -423,28 +492,33 @@ class _AttendaceListState extends State<AttendaceList> {
   }
 
 
-  Future<MonthlyAttendanceModel> fromMonthlyAttendance() async{
+  Future<void> fromMonthlyAttendance() async{
 
         SharedPreferences localStorage = await SharedPreferences.getInstance();
     //Store Data
     var token = localStorage.getString('token');
 
-    var data={
-      "month" : "2022-05",
+    var dailyAtten = {
+      "date" : SearchDay,
+      "type" : "daily",
+    };
+    var monthlyAtten = {
+      "month" : month,
       "type" : "monthly",
     };
 
+
     final response = await http.post(Uri.parse(APIService.attendanceListURL),
-        body:jsonEncode(data),
+        body: selectDate ? dailyAtten : monthlyAtten,
         headers: {
           "Authorization" : "Bearer $token"
         }
     );
-    var body = jsonDecode(response.body);
+    var body = jsonDecode(response.body.toString());
     if(response.statusCode == 201){
-      var data = jsonDecode(response.body);
-      print(data);
-      return MonthlyAttendanceModel.fromJson(data);
+      var data = jsonDecode(response.body.toString());
+      print(response.statusCode);
+      return monthlyAtteandanceList = data;
 
     }else{
       print("error");
@@ -479,6 +553,7 @@ class ListAttendace extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.only(bottom: 20),
       padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 2.h),
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
@@ -501,8 +576,8 @@ class ListAttendace extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              MediunText(text: date, size: 9, color: appColors.gray,),
-              BigText(text: status, size: 12, color: appColors.successColor,)
+              MediunText(text: "${date}", size: 9, color: appColors.gray,),
+              BigText(text: status, size: 12, color: color,)
             ],
           ),
           const SizedBox(height: 10,),
@@ -538,8 +613,7 @@ class ListAttendace extends StatelessWidget {
                 ],
               ),
             ],
-          )
-
+          ),
         ],
       ),
     );
