@@ -1,7 +1,9 @@
 import 'package:HRMS/view/flash_screen/flash-screen.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 void main() {
   runApp(MyApp());
 }
@@ -21,7 +23,13 @@ class MyApp extends StatelessWidget {
               fontFamily: "Roboto",
             ),
             home: FlashScreen(),
+            localizationsDelegates: [
+              GlobalWidgetsLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              MonthYearPickerLocalizations.delegate,
+            ],
           );
+
         }
     );
 

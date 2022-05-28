@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:HRMS/model/monthly-attedance-model.dart';
 import 'package:http/http.dart' as http;
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
@@ -7,11 +6,8 @@ import 'package:HRMS/view/global_widget/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import '../../../model/TodayAttendanceModel.dart';
 import '../../../service/api-service.dart';
 import '../../global_widget/mediun_text.dart';
 import '../../home_screen/home.dart';
@@ -39,7 +35,8 @@ class _AttendaceListState extends State<AttendaceList> {
   DateTime? _selectedDay;
 
   final dateFormate = DateFormat.yMMMMd('en_US');
-  final monthOfTheYear = DateFormat.yMMM().format(DateTime.now());
+  late final monthOfTheYear = DateFormat.yMMM().format(DateTime.now());
+  late dynamic toMonth ;
   var monthFormat = DateFormat("yyyy-MM");
   dynamic toDay;
   dynamic month = DateFormat("yyyy-MM").format(DateTime.now());
@@ -201,6 +198,7 @@ class _AttendaceListState extends State<AttendaceList> {
                     });
                     _focusedDay = focusedDay;
                     month = monthFormat.format(_focusedDay);
+                    toMonth = (dateFormate.format(_focusedDay!));
                   },
                 ),
 
@@ -235,7 +233,9 @@ class _AttendaceListState extends State<AttendaceList> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
-                        child: selectDate ? MediunText(text: toDay.toString(), size: 10.sp, color: appColors.gray,) : MediunText(text: monthOfTheYear.toString(), size: 10.sp, color: appColors.gray,),
+                        child: selectDate ? MediunText(text: toDay.toString(), size: 10.sp, color: appColors.gray,)
+                            : selectMonth ? MediunText(text: toMonth.toString(), size: 10.sp, color: appColors.gray,):
+                        MediunText(text: monthOfTheYear.toString(), size: 10.sp, color: appColors.gray,),
                       ),
                     ),
                     const SizedBox(height: 10,),
@@ -296,7 +296,6 @@ class _AttendaceListState extends State<AttendaceList> {
                                   }
                               ),
                             );
-                            return Text("dsafds");
                           }else{
                              return Expanded(
                                child: Center(
