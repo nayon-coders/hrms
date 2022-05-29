@@ -69,7 +69,7 @@ class _HomeAttendanceReportsState extends State<HomeAttendanceReports> {
                   future: fromMonthlyAttendance(),
                   builder: (context, AsyncSnapshot<dynamic> snapshot){
                     if(snapshot.connectionState == ConnectionState.waiting){
-                      return Center(child: Text("Please Wait...."));
+                      return const Center(child: Text("Please Wait...."));
                     }else if(snapshot.hasData){
                       var data = snapshot.data['attendanceEmployee'];
                       double lateLength = 0;

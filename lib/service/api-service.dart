@@ -6,4 +6,7 @@ class APIService{
     static const String clockOutUrl = baseUrl + "/attendanceemployee/clock_out";
     static const String attendanceListURL = baseUrl + "/attendanceemployee";
     static const String todayAttendanceListURL = baseUrl + "/todays/attendance";
+    static const String profileUrl = "$baseUrl/profile";
+    static const String updateProfileUrl = "$baseUrl/edit/profile";
+    static const String updateChangePassUrl = "$baseUrl/update/password";
 }

@@ -1,4 +1,5 @@
 import 'package:HRMS/utility/colors.dart';
+import 'package:HRMS/view/attendnace-regularization/regularization-list/regularization-list.dart';
 import 'package:HRMS/view/global_widget/bottom-navigation-button.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
 import 'package:HRMS/view/global_widget/tob-bar.dart';
@@ -41,7 +42,7 @@ class _ApplyAttendanceRegularizationState extends State<ApplyAttendanceRegulariz
                 children: [
                   GestureDetector(
                     onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>ApplyAttendanceRegularization()));
+                      //Navigator.push(context, MaterialPageRoute(builder: (context)=>ApplyAttendanceRegularization()));
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width/2,
@@ -53,13 +54,13 @@ class _ApplyAttendanceRegularizationState extends State<ApplyAttendanceRegulariz
                       ),
                       child: Padding(
                         padding: const EdgeInsets.only(left: 20),
-                        child: Center(child: MediunText (text: "Create Regularization", size: 10.sp, color: appColors.secondColor,)),
+                        child: Center(child: MediunText (text: "Create Regularization", size: 9.sp, color: appColors.secondColor,)),
                       ),
                     ),
                   ),
                   GestureDetector(
                     onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>LeaveList()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>const ApplyAttendanceRegularizationList()));
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width/2,
@@ -71,7 +72,7 @@ class _ApplyAttendanceRegularizationState extends State<ApplyAttendanceRegulariz
                       ),
                       child: Padding(
                         padding: const EdgeInsets.only(left: 20),
-                        child: Center(child: MediunText (text: "Regularization List", size: 10.sp, color: appColors.gray,)),
+                        child: Center(child: MediunText (text: "Regularization List", size: 9.sp, color: appColors.gray,)),
                       ),
                     ),
                   )

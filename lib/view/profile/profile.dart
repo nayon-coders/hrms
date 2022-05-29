@@ -1,3 +1,9 @@
+import 'dart:convert';
+import 'package:HRMS/service/api-service.dart';
+import 'package:HRMS/view/global_widget/big_text.dart';
+import 'package:http/http.dart' as http;
+import 'package:HRMS/controller/profile/profile-coltroller.dart';
+import 'package:HRMS/model/user-info-model.dart';
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/attendance/attendance.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
@@ -5,6 +11,7 @@ import 'package:HRMS/view/home_screen/home.dart';
 import 'package:HRMS/view/profile/widget/cheange-pass.dart';
 import 'package:HRMS/view/profile/widget/profile/profile-details.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 import '../global_widget/tob-bar.dart';
@@ -16,6 +23,39 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  bool _isProfilePic = false;
+
+  Future<UserInfoModel> _getUserProfile() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    //Store Data
+    var token = localStorage.getString('token');
+    final response = await http.post(
+      Uri.parse(APIService.profileUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        "Authorization": "Bearer $token",
+      },
+      body: jsonEncode(<String, String>{
+        "Authorization": "Bearer $token",
+      }),
+    );
+    if (response.statusCode == 201) {
+      // If the server did return a 201 CREATED response,
+      // then parse the JSON.
+      return UserInfoModel.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 201 CREATED response,
+      // then throw an exception.
+      throw Exception('Failed to create album.');
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+   // _getUserProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,39 +101,82 @@ class _ProfileState extends State<Profile> {
                               ),
                             ],
                           ),
-                          child: Column(
-                            children: [
-                              ClipRRect(
-                                child: Image.asset("assets/images/user.jpg",
-                                  height: 70,
-                                  width: 70,
-                                ),
-                              ),
-                              const SizedBox(height: 10,),
-                              MediunText(text: "Nayon Talukder",
-                                color: appColors.mainColor,
-                                size: 11.sp,
-                              ),
-                              const SizedBox(height: 5,),
-                              Container(
-                                padding: EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 10),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100),
-                                    color: appColors.secondColor
-                                ),
-                                child: MediunText(
-                                  text: "Employee",
-                                  color: appColors.white,
-                                ),
-                              ),
-                              const SizedBox(height: 10,),
-                              MediunText(
-                                text: "nayon.coder@gmail.com",
-                                color: appColors.gray,
-                              ),
-                            ],
-                          ),
+                          child:Expanded(
+                                  child: FutureBuilder(
+                                    future: _getUserProfile(),
+                                    builder: (context, AsyncSnapshot<UserInfoModel> snapshot){
+                                      if(snapshot.connectionState == ConnectionState.waiting){
+                                        return Column(
+                                          children: [
+                                            Center(
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                backgroundColor: appColors.secondColor,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10,),
+                                            MediunText(text: "Profiel is loading...", color: appColors.gray, size: 7,),
+                                          ],
+                                        );
+                                      }else if(snapshot.hasData){
+                                        var avatar = snapshot.data?.userDetail.avatar;
+                                        if(avatar != null){
+                                          print(avatar);
+                                           _isProfilePic = true;
+                                        }
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius: BorderRadius.circular(100),
+                                              child: _isProfilePic ? Image.network("https://asia.net.in/storage/uploads/avatar/$avatar",
+                                                height: 70,
+                                                width: 70,
 
+                                              ): Image.asset("assets/images/user.jpg",
+                                                height: 70,
+                                                width: 70,
+                                              ),
+                                            ),
+
+                                            const SizedBox(height: 10,),
+                                            Center(
+                                              child: BigText(text: "${snapshot.data?.userDetail.name}",
+                                                color: appColors.mainColor,
+                                                size: 7.sp,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 5,),
+                                            Container(
+                                              padding: EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 10),
+                                              decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(100),
+                                                  color: appColors.secondColor
+                                              ),
+                                              child: MediunText(
+                                                text: "${snapshot.data?.userDetail.type}",
+                                                color: appColors.white,
+                                                size: 7,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10,),
+                                            Center(
+                                              child: MediunText(
+                                                text: "${snapshot.data?.userDetail.email}",
+                                                color: appColors.gray,
+                                                size: 7,
+                                              ),
+                                            ),
+
+                                          ],
+                                        );
+                                      }else{
+                                        return Text("nothing");
+                                      }
+                                    }
+                                  )
+                              ),
                         ),
 
                         const SizedBox(height: 50,),

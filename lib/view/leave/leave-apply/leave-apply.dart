@@ -41,7 +41,7 @@ class _LeaveApplyState extends State<LeaveApply> {
                 children: [
                   GestureDetector(
                     onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>LeaveApply()));
+                     // Navigator.push(context, MaterialPageRoute(builder: (context)=>const LeaveApply()));
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width/2,
@@ -53,7 +53,7 @@ class _LeaveApplyState extends State<LeaveApply> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.only(left: 20),
-                        child: Center(child: MediunText (text: "Leave Apply", size: 10.sp, color: appColors.secondColor,)),
+                        child: Center(child: MediunText (text: "Leave Apply", size: 9.sp, color: appColors.secondColor,)),
                       ),
                     ),
                   ),
@@ -71,7 +71,7 @@ class _LeaveApplyState extends State<LeaveApply> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.only(left: 20),
-                        child: Center(child: MediunText (text: "Leave Apply", size: 10.sp, color: appColors.gray,)),
+                        child: Center(child: MediunText (text: "Leave Lis", size: 9.sp, color: appColors.gray,)),
                       ),
                     ),
                   )
