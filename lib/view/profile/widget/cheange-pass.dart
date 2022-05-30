@@ -1,21 +1,47 @@
-import 'package:HRMS/utility/colors.dart';
-import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
-import '../../global_widget/mediun_text.dart';
-class ChangePass extends StatelessWidget {
+import 'dart:convert';
 
+import 'package:HRMS/utility/colors.dart';
+import 'package:HRMS/view/global_widget/notify.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sizer/sizer.dart';
+import '../../../service/api-service.dart';
+import 'package:http/http.dart' as http;
+class ChangePass extends StatefulWidget {
+
+  @override
+  State<ChangePass> createState() => _ChangePassState();
+}
+
+class _ChangePassState extends State<ChangePass> {
   final changePassForm = GlobalKey<FormState>();
 
-  final _newPass = TextEditingController();
-  final _reTypePass = TextEditingController();
+  TextEditingController _newPass = TextEditingController();
+
+  TextEditingController _reTypePass = TextEditingController();
+
+  void showAlertDialog(BuildContext context) {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+          title: Text("Wifi"),
+          content: Text("Wifi not detected. Please activate it."),
+         )
+        );
+    }
+
+    bool _isChange = false;
+  final _changePassKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(top: 25, bottom: 25, left: 10, right: 10),
       child: Form(
+        key: _changePassKey,
           child: Column(
             children: [
+
               TextFormField(
                 controller: _newPass,
                 decoration: InputDecoration(
@@ -31,9 +57,10 @@ class ChangePass extends StatelessWidget {
                     labelText: "New Password"
                 ),
                 validator: (value){
-                  if(value != null && value.isNotEmpty){
-                    return "Enter New Password";
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter some text';
                   }
+                  return null;
                 },
               ),
               const SizedBox(height: 15,),
@@ -48,20 +75,20 @@ class ChangePass extends StatelessWidget {
                             color: appColors.bg
                         )
                     ),
-                    hintText: "Nayon Talukder"
+                    hintText: "Enter New Password",
+                    labelText: "New Password"
                 ),
                 validator: (value){
-                  if(value != null && value.isNotEmpty){
-                    return "Retype Password";
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter some text';
                   }
+                  return null;
                 },
               ),
 
               GestureDetector(
                 onTap: (){
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context)=>HomeScreen())
-                  // );
+                  _changePass();
                 },
                 child: Container(
                   margin: EdgeInsets.only(top: 15),
@@ -71,12 +98,31 @@ class ChangePass extends StatelessWidget {
                       borderRadius: BorderRadius.circular(100),
                       color: appColors.secondColor
                   ),
-                  child: Center(child: Text("Save Changes",
+                  child: Center(child:
+                  _isChange != true ? Text("Save Changes",
                     style: TextStyle(
                         color: appColors.white,
                         fontWeight: FontWeight.w600,
                         fontSize: 11.sp
                     ),
+                  ): Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        value: 2,
+                        strokeWidth: 2,
+                        color: appColors.white,
+                        backgroundColor: appColors.successColor,
+                      ),
+                      const SizedBox(width: 10,),
+                      Text("Saving...",
+                      style: TextStyle(
+                          color: appColors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 11.sp
+                      ),
+                ),
+                    ],
                   )),
                 ),
               ),
@@ -84,5 +130,54 @@ class ChangePass extends StatelessWidget {
           )
       ),
     );
+  }
+
+  void _changePass() async{
+    if(_changePassKey.currentState!.validate()){
+      setState(() {
+        _isChange = true;
+      });
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+      //Store Data
+      var data = {
+        "current_password" : _newPass.text,
+        "new_password": _newPass.text,
+        "confirm_password": _reTypePass.text,
+      };
+      var token = localStorage.getString('token');
+      var url = Uri.parse(APIService.updateChangePassUrl);
+      final response = await http.post(url,
+        body: data,
+        headers: {
+          "Authorization" : "Bearer $token",
+
+        },
+      );
+      print(jsonEncode(data));
+      if (response.statusCode == 201) {
+        setState(() {
+          _isChange = false;
+          _newPass.clear();
+          _reTypePass.clear();
+          Notify(
+            title: "Password Changed",
+            body: "Recently Your Password is changed. New Password is set. ",
+            color: appColors.successColor,
+          ).notify(context);
+        });
+
+      } else {
+        // If the server did not return a 201 CREATED response,
+        // then throw an exception.
+        print(response.statusCode);
+        print(response.body.toString());
+        throw Exception('Failed to create album.');
+        print(response.statusCode);
+      }
+      setState(() {
+        _isChange = false;
+      });
+    }
+
   }
 }

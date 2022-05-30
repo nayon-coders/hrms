@@ -7,10 +7,12 @@ class ListOfMenu extends StatelessWidget {
   String text;
   String image;
   double? TextSize;
+  Color? bgColor;
   ListOfMenu({Key? key,
     required this.text,
     required this.image,
     this.TextSize = 10,
+    this.bgColor = appColors.gray200,
   }) : super(key: key);
 
   @override
@@ -18,7 +20,7 @@ class ListOfMenu extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 2.h),
       decoration: BoxDecoration(
-        color: appColors.listOfMenuColor,
+        color: bgColor,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(

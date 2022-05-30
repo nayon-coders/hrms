@@ -77,6 +77,7 @@ class TopBar extends StatelessWidget {
                   topRight: Radius.circular(30),
                 )
             ),
+
           ),
         ),
       ],

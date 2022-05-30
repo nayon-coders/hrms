@@ -319,34 +319,9 @@ class _AttendaceListState extends State<AttendaceList> {
 
 
       //navigation bar
-      floatingActionButton: FloatingActionButton(
-        child: Container(
-          width: 80,
-          height: 80,
-          decoration:  BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              gradient:
-              LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: <Color>[
-                  Color(0xffFE5709),
-                  Color(0xffFE5709),
-                ],
-              )
-          ),
-          child: const Icon(Icons.add),
-        ),
-        onPressed: () {
-          setState(() {
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>Attendance()));
-          });
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
-        notchMargin: 10,
+
         child: Container(
           height: 60,
           child: Row(
@@ -364,18 +339,55 @@ class _AttendaceListState extends State<AttendaceList> {
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
+                      children: const <Widget>[
                         Icon(
                           Icons.dashboard,
                           color:  appColors.mainColor,
                         ),
                         Text(
-                          'Dashboard',
+                          'Home',
                           style: TextStyle(
                             color: appColors.mainColor,
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  MaterialButton(
+                    onPressed: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Attendance()));
+                    },
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      transform: Matrix4.translationValues(0.0, -20.0, 0.0),
+                      decoration:  BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              spreadRadius: 5,
+                              blurRadius: 5,
+                              offset: Offset(0, 0), // changes position of shadow
+                            ),
+                          ],
+
+                          borderRadius: BorderRadius.circular(100),
+                          gradient:
+                          LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: <Color>[
+                              Color(0xffFE5709),
+                              Color(0xffFE5709),
+                            ],
+                          )
+                      ),
+                      child: const Icon(Icons.add, color: appColors.white,),
                     ),
                   ),
                 ],

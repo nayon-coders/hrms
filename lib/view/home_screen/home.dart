@@ -47,7 +47,16 @@ class _HomeScreenState extends State<HomeScreen> {
       Name = name;
     });
   }
-
+  String greeting() {
+    var hour = DateTime.now().hour;
+    if (hour <= 12) {
+      return 'Good Morning';
+    }
+    if (hour <= 17) {
+      return 'Good Afternoon';
+    }
+    return 'Good Evening';
+  }
   bool _isLogout = false;
   @override
   Widget build(BuildContext context) {
@@ -116,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            BigText(text: "Hi, Good Morning", color: appColors
+                            BigText(text: "Hi, ${greeting()}", color: appColors
                                 .white, size: 13,),
                             SizedBox(height: 5,),
                             MediunText(
@@ -174,6 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: ListOfMenu(
                                 text: 'Employee \nAttendance',
                                 image: 'assets/images/attendance.png',
+                                bgColor: appColors.listOfMenuColor,
                               ),
                             ),
                           ),
@@ -186,6 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: ListOfMenu(
                                 text: 'Attendance \nList',
                                 image: 'assets/images/calander.png',
+                                bgColor: appColors.listOfMenuColor,
                               ),
                             ),
                           ),
@@ -204,9 +215,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           Expanded(
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(
-                                    builder: (context) =>
-                                        ApplyAttendanceRegularization()));
+                                // Navigator.push(context, MaterialPageRoute(
+                                //     builder: (context) =>
+                                //         ApplyAttendanceRegularization()));
                               },
                               child: ListOfMenu(
                                 text: 'Attendance \nRegulizetion',
@@ -223,8 +234,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           Expanded(
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(
-                                    builder: (context) => LeaveApply()));
+                                // Navigator.push(context, MaterialPageRoute(
+                                //     builder: (context) => LeaveApply()));
                               },
                               child: ListOfMenu(
                                 text: 'Apply For \nLeave',
@@ -236,8 +247,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           Expanded(
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(
-                                    builder: (context) => LeaveList()));
+                                // Navigator.push(context, MaterialPageRoute(
+                                //     builder: (context) => LeaveList()));
                               },
                               child: ListOfMenu(
                                 text: 'Leave List',
@@ -276,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () {
                       setState(() {
                         Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => HomeScreen()));
+                            builder: (context) => const HomeScreen()));
                       });
                     },
                     child: Column(

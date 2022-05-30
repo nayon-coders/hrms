@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 import '../global_widget/tob-bar.dart';
+import '../login_screen/login.dart';
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
 
@@ -24,7 +25,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   bool _isProfilePic = false;
-
+  bool _isLogout = false;
   Future<UserInfoModel> _getUserProfile() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     //Store Data
@@ -59,7 +60,20 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
+    return _isLogout ? Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CircularProgressIndicator(
+            color: appColors.secondColor,
+            strokeWidth: 3,
+          ),
+          const SizedBox(height: 10,),
+          MediunText(text: "Logout processing..."),
+        ],
+      ),
+    ): DefaultTabController(
       length: 2,
       child: Scaffold(
         backgroundColor: appColors.bg,
@@ -72,7 +86,7 @@ class _ProfileState extends State<Profile> {
                 },
 
                 iconNavigate: (){
-                  Navigator.pop(context);
+                  _logout();
                 },
                 icon:Icons.logout,
               bottomRoundedColor: appColors.bg,
@@ -115,7 +129,7 @@ class _ProfileState extends State<Profile> {
                                               ),
                                             ),
                                             const SizedBox(height: 10,),
-                                            MediunText(text: "Profiel is loading...", color: appColors.gray, size: 7,),
+                                            MediunText(text: "Checking Update...", color: appColors.gray, size: 7,),
                                           ],
                                         );
                                       }else if(snapshot.hasData){
@@ -172,7 +186,7 @@ class _ProfileState extends State<Profile> {
                                           ],
                                         );
                                       }else{
-                                        return Text("nothing");
+                                        return Center(child: Text("Server Error"));
                                       }
                                     }
                                   )
@@ -359,6 +373,34 @@ class _ProfileState extends State<Profile> {
         ),
       ),
     );
+  }
+  void _logout() async{
+    setState(() {
+      _isLogout = true;
+    });
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    //Store Data
+    var token = localStorage.getString('token');
+
+    final respons = await http.post(Uri.parse(APIService.logoutUrl),
+        body: jsonEncode("object"),
+        headers: {
+          "Authorization" : "Bearer $token"
+        }
+    );
+    if(respons.statusCode == 200){
+      localStorage.remove('token');
+      localStorage.remove('name');
+      localStorage.remove('email');
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+
+    }else{
+      print("faild");
+    }
+
+    setState(() {
+      _isLogout = false;
+    });
   }
 }
 

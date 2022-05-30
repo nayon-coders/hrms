@@ -23,6 +23,7 @@ class TodayAttendanceController{
       return TodaysAttendanceModel.fromJson(data);
 
     }else{
+
       print("error");
       print(response.statusCode);
       throw Exception("Error");
