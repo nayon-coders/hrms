@@ -155,8 +155,8 @@ class _AttendanceState extends State<Attendance> {
                             );
                           }else if(snapshot.hasData){
                             //var APIDate = snapshot.data!.todaysAttendance!.date;
-                            var clock_in = snapshot.data!.todaysAttendance!.clockIn;
-                            var clock_out = snapshot.data!.todaysAttendance!.clockOut;
+                            var clock_in = snapshot.data?.todaysAttendance?.clockIn;
+                            var clock_out = snapshot.data?.todaysAttendance?.clockOut;
                             //String APIdateFormet = DateFormat('yyyy-MM-dd').format(APIDate);
 
                               if(clock_in == "00:00:00"){

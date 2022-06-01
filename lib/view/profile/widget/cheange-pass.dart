@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:HRMS/utility/colors.dart';
+import 'package:HRMS/view/global_widget/big_text.dart';
 import 'package:HRMS/view/global_widget/notify.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,6 +42,27 @@ class _ChangePassState extends State<ChangePass> {
         key: _changePassKey,
           child: Column(
             children: [
+              
+              BigText(text: "Change Password", size: 12,),
+              Container(
+                width: 80,
+                height: 3,
+                margin: const EdgeInsets.only(top: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: appColors.secondColor
+                ),
+              ),
+              Container(
+                width: 60,
+                height: 3,
+                margin: const EdgeInsets.only(top: 5),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    color: appColors.secondColor
+                ),
+              ),
+              const SizedBox(height: 20,),
 
               TextFormField(
                 controller: _newPass,
@@ -58,7 +80,7 @@ class _ChangePassState extends State<ChangePass> {
                 ),
                 validator: (value){
                   if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
+                    return 'Please enter New Password';
                   }
                   return null;
                 },
@@ -75,12 +97,12 @@ class _ChangePassState extends State<ChangePass> {
                             color: appColors.bg
                         )
                     ),
-                    hintText: "Enter New Password",
-                    labelText: "New Password"
+                    hintText: "Retype Password",
+                    labelText: "Retype Password"
                 ),
                 validator: (value){
                   if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
+                    return 'Please Retype Password';
                   }
                   return null;
                 },
@@ -103,7 +125,7 @@ class _ChangePassState extends State<ChangePass> {
                     style: TextStyle(
                         color: appColors.white,
                         fontWeight: FontWeight.w600,
-                        fontSize: 11.sp
+                        fontSize: 9.sp
                     ),
                   ): Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -172,7 +194,6 @@ class _ChangePassState extends State<ChangePass> {
         print(response.statusCode);
         print(response.body.toString());
         throw Exception('Failed to create album.');
-        print(response.statusCode);
       }
       setState(() {
         _isChange = false;

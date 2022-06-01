@@ -19,7 +19,7 @@ class HomeLeaveReports extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 3.h),
       decoration: BoxDecoration(
-        color: appColors.white,
+        color: appColors.gray200,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(

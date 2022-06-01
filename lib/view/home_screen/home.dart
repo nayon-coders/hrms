@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:HRMS/controller/profile/profile-coltroller.dart';
 import 'package:HRMS/service/api-service.dart';
 import 'package:http/http.dart' as http;
 import 'package:HRMS/controller/auth-controller/logout-controller.dart';
@@ -30,7 +31,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   var Name;
   var Email;
-
+  bool _isProfilePic = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -60,6 +61,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLogout = false;
   @override
   Widget build(BuildContext context) {
+    UserProfileController _userProfileControllor = UserProfileController();
+
     return Scaffold(
       backgroundColor: appColors.white,
       body: _isLogout ? Center(
@@ -111,13 +114,39 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(context, MaterialPageRoute(
                                 builder: (context) => Profile()));
                           },
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.circular(100),
+                          child: FutureBuilder(
+                            future: _userProfileControllor.getUserProfile(),
+                            builder: (context, AsyncSnapshot snapshot){
+                              if(snapshot.connectionState == ConnectionState.waiting){
+                                return  Center(
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        backgroundColor: appColors.secondColor,
+                                      ),
+                                    );
+                              }else if(snapshot.hasData) {
+                                var avatar = snapshot.data?.userDetail.avatar;
+                                if (avatar != null) {
+                                  _isProfilePic = true;
+                                }
+                                return ClipOval(
+                                  child:  _isProfilePic ? Image.network("https://asia.net.in/storage/uploads/avatar/$avatar",
+                                    height: 60,
+                                    width: 60,
+
+                                  ): Image.asset("assets/images/user.jpg",
+                                    height: 60,
+                                    width: 60,
+                                  ),
+                                );
+                              }
+                            return ClipOval(
                               child: Image.asset("assets/images/user.jpg",
-                                fit: BoxFit.cover,
-                                height: 50,
-                                width: 50,
-                              )
+                                  height: 60,
+                                  width: 60,
+                                ),
+                            );
+                            },
 
                           ),
                         ),

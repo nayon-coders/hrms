@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:HRMS/service/api-service.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
+import 'package:HRMS/view/global_widget/notify.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:http/http.dart' as http;
 import 'package:HRMS/controller/profile/profile-coltroller.dart';
 import 'package:HRMS/model/user-info-model.dart';
@@ -9,8 +12,8 @@ import 'package:HRMS/view/attendance/attendance.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
 import 'package:HRMS/view/home_screen/home.dart';
 import 'package:HRMS/view/profile/widget/cheange-pass.dart';
-import 'package:HRMS/view/profile/widget/profile/profile-details.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
@@ -24,42 +27,45 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  final ImagePicker _picker = ImagePicker();
+  File? imagePickFile;
+
   bool _isProfilePic = false;
   bool _isLogout = false;
-  Future<UserInfoModel> _getUserProfile() async {
+
+
+  final changeInfoForm = GlobalKey<FormState>();
+
+  var Name="";
+  var Email="";
+
+  final TextEditingController _name = TextEditingController();
+
+  final TextEditingController _email = TextEditingController();
+
+
+  void _UserInfo() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    //Store Data
-    var token = localStorage.getString('token');
-    final response = await http.post(
-      Uri.parse(APIService.profileUrl),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        "Authorization": "Bearer $token",
-      },
-      body: jsonEncode(<String, String>{
-        "Authorization": "Bearer $token",
-      }),
-    );
-    if (response.statusCode == 201) {
-      // If the server did return a 201 CREATED response,
-      // then parse the JSON.
-      return UserInfoModel.fromJson(jsonDecode(response.body));
-    } else {
-      // If the server did not return a 201 CREATED response,
-      // then throw an exception.
-      throw Exception('Failed to create album.');
-    }
+    var name = localStorage.getString("name");
+    var email = localStorage.getString("email");
+    setState(() {
+      Name = name!;
+      Email = email!;
+    });
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-   // _getUserProfile();
+    _UserInfo();
   }
+  bool _isProfileUpdate = false;
+String check = '';
 
   @override
   Widget build(BuildContext context) {
+    UserProfileController _userProfileControllor = UserProfileController();
     return _isLogout ? Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -86,10 +92,11 @@ class _ProfileState extends State<Profile> {
                 },
 
                 iconNavigate: (){
-                  _logout();
+                  _profileUpdatePopUp(context);
                 },
-                icon:Icons.logout,
-              bottomRoundedColor: appColors.bg,
+                icon:Icons.edit,
+                
+                bottomRoundedColor: appColors.bg,
 
             ),
 
@@ -101,7 +108,7 @@ class _ProfileState extends State<Profile> {
                       children: [
                         const SizedBox(height: 10,),
                         Container(
-                          width: MediaQuery.of(context).size.width/2,
+                          width: MediaQuery.of(context).size.width/1.5,
                           padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 2.h),
                           decoration: BoxDecoration(
                             color: appColors.white,
@@ -117,7 +124,7 @@ class _ProfileState extends State<Profile> {
                           ),
                           child:Expanded(
                                   child: FutureBuilder(
-                                    future: _getUserProfile(),
+                                    future: _userProfileControllor.getUserProfile(),
                                     builder: (context, AsyncSnapshot<UserInfoModel> snapshot){
                                       if(snapshot.connectionState == ConnectionState.waiting){
                                         return Column(
@@ -135,30 +142,56 @@ class _ProfileState extends State<Profile> {
                                       }else if(snapshot.hasData){
                                         var avatar = snapshot.data?.userDetail.avatar;
                                         if(avatar != null){
-                                          print(avatar);
                                            _isProfilePic = true;
                                         }
                                         return Column(
                                           crossAxisAlignment: CrossAxisAlignment.center,
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            ClipRRect(
-                                              borderRadius: BorderRadius.circular(100),
-                                              child: _isProfilePic ? Image.network("https://asia.net.in/storage/uploads/avatar/$avatar",
-                                                height: 70,
-                                                width: 70,
+                                            Stack(
+                                              children: [
+                                                ClipOval(
+                                                child:imagePickFile !=null ? Image.file(imagePickFile!,
+                                                  height: 130,
+                                                  width: 130,
 
-                                              ): Image.asset("assets/images/user.jpg",
-                                                height: 70,
-                                                width: 70,
+                                                ):  _isProfilePic ? Image.network("https://asia.net.in/storage/uploads/avatar/$avatar",
+                                                height: 130,
+                                                width: 130,
+
+                                                ): Image.asset("assets/images/user.jpg",
+                                                  height: 130,
+                                                  width: 130,
+                                                ),
                                               ),
+                                               Positioned(
+                                                 bottom: 0,
+                                                 right: 0,
+                                                 child: Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(100),
+                                                      color: appColors.white
+                                                    ),
+                                                   child: IconButton(
+                                                         onPressed: (){
+                                                           _shoBottomSheet(context);
+                                                         },
+                                                         icon: Icon(
+                                                           Icons.add_a_photo,
+                                                           color: appColors.gray,
+                                                           size: 25,
+                                                         )
+                                                     ),
+                                                 ),
+                                               ),
+                                              ],
                                             ),
 
                                             const SizedBox(height: 10,),
                                             Center(
                                               child: BigText(text: "${snapshot.data?.userDetail.name}",
                                                 color: appColors.mainColor,
-                                                size: 7.sp,
+                                                size: 10.sp,
                                               ),
                                             ),
                                             const SizedBox(height: 5,),
@@ -171,7 +204,7 @@ class _ProfileState extends State<Profile> {
                                               child: MediunText(
                                                 text: "${snapshot.data?.userDetail.type}",
                                                 color: appColors.white,
-                                                size: 7,
+                                                size: 8,
                                               ),
                                             ),
                                             const SizedBox(height: 10,),
@@ -179,7 +212,7 @@ class _ProfileState extends State<Profile> {
                                               child: MediunText(
                                                 text: "${snapshot.data?.userDetail.email}",
                                                 color: appColors.gray,
-                                                size: 7,
+                                                size: 8,
                                               ),
                                             ),
 
@@ -193,36 +226,17 @@ class _ProfileState extends State<Profile> {
                               ),
                         ),
 
-                        const SizedBox(height: 50,),
+                        const SizedBox(height: 10,),
 
                         Padding(
                           padding:  EdgeInsets.symmetric(horizontal: 2. h),
                           child: Column(
                             children: [
-                              Container(
-                                width: MediaQuery.of(context).size.width,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100),
-                                    border: Border.all(width: 1, color: appColors.secondColor)
-                                ),
-                                child: TabBar(
-                                  indicator:  BoxDecoration(
-                                      borderRadius: BorderRadius.circular(100),
-                                      color: appColors.secondColor
-                                  ),
-                                  unselectedLabelColor: appColors.secondColor,
-                                  tabs: [
-                                    Tab(text: "Profile"),
-                                    Tab(text: "change Passeword"),
-                                  ],
-                                ),
-                              ),
-
                               const SizedBox(height: 20,),
 
                               Container(
-                                height: 220,
                                 width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.all(20),
                                 decoration: BoxDecoration(
                                   color: appColors.white,
                                   borderRadius: BorderRadius.circular(10),
@@ -235,26 +249,18 @@ class _ProfileState extends State<Profile> {
                                     ),
                                   ],
                                 ),
-                                child: TabBarView(
-                                  children: [
-                                    ProfileDetails(),
-                                    ChangePass(),
-                                  ],
-                                ),
+                                child: ChangePass(),
 
                               )
                             ],
                           ),
                         ),
-                        const SizedBox(height: 60,),
+                        const SizedBox(height: 20,),
                       ],
                     ),
                   ),
                 )
-            )
-
-
-
+            ),
 
           ],
         ),
@@ -374,33 +380,213 @@ class _ProfileState extends State<Profile> {
       ),
     );
   }
-  void _logout() async{
+
+  Future<void> _profileUpdatePopUp(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: MediunText(text: "Change Profile", size: 15,),
+            content: Container(
+              height: 200,
+              margin: EdgeInsets.only(top: 10),
+              child: Column(
+                children: [
+                  TextField(
+                    onChanged: (value) {
+                    },
+                    controller: _name,
+                    decoration: InputDecoration(
+                        hintText: "Enter Your Name"
+                    ),
+                  ),
+                  TextField(
+                    controller: _email,
+                    decoration: InputDecoration(
+                        hintText: "Enter your email"
+                    ),
+                  ),
+
+                  GestureDetector(
+                    onTap: (){
+                      _userInfoUpdate();
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 15),
+                      width: MediaQuery.of(context).size.width/3,
+                      padding: EdgeInsets.only(top: 10, bottom: 10),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          color: appColors.secondColor
+                      ),
+                      child: Center(child: Text("Save Changes",
+                        style: TextStyle(
+                            color: appColors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 11.sp
+                        ),
+                      )),
+                    ),
+                  ),
+                ],
+              ),
+            )
+
+          );
+        });
+  }
+
+
+  void _userInfoUpdate() async{
+    String name;
+    String email;
     setState(() {
-      _isLogout = true;
+      _isProfileUpdate = true;
+      if(_name.text == null && _email.text == null ){
+        check = "check all";
+      }
     });
+    if(_name.text == null && _email.text == null ){
+      name = Name;
+      email = Email;
+    }else{
+      name = _name.text;
+      email = _email.text;
+    }
+
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     //Store Data
     var token = localStorage.getString('token');
-
-    final respons = await http.post(Uri.parse(APIService.logoutUrl),
-        body: jsonEncode("object"),
+    final response = await http.post(Uri.parse(APIService.updateProfileUrl),
+        body: {
+          "name":name,
+          "email" : email,
+        },
         headers: {
-          "Authorization" : "Bearer $token"
+          "Authorization" : "Bearer $token",
+          "Accept" : "application/json",
         }
     );
-    if(respons.statusCode == 200){
-      localStorage.remove('token');
-      localStorage.remove('name');
-      localStorage.remove('email');
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
-
-    }else{
-      print("faild");
+    if(response.statusCode == 201){
+      Navigator.pop(context);
+      Notify(
+        title: 'Profile Updated',
+        body: 'Your profile is updated. ',
+        color: appColors.successColor,
+      ).notify(context);
     }
-
     setState(() {
-      _isLogout = false;
+      _isProfileUpdate = false;
     });
+
   }
+
+  void _shoBottomSheet(BuildContext context){
+    showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        context: context,
+        builder: (BuildContext Context){
+          return Container(
+            padding: EdgeInsets.all(20),
+            height: 18.h,
+            child: Column(
+
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: ElevatedButton.icon(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(appColors.white),
+                      padding: MaterialStateProperty.all(EdgeInsets.all(10)),
+                    ),
+                      onPressed: (){
+                        _changeProfilePic(ImageSource.camera);
+                      },
+                      icon: Icon(
+                        Icons.camera_alt_outlined,
+                        color: appColors.secondColor,
+                      ),
+                      label: MediunText(text: "Camera Image", color: appColors.secondColor,)
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: ElevatedButton.icon(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(appColors.white),
+                        padding: MaterialStateProperty.all(EdgeInsets.all(10)),
+                      ),
+                      onPressed: (){
+                        _changeProfilePic(ImageSource.gallery);
+                      },
+                      icon: Icon(
+                        Icons.image,
+                        color: appColors.secondColor,
+                      ),
+                      label: MediunText(text: "Gallery Image", color: appColors.secondColor,)
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+    );
+  }
+
+  //CHANGE PROFILE PICTURE METHOD
+  Future<void> _changeProfilePic(ImageSource imageType) async{
+     try{
+
+       final XFile? pickPhoto = await _picker.pickImage(source: imageType);
+       if(pickPhoto == null) return;
+
+       SharedPreferences localStorage = await SharedPreferences.getInstance();
+       //Store Data
+       var token = localStorage.getString('token');
+
+       String url = APIService.updateProfileUrl;
+       Map<String, String> headers = {
+         "Accept" : "application/json",
+         "Authorization" : "Bearer $token",
+       };
+       Map<String, String> body = {
+         "name":Name,
+         "email" :Email,
+       };
+       var request = http.MultipartRequest('POST', Uri.parse(url))
+       ..fields.addAll(body)
+         ..headers.addAll(headers)
+         ..files.add(await http.MultipartFile.fromPath('profile', pickPhoto.path.toString()));
+       var response = await request.send();
+       print(response.statusCode);
+       if (response.statusCode == 201) {
+         Navigator.pop(context);
+         Notify(
+             title: "Profile uploaded",
+             body: "Profile image is upload successfully",
+             color: appColors.successColor
+         ).notify(context);
+       } else {
+         print(response.statusCode);
+         Notify(
+             title: "Profile uploaded Faild",
+             body: "Profile image is upload Faild",
+             color: appColors.secondColor
+         ).notify(context);
+       }
+       setState((){
+         imagePickFile = File(pickPhoto.path);
+         print(imagePickFile);
+
+       });
+
+     }catch(e){
+       debugPrint(e.toString());
+     }
+  }
+
+
 }
 
