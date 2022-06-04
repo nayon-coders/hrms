@@ -11,4 +11,12 @@ class appColors{
   static const Color bg = Color(0xffF1F8FF);
   static const Color gray = Color(0xff7E7E7E);
   static const Color gray200 = Color(0xffdddddd);
+  static  Color grdent = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment(0.8, 1),
+    colors: <Color>[
+      Color(0xff00315E),
+      Color(0xff580082),
+    ],
+  ) as Color;
 }

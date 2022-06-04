@@ -9,4 +9,7 @@ class APIService{
     static const String profileUrl = "$baseUrl/profile";
     static const String updateProfileUrl = "$baseUrl/edit/profile";
     static const String updateChangePassUrl = "$baseUrl/update/password";
+    static const String leaveTypeUrl = "$baseUrl/leave/type";
+    static const String leaveRequestUrl = "$baseUrl/leave/store";
+    static const String leaveListUrl = "$baseUrl/leave/index";
 }

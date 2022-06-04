@@ -18,125 +18,62 @@ class _LeaveListState extends State<LeaveList> {
   Widget build(BuildContext context) {
     return  Scaffold(
       backgroundColor: appColors.white,
-      body: Column(
-        children: [
-          TopBar(
-            icon: Icons.info_outline,
-            text: "Leave List",
-            goToBack: ()=>Navigator.pop(context),
+      body:  Padding(
+          padding: EdgeInsets.symmetric(horizontal: 2.h, vertical: 2.h),
 
-          ),
+          child:ListView(
+            children: [
+              leaveListItem(
+                  date: "May 20, 2022",
+                  status: "Aspect",
+                  editFunction: (){},
+                  startDate: "May 20, 2022",
+                  endDate: "may 25, 2022",
+                  totalDays: "5",
+                  reason: "Casual Leave",
+                  leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
+                  color: appColors.successColor
+              ),
+              const SizedBox(height: 30,),
+              leaveListItem(
+                  date: "May 20, 2022",
+                  status: "Pending",
+                  editFunction: (){},
+                  startDate: "May 20, 2022",
+                  endDate: "may 25, 2022",
+                  totalDays: "5",
+                  reason: "Casual Leave",
+                  leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
+                  color: appColors.mainColor
+              ),
+              const SizedBox(height: 20,),
+              leaveListItem(
+                  date: "May 20, 2022",
+                  status: "Cancel",
+                  editFunction: (){},
+                  startDate: "May 20, 2022",
+                  endDate: "may 25, 2022",
+                  totalDays: "5",
+                  reason: "Casual Leave",
+                  leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
+                  color: appColors.secondColor
+              ),
 
-          Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>LeaveApply()));
-                    },
-                    child: Container(
-                      width: MediaQuery.of(context).size.width/2,
-                      padding: EdgeInsets.only(bottom: 15),
-                      decoration: BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(width: 3, color: appColors.gray)
-                          )
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: Center(child: MediunText (text: "Leave Apply", size: 9.sp, color: appColors.gray,)),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      //Navigator.push(context, MaterialPageRoute(builder: (context)=>LeaveList()));
-                    },
-                    child: Container(
-                      width: MediaQuery.of(context).size.width/2,
-                      padding: const EdgeInsets.only(bottom: 15),
-                      decoration: const BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(width: 3, color: appColors.secondColor)
-                          ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: Center(child: MediunText (text: "Leave List", size: 9.sp, color: appColors.secondColor,)),
-                      ),
-                    ),
-                  )
-                ],
-              )
-          ),
-
-          //Apply From.....
-          Expanded(
-            child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 2.h, vertical: 2.h),
-
-              child:ListView(
-                children: [
-                  leaveListItem(
-                      date: "May 20, 2022",
-                      status: "Aspect",
-                      editFunction: (){},
-                      startDate: "May 20, 2022",
-                      endDate: "may 25, 2022",
-                      totalDays: "5",
-                      reason: "Casual Leave",
-                      leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
-                      color: appColors.successColor
-                  ),
-                  const SizedBox(height: 10,),
-                  leaveListItem(
-                      date: "May 20, 2022",
-                      status: "Pending",
-                      editFunction: (){},
-                      startDate: "May 20, 2022",
-                      endDate: "may 25, 2022",
-                      totalDays: "5",
-                      reason: "Casual Leave",
-                      leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
-                      color: appColors.mainColor
-                  ),
-                  const SizedBox(height: 20,),
-                  leaveListItem(
-                      date: "May 20, 2022",
-                      status: "Cancel",
-                      editFunction: (){},
-                      startDate: "May 20, 2022",
-                      endDate: "may 25, 2022",
-                      totalDays: "5",
-                      reason: "Casual Leave",
-                      leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
-                      color: appColors.secondColor
-                  ),
-
-                  const SizedBox(height: 20,),
-                  leaveListItem(
-                      date: "May 20, 2022",
-                      status: "Aspect",
-                      editFunction: (){},
-                      startDate: "May 20, 2022",
-                      endDate: "may 25, 2022",
-                      totalDays: "5",
-                      reason: "Casual Leave",
-                      leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
-                      color: appColors.successColor
-                  ),
-                ],
-              )
-            ),
-          ),
-
-        ],
+              const SizedBox(height: 20,),
+              leaveListItem(
+                  date: "May 20, 2022",
+                  status: "Aspect",
+                  editFunction: (){},
+                  startDate: "May 20, 2022",
+                  endDate: "may 25, 2022",
+                  totalDays: "5",
+                  reason: "Casual Leave",
+                  leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
+                  color: appColors.successColor
+              ),
+            ],
+          )
       ),
-
-
-
-      bottomNavigationBar: BottomNavigation(),
 
     );
   }

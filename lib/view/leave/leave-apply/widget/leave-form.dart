@@ -1,13 +1,17 @@
 import 'dart:math';
+import 'package:HRMS/service/api-service.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
+import 'package:HRMS/view/global_widget/notify.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 import 'package:HRMS/utility/colors.dart';
-import 'package:HRMS/view/attendance/attendance-list/attendance-list.dart';
+import 'package:http/http.dart' as http;
 import 'package:dropdown_button2/custom_dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
+import '../../../../controller/Leave/leaveType-controller.dart';
 class LeaveForm extends StatefulWidget {
   const LeaveForm({Key? key}) : super(key: key);
 
@@ -17,16 +21,9 @@ class LeaveForm extends StatefulWidget {
 
 class _LeaveFormState extends State<LeaveForm> {
   final List<String> items = [
-    'Item1',
-    'Item2',
-    'Item3',
-    'Item4',
-    'Item5',
-    'Item6',
-    'Item7',
-    'Item8',
+    'CASUAL LEAVE (10)',
   ];
-  String? selectedValue;
+  String? selectedLeaveTypeValue;
   late DateTime date;
 
   final _selectTypeControler = TextEditingController();
@@ -36,9 +33,13 @@ class _LeaveFormState extends State<LeaveForm> {
   final _RemarkController = TextEditingController();
   final format = DateFormat.yMMMMd('en_US');
   final _LeaveFormKey = GlobalKey<FormState>();
+
+  bool _isLeaveApply = false;
+
    @override
   Widget build(BuildContext context) {
-    return Container(
+
+     return Container(
 
       padding: EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 30),
       decoration: BoxDecoration(
@@ -53,10 +54,23 @@ class _LeaveFormState extends State<LeaveForm> {
           ),
         ],
       ),
-      child: Form(
+      child:_isLeaveApply ? Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+            ),
+          ),
+          SizedBox(height: 10,),
+          Center(
+            child: MediunText(text: "Applying for leave..."),
+          ),
+        ],
+      ): Form(
         key: _LeaveFormKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
             MediunText(text: "Apply for leave", size: 10.sp, color: appColors.black,),
             const SizedBox(height: 20,),
@@ -71,10 +85,10 @@ class _LeaveFormState extends State<LeaveForm> {
                 borderRadius: BorderRadius.circular(5),
               ),
               dropdownItems: items,
-              value: selectedValue,
+              value: selectedLeaveTypeValue,
               onChanged: (value) {
                 setState(() {
-                  selectedValue = value;
+                  selectedLeaveTypeValue = value;
                 });
               },
             ),
@@ -167,7 +181,7 @@ class _LeaveFormState extends State<LeaveForm> {
                 border: OutlineInputBorder(
                     borderSide: BorderSide(width: 1, color: appColors.gray200)
                 ),
-                
+
               ),
               validator: (value){
                 if(value == null || value.isEmpty ){
@@ -211,6 +225,7 @@ class _LeaveFormState extends State<LeaveForm> {
             GestureDetector(
               onTap: (){
                   _applyLeaveMethod();
+
               },
               child: Container(
                 width: double.infinity,
@@ -227,7 +242,7 @@ class _LeaveFormState extends State<LeaveForm> {
                   ),
                 )),
               ),
-            )
+            ),
 
 
           ],
@@ -237,13 +252,51 @@ class _LeaveFormState extends State<LeaveForm> {
   }
 
   //apply menthod
-  _applyLeaveMethod(){
+  _applyLeaveMethod()async{
      if(_LeaveFormKey.currentState!.validate()){
-       ScaffoldMessenger.of(context).showSnackBar(
-         const SnackBar(content: Text('Processing Data')),
+       setState((){
+         _isLeaveApply = true;
+       });
+       SharedPreferences localStorage = await SharedPreferences.getInstance();
+       //Store Data
+       var token = localStorage.getString('token');
+
+       var response = await http.post(Uri.parse(APIService.leaveRequestUrl),
+        body: {
+         "leave_type_id" : "2",
+          "start_date" : _fromDateController.text,
+          "end_date" : _toDateController.text,
+          "leave_reason" : _leaveReasionController.text,
+          "remark" : _RemarkController.text,
+        },
+           headers: {
+             "Authorization" : "Bearer $token",
+
+           }
        );
+
+       if(response.statusCode == 201){
+         Notify(
+             title: "Application submitted",
+             body: "Succesfully you leave application submitted",
+             color: appColors.successColor,
+         ).notify(context);
+       }else{
+         Notify(
+           title: "Application submitted Failed",
+           body: "your leave application submitted failed",
+           color: appColors.secondColor,
+         ).notify(context);
+       }
+
+       setState((){
+         _isLeaveApply = false;
+       });
+
      }
   }
+
+
 
 }
 

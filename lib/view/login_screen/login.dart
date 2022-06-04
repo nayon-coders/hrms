@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:HRMS/service/api-service.dart';
+import 'package:HRMS/view/global_widget/mediun_text.dart';
 import 'package:http/http.dart' as http;
-import 'package:HRMS/controller/auth-controller/login-controller.dart';
 import 'package:HRMS/view/global_widget/notify.dart';
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/home_screen/home.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -16,6 +17,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _policayUrl = Uri.parse("https://sites.google.com/view/aisa-solution-ltd/home");
   bool isLogin = true;
   //form key
   final _loginFormKey = GlobalKey<FormState>();
@@ -146,6 +148,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           )),
                         ): loadingBtn(),
+                      ), 
+                      
+                      SizedBox(height: 20,),
+                      TextButton(
+                          onPressed: () {
+                            TramsCondition();
+                          },
+                          child: MediunText(text: "Privacy Policy and Terms & Conditions.", color: appColors.white,)
                       )
                     ],
                   )
@@ -180,17 +190,15 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         isLogin = false;
       });
-      var loginInfo = {
-        "email":_email.text,
-        "password": _pass.text,
-      };
-
       try {
         var response = await http.post(Uri.parse(APIService.loginUrl),
           body: {
             "email": _email.text,
             "password": _pass.text,
           },
+          headers: {
+          "Accept":"application/json"
+          }
         );
         var body = jsonDecode(response.body);
         if (response.statusCode == 201) {
@@ -225,6 +233,8 @@ class _LoginScreenState extends State<LoginScreen> {
      }
     }//end login method
 
-
+void TramsCondition()async{
+    if (!await launchUrl(_policayUrl)) throw 'Could not launch $_policayUrl';
+}
 
 }

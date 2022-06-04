@@ -33,38 +33,22 @@ class _FlashScreenState extends State<FlashScreen> with TickerProviderStateMixin
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var token = localStorage.getString("token");
 
-
-    final response = await http.get(Uri.parse(APIService.todayAttendanceListURL),
-        headers: {
-          "Authorization" : "Bearer $token"
-        }
-    );
-    if(response.statusCode != 201){
-      setState(() {
-        print(token);
-        Future.delayed(
-            const Duration(seconds: 3),() =>
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ServerError(SatusCode: '${response.statusCode.toString()}',)))
-        );
-      });
-    }else{
-      setState(() {
-        print(token);
-        Future.delayed(
-            const Duration(seconds: 3),() =>
-        token == null ?
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginScreen())):
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()))
-        );
-      });
-    }
+    setState(() {
+      print(token);
+      Future.delayed(
+          const Duration(seconds: 3),() =>
+      token == null ?
+      Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginScreen())):
+      Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()))
+      );
+    });
   }
 
 
   late final AnimationController _controller = AnimationController(
     duration: const Duration(seconds: 3),
     vsync: this,
-    )..repeat();
+    )..repeat(max: 1);
   late final Animation<double> _animation = CurvedAnimation(
     parent: _controller,
     curve: Curves.fastOutSlowIn,

@@ -263,25 +263,27 @@ class _HomeScreenState extends State<HomeScreen> {
                           Expanded(
                             child: GestureDetector(
                               onTap: () {
-                                // Navigator.push(context, MaterialPageRoute(
-                                //     builder: (context) => LeaveApply()));
+                                Navigator.push(context, MaterialPageRoute(
+                                    builder: (context) => LeaveApply(index: 0,)));
                               },
                               child: ListOfMenu(
                                 text: 'Apply For \nLeave',
                                 image: 'assets/images/applyforleav.png',
+                                bgColor: appColors.listOfMenuColor,
                               ),
                             ),
                           ),
                           SizedBox(width: 20,),
-                          Expanded(
+                              Expanded(
                             child: GestureDetector(
                               onTap: () {
-                                // Navigator.push(context, MaterialPageRoute(
-                                //     builder: (context) => LeaveList()));
+                                Navigator.push(context, MaterialPageRoute(
+                                    builder: (context) => LeaveApply(index: 1)));
                               },
                               child: ListOfMenu(
                                 text: 'Leave List',
                                 image: 'assets/images/leavelist.png',
+                                bgColor: appColors.listOfMenuColor,
                               ),
                             ),
                           ),

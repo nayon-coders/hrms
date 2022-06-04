@@ -47,6 +47,10 @@ dependencies:
   month_year_picker: ^0.1.0+1
   awesome_dialog: ^2.2.1
   image_picker: ^0.8.5+3
+  rename: ^2.0.1
+  animated_splash_screen: ^1.2.0
+  url_launcher: ^6.1.2
+
 
 
 

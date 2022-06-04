@@ -489,7 +489,7 @@ String check = '';
         context: context,
         builder: (BuildContext Context){
           return Container(
-            padding: EdgeInsets.all(20),
+            padding: EdgeInsets.only(left: 1.h, right: 1.h, top: 2.h, bottom: 2.h),
             height: 18.h,
             child: Column(
 
