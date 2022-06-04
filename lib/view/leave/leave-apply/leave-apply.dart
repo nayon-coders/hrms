@@ -1,5 +1,7 @@
+import 'package:HRMS/controller/Leave/leave-list.dart';
 import 'package:HRMS/controller/Leave/leaveType-controller.dart';
 import 'package:HRMS/service/api-service.dart';
+import 'package:HRMS/utility/colors.dart';
 import 'package:http/http.dart' as http;
 import 'package:HRMS/view/leave/leave-apply/widget/leave-form.dart';
 import 'package:HRMS/view/leave/leave-list/leave-list.dart';
@@ -32,6 +34,7 @@ class _LeaveApplyState extends State<LeaveApply> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          //
           flexibleSpace: Container(
             decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -47,10 +50,10 @@ class _LeaveApplyState extends State<LeaveApply> {
           bottom: TabBar(
             tabs: [
               Tab(
-                text: "Leave Apply",
+                text: "Leave List",
               ),
               Tab(
-                text: "Leave List",
+                text: "Leave Apply",
               ),
 
             ],
@@ -59,10 +62,11 @@ class _LeaveApplyState extends State<LeaveApply> {
         body: TabBarView(
           children: [
             Center(
-              child: LeaveForm(),
+              child: LeaveList(),
             ),
             Center(
-              child: LeaveList(),
+              child: LeaveForm(),
+
             ),
 
           ],

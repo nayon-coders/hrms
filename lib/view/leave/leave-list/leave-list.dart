@@ -1,11 +1,14 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:HRMS/model/leave-list-model.dart';
 import 'package:HRMS/utility/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
+import '../../../service/api-service.dart';
 import '../../global_widget/big_text.dart';
-import '../../global_widget/bottom-navigation-button.dart';
 import '../../global_widget/mediun_text.dart';
-import '../../global_widget/tob-bar.dart';
-import '../leave-apply/leave-apply.dart';
 class LeaveList extends StatefulWidget {
   const LeaveList({Key? key}) : super(key: key);
 
@@ -14,64 +17,84 @@ class LeaveList extends StatefulWidget {
 }
 
 class _LeaveListState extends State<LeaveList> {
+  late Color color;
+  late final monthOfTheYear = DateFormat.yMMM().format(DateTime.now());
+
+
+var leaveList;
+  Future<void> getLiveList() async{
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    //Store Data
+    var token = localStorage.getString('token');
+    final response = await http.post(Uri.parse(APIService.leaveListUrl),
+        headers: {
+          "Authorization" : "Bearer $token"
+        }
+    );
+    if(response.statusCode == 201){
+      var data = jsonDecode(response.body.toString());
+      print(response.statusCode);
+      return leaveList = data;
+
+    }else{
+      print("error");
+      print(response.statusCode);
+      throw Exception("Error");
+    }
+
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return  Scaffold(
       backgroundColor: appColors.white,
       body:  Padding(
           padding: EdgeInsets.symmetric(horizontal: 2.h, vertical: 2.h),
 
-          child:ListView(
-            children: [
-              leaveListItem(
-                  date: "May 20, 2022",
-                  status: "Aspect",
-                  editFunction: (){},
-                  startDate: "May 20, 2022",
-                  endDate: "may 25, 2022",
-                  totalDays: "5",
-                  reason: "Casual Leave",
-                  leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
-                  color: appColors.successColor
-              ),
-              const SizedBox(height: 30,),
-              leaveListItem(
-                  date: "May 20, 2022",
-                  status: "Pending",
-                  editFunction: (){},
-                  startDate: "May 20, 2022",
-                  endDate: "may 25, 2022",
-                  totalDays: "5",
-                  reason: "Casual Leave",
-                  leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
-                  color: appColors.mainColor
-              ),
-              const SizedBox(height: 20,),
-              leaveListItem(
-                  date: "May 20, 2022",
-                  status: "Cancel",
-                  editFunction: (){},
-                  startDate: "May 20, 2022",
-                  endDate: "may 25, 2022",
-                  totalDays: "5",
-                  reason: "Casual Leave",
-                  leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
-                  color: appColors.secondColor
-              ),
+          child:Expanded(
+            child: FutureBuilder(
+              future: getLiveList(),
+                builder: (context, AsyncSnapshot<dynamic> snapshot){
 
-              const SizedBox(height: 20,),
-              leaveListItem(
-                  date: "May 20, 2022",
-                  status: "Aspect",
-                  editFunction: (){},
-                  startDate: "May 20, 2022",
-                  endDate: "may 25, 2022",
-                  totalDays: "5",
-                  reason: "Casual Leave",
-                  leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
-                  color: appColors.successColor
-              ),
-            ],
+                if(snapshot.connectionState == ConnectionState.waiting){
+                  return Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                    ),
+                  );
+                }if(snapshot.hasData){
+                  var data = leaveList['leaves'];
+                  return ListView.builder(
+                      itemCount: leaveList['leaves'].length,
+
+                      itemBuilder: (context, index){
+                        if(leaveList['leaves'][index]["status"] == "Pending"){
+                          color = appColors.mainColor;
+                        }else{
+                          color = appColors.successColor;
+                        }
+                        var date = DateFormat.yMMMMd().format(DateTime.parse(leaveList['leaves'][index]["applied_on"]));
+                        return leaveListItem(
+                            date: date.toString(),
+                            status: "${leaveList['leaves'][index]["status"]}",
+                            editFunction: (){},
+                            startDate: "${leaveList['leaves'][index]["start_date"]}",
+                            endDate: "${leaveList['leaves'][index]["end_date"]}",
+                            totalDays: "${leaveList['leaves'][index]["total_leave_days"]}",
+                            reason: "${leaveList['leaves'][index]["leave_reason"]}",
+                            leaveReason: "${leaveList['leaves'][index]["remark"]}",
+                            color: color
+                        );
+                      }
+                  );
+                }else{
+                  return Text("some think is warng");
+                }
+
+                }
+            ),
+
           )
       ),
 
@@ -106,6 +129,7 @@ class leaveListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 2.h),
+      margin: EdgeInsets.only(bottom: 30),
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         color: appColors.white,
@@ -123,6 +147,7 @@ class leaveListItem extends StatelessWidget {
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,13 +192,6 @@ class leaveListItem extends StatelessWidget {
                   MediunText(text: totalDays, color: appColors.black, size: 8.sp,)
                 ],
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  BigText(text: "Reason", color: appColors.gray, size: 8.sp,),
-                  MediunText(text: reason, color: appColors.black, size: 8.sp,)
-                ],
-              ),
             ],
           ),
           const SizedBox(height: 10,),
@@ -181,6 +199,14 @@ class leaveListItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               MediunText(text: "Leave Reason: ", size: 10.sp,),
+              Text(reason,
+                style: TextStyle(
+                    color: appColors.gray,
+                    fontSize: 9.sp
+                ),
+              ),
+              const SizedBox(height: 10,),
+              MediunText(text: "Leave Remark: ", size: 10.sp,),
               Text(leaveReason,
                 style: TextStyle(
                     color: appColors.gray,
@@ -188,7 +214,7 @@ class leaveListItem extends StatelessWidget {
                 ),
               )
             ],
-          )
+          ),
 
         ],
       ),

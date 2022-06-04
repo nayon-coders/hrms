@@ -25,13 +25,13 @@ class _LeaveFormState extends State<LeaveForm> {
   ];
   String? selectedLeaveTypeValue;
   late DateTime date;
-
+late dynamic formatingDate =  DateFormat("yyyy-MM");
   final _selectTypeControler = TextEditingController();
   final _fromDateController = TextEditingController();
   final _toDateController = TextEditingController();
   final _leaveReasionController = TextEditingController();
   final _RemarkController = TextEditingController();
-  final format = DateFormat.yMMMMd('en_US');
+  final format = DateFormat("yyyy-MM-dd");
   final _LeaveFormKey = GlobalKey<FormState>();
 
   bool _isLeaveApply = false;
@@ -111,7 +111,6 @@ class _LeaveFormState extends State<LeaveForm> {
                     Icons.date_range,
                   ),
               ),
-
               onShowPicker: (context, currentValue) {
                 return showDatePicker(
                     context: context,
@@ -253,9 +252,11 @@ class _LeaveFormState extends State<LeaveForm> {
 
   //apply menthod
   _applyLeaveMethod()async{
+
      if(_LeaveFormKey.currentState!.validate()){
        setState((){
          _isLeaveApply = true;
+
        });
        SharedPreferences localStorage = await SharedPreferences.getInstance();
        //Store Data
