@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/global_widget/bottom-navigation-button.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
@@ -7,8 +9,11 @@ import 'package:HRMS/view/leave/leave-apply/widget/leave-form.dart';
 import 'package:HRMS/view/leave/leave-list/leave-list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-
+import '../../../service/api-service.dart';
+import 'package:http/http.dart' as http;
 import '../../attendance/attendance.dart';
 import '../../global_widget/big_text.dart';
 import '../../profile/profile.dart';
@@ -22,138 +27,95 @@ class ApplyAttendanceRegularizationList extends StatefulWidget {
 }
 
 class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegularizationList> {
+  late final monthOfTheYear = DateFormat.yMMM().format(DateTime.now());
+  late Color color;
 
+  var regularaizationList;
+  Future<void> getRegularaization() async{
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    //Store Data
+    var token = localStorage.getString('token');
+    final response = await http.get(Uri.parse(APIService.regularizationList),
+        headers: {
+          "Authorization" : "Bearer $token"
+        }
+    );
+    if(response.statusCode == 201){
+      var data = jsonDecode(response.body.toString());
+      print(response.statusCode);
+      print(regularaizationList);
+      return regularaizationList = data;
+
+    }else{
+      print("error");
+      print(response.statusCode);
+      throw Exception("Error");
+    }
+
+  }
   @override
   Widget build(BuildContext context) {
 
     return  Scaffold(
       backgroundColor: appColors.white,
-      body: Column(
-        children: [
-          TopBar(
-            icon: Icons.info_outline,
-            text: "Create Regularization ",
-            goToBack: ()=>Navigator.pop(context),
+      body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 2.h, vertical: 2.h),
 
-          ),
+          child:Expanded(
+            child: FutureBuilder(
+                future: getRegularaization(),
+                builder: (context, AsyncSnapshot<dynamic> snapshot){
 
-          Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>ApplyAttendanceRegularization()));
-                    },
-                    child: Container(
-                      width: MediaQuery.of(context).size.width/2,
-                      padding: const EdgeInsets.only(bottom: 15),
-                      decoration: const BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(width: 3, color: appColors.gray)
-                          )
+                  if(snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3,
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: Center(child: MediunText (text: "Create Regularization", size: 9.sp, color: appColors.gray,)),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      //Navigator.push(context, MaterialPageRoute(builder: (context)=>const LeaveList()));
-                    },
-                    child: Container(
-                      width: MediaQuery.of(context).size.width/2,
-                      padding: const EdgeInsets.only(bottom: 15),
-                      decoration: const BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(width: 3, color: appColors.secondColor)
-                          )
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: Center(child: MediunText (text: "Regularization List", size: 9.sp, color: appColors.secondColor,)),
-                      ),
-                    ),
-                  )
-                ],
-              )
-          ),
+                    );
+                  }
 
-          //Apply From.....
-          Expanded(
-            child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 2.h, vertical: 2.h),
+                  if(snapshot.hasData){
+                    var data = regularaizationList['regularize_attendance'];
+                    return ListView.builder(
+                        itemCount: data.length,
 
-                child: ListView(
-                  children:  [
-                    leaveListItem(
-                        date: "May 20, 2022",
-                        status: "Aspect",
-                        editFunction: (){},
-                        startDate: "May 20, 2022",
-                        endDate: "may 25, 2022",
-                        totalDays: "5",
-                        reason: "Casual Leave",
-                        leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
-                        color: appColors.successColor
-                    ),
-                    const SizedBox(height: 10,),
-                    leaveListItem(
-                        date: "May 20, 2022",
-                        status: "Pending",
-                        editFunction: (){},
-                        startDate: "May 20, 2022",
-                        endDate: "may 25, 2022",
-                        totalDays: "5",
-                        reason: "Casual Leave",
-                        leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
-                        color: appColors.mainColor
-                    ),
-                    const SizedBox(height: 20,),
-                    leaveListItem(
-                        date: "May 20, 2022",
-                        status: "Cancel",
-                        editFunction: (){},
-                        startDate: "May 20, 2022",
-                        endDate: "may 25, 2022",
-                        totalDays: "5",
-                        reason: "Casual Leave",
-                        leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
-                        color: appColors.secondColor
-                    ),
+                        itemBuilder: (context, index){
+                          if(data[index]["status"] == "Pending"){
+                            color = appColors.mainColor;
+                          }else{
+                            color = appColors.successColor;
+                          }
+                          var date = DateFormat.yMMMMd().format(DateTime.parse(data[index]["date"]));
+                          return leaveListItem(
+                              date: "May 20, 2022",
+                              status: "Aspect",
+                              editFunction: (){},
+                              startDate: "May 20, 2022",
+                              endDate: "may 25, 2022",
+                              totalDays: "5",
+                              reason: "Casual Leave",
+                              leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
+                              color: appColors.successColor
+                          );
+                        }
+                    );
+                  }else{
+                    return const Text("some think is warng");
+                  }
 
-                    const SizedBox(height: 20,),
-                    leaveListItem(
-                        date: "May 20, 2022",
-                        status: "Aspect",
-                        editFunction: (){},
-                        startDate: "May 20, 2022",
-                        endDate: "may 25, 2022",
-                        totalDays: "5",
-                        reason: "Casual Leave",
-                        leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
-                        color: appColors.successColor
-                    ),
-                  ],
-                )
+                }
             ),
+
           )
-
-
-
-
-        ],
       ),
 
-
-
-      bottomNavigationBar: const BottomNavigation(),
 
     );
   }
 }
+
+
+
 class leaveListItem extends StatelessWidget {
   final String date;
   final String status;

@@ -50,6 +50,8 @@ dependencies:
   rename: ^2.0.1
   animated_splash_screen: ^1.2.0
   url_launcher: ^6.1.2
+  intl: ^0.17.0
+  toast: ^0.2.9
 
 
 

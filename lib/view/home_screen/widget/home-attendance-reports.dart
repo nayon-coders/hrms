@@ -35,7 +35,7 @@ class _HomeAttendanceReportsState extends State<HomeAttendanceReports> {
     return Container(
         padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 3.h),
             decoration: BoxDecoration(
-              color: appColors.white,
+              color: appColors.listOfMenuColor,
               borderRadius: BorderRadius.circular(10),
               boxShadow: [
               BoxShadow(
@@ -50,6 +50,7 @@ class _HomeAttendanceReportsState extends State<HomeAttendanceReports> {
           padding: EdgeInsets.only(left: 10, right: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment:  MainAxisAlignment.spaceBetween,

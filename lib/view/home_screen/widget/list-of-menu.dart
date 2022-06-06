@@ -12,7 +12,7 @@ class ListOfMenu extends StatelessWidget {
     required this.text,
     required this.image,
     this.TextSize = 10,
-    this.bgColor = appColors.gray200,
+    this.bgColor = appColors.bg,
   }) : super(key: key);
 
   @override

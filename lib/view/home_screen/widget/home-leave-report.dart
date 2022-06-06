@@ -1,25 +1,59 @@
+import 'dart:convert';
+
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
+import 'package:http/http.dart' as http;
+import '../../../service/api-service.dart';
 
-class HomeLeaveReports extends StatelessWidget {
+class HomeLeaveReports extends StatefulWidget {
   HomeLeaveReports({Key? key}) : super(key: key);
 
+  @override
+  State<HomeLeaveReports> createState() => _HomeLeaveReportsState();
+}
+
+class _HomeLeaveReportsState extends State<HomeLeaveReports> {
   final colorList = [
     appColors.successColor,
     appColors.dangerColor,
     appColors.secondColor,
   ];
+  var leaveList;
+  Future<void> getLiveList() async{
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    //Store Data
+    var token = localStorage.getString('token');
+    final response = await http.get(Uri.parse(APIService.leaveCount),
+        headers: {
+          "Authorization" : "Bearer $token"
+        }
+    );
+    if(response.statusCode == 201){
+      var data = jsonDecode(response.body.toString());
+      print(data);
+      return leaveList = data;
+
+    }else{
+      print("error");
+      print(response.statusCode);
+      throw Exception("Error");
+    }
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 3.h),
       decoration: BoxDecoration(
-        color: appColors.gray200,
+        color: appColors.listOfMenuColor,
+
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -34,56 +68,89 @@ class HomeLeaveReports extends StatelessWidget {
         padding: EdgeInsets.only(left: 10, right: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             MediunText(text: "Leave", size: 11.sp,),
             const SizedBox(height: 10,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 70,
-                  child: PieChart(
-                    legendOptions: LegendOptions(
-                        showLegends: false
-                    ),
-                    dataMap: {
-                      "Remaining": 15,
-                      "Taken": 5,
-                      "Total": 20,
-                    },
-                    colorList: colorList,
-                    ringStrokeWidth: 15,
-                    chartLegendSpacing: 500,
-                    chartType: ChartType.ring,
-                    baseChartColor: Colors.grey[300]!,
-                    chartValuesOptions: ChartValuesOptions(
-                        showChartValues: false,
-                        showChartValuesOutside: false
-                    ),
+            FutureBuilder(
+                future: getLiveList(),
+                builder: (context, AsyncSnapshot<dynamic> snapshot){
+                  if(snapshot.connectionState == ConnectionState.waiting){
+                    return const Center(child: Text("Please Wait...."));
+                  }else if(snapshot.hasData){
+                    var remaining;
+                    var total;
+                    var taken;
+
+                    if(snapshot.data['total'] != null){
+                       total = snapshot.data['total'];
+                    }else{
+                       total = "0";
+                    }
+
+                    if(snapshot.data['remaining'] != null){
+                       remaining = snapshot.data['remaining'];
+                    }else{
+                       remaining = "0";
+                    }
+                    if(snapshot.data['taken'] != null){
+                      taken = snapshot.data['taken'];
+                    }else{
+                      taken = "0";
+                    }
 
 
-                  ),
-                ),
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: 70,
+                          child: PieChart(
+                            legendOptions: LegendOptions(
+                                showLegends: false
+                            ),
+                            dataMap: {
+                              "Remaining": double.parse(remaining),
+                              "Taken": double.parse(taken),
+                              "Total": double.parse(total),
+                            },
+                            colorList: colorList,
+                            ringStrokeWidth: 15,
+                            chartLegendSpacing: 500,
+                            chartType: ChartType.ring,
+                            baseChartColor: Colors.grey[300]!,
+                            chartValuesOptions: ChartValuesOptions(
+                                showChartValues: false,
+                                showChartValuesOutside: false
+                            ),
 
-                Column(
-                  children: [
-                    BigText(text: "15", color: appColors.successColor, size: 12.sp,),
-                    MediunText(text: "Remaining", color: appColors.black, size: 9.sp,)
-                  ],
-                ),
-                Column(
-                  children: [
-                    BigText(text: "05", color: appColors.dangerColor, size: 12.sp,),
-                    MediunText(text: "Taken", color: appColors.black, size: 9.sp,)
-                  ],
-                ),
-                Column(
-                  children: [
-                    BigText(text: "20", color: appColors.secondColor, size: 12.sp,),
-                    MediunText(text: "Total", color: appColors.black, size: 9.sp,)
-                  ],
-                )
-              ],
+
+                          ),
+                        ),
+
+                        Column(
+                          children: [
+                            BigText(text: "${remaining}", color: appColors.successColor, size: 12.sp,),
+                            MediunText(text: "Remaining", color: appColors.black, size: 9.sp,)
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            BigText(text: "${taken}", color: appColors.dangerColor, size: 12.sp,),
+                            MediunText(text: "Taken", color: appColors.black, size: 9.sp,)
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            BigText(text: "${total}", color: appColors.secondColor, size: 12.sp,),
+                            MediunText(text: "Total", color: appColors.black, size: 9.sp,)
+                          ],
+                        )
+                      ],
+                    );
+                  }
+                  return Text("You have No Data at");
+                }
             ),
           ],
         ),

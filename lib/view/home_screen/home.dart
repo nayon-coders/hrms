@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:HRMS/controller/profile/profile-coltroller.dart';
 import 'package:HRMS/service/api-service.dart';
+import 'package:HRMS/view/global_widget/notify.dart';
 import 'package:http/http.dart' as http;
 import 'package:HRMS/controller/auth-controller/logout-controller.dart';
 import 'package:HRMS/utility/colors.dart';
@@ -167,6 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     IconButton(
                       onPressed: () {
                         _logout();
+
                       },
                       icon: Icon(
                         Icons.logout,
@@ -244,9 +246,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           Expanded(
                             child: GestureDetector(
                               onTap: () {
-                                // Navigator.push(context, MaterialPageRoute(
-                                //     builder: (context) =>
-                                //         ApplyAttendanceRegularization()));
+                                Navigator.push(context, MaterialPageRoute(
+                                    builder: (context) =>
+                                        AttendanceRegularization(index: 0,)));
                               },
                               child: ListOfMenu(
                                 text: 'Attendance \nRegulizetion',

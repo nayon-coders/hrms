@@ -4,6 +4,7 @@ import 'package:sizer/sizer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:month_year_picker/month_year_picker.dart';
+import 'package:toast/toast.dart';
 void main() {
   runApp(MyApp());
 }
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
 
     return Sizer(
         builder: (context, orientation, deviceType) {
+          ToastContext().init(context);
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
