@@ -87,15 +87,14 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
                           }
                           var date = DateFormat.yMMMMd().format(DateTime.parse(data[index]["date"]));
                           return leaveListItem(
-                              date: "May 20, 2022",
-                              status: "Aspect",
+                              date: date,
+                              status: data[index]["status"].toString(),
                               editFunction: (){},
-                              startDate: "May 20, 2022",
-                              endDate: "may 25, 2022",
-                              totalDays: "5",
-                              reason: "Casual Leave",
-                              leaveReason: "Clarification For Regularization Clarification For RegularizationClarification For Regularization",
-                              color: appColors.successColor
+                              in_time: data[index]['regularized_in_time'].toString(),
+                              out_time: data[index]['regularized_out_time'].toString(),
+                              reason: data[index]['reason'].toString(),
+                              description: data[index]['description'],
+                              color: color
                           );
                         }
                     );
@@ -120,21 +119,19 @@ class leaveListItem extends StatelessWidget {
   final String date;
   final String status;
   final VoidCallback editFunction;
-  final String startDate;
-  final String endDate;
-  final String totalDays;
+  final String in_time;
+  final String out_time;
   final String reason;
-  final String leaveReason;
+  final String description;
   final Color color;
   leaveListItem({
     required this.date,
     required this.status,
     required this.editFunction,
-    required this.startDate,
-    required this.endDate,
-    required this.totalDays,
+    required this.in_time,
+    required this.out_time,
     required this.reason,
-    required this.leaveReason,
+    required this.description,
     required this.color,
   });
 
@@ -159,6 +156,7 @@ class leaveListItem extends StatelessWidget {
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -185,22 +183,15 @@ class leaveListItem extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  BigText(text: "Start Date", color: appColors.gray, size: 8.sp,),
-                  MediunText(text: startDate, color: appColors.black, size: 8.sp,)
+                  BigText(text: "In Time", color: appColors.gray, size: 8.sp,),
+                  MediunText(text: in_time, color: appColors.black, size: 8.sp,)
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  BigText(text: "End Date", color: appColors.gray, size: 8.sp,),
-                  MediunText(text: endDate, color: appColors.black, size: 8.sp,)
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  BigText(text: "Total", color: appColors.gray, size: 8.sp,),
-                  MediunText(text: totalDays, color: appColors.black, size: 8.sp,)
+                  BigText(text: "Out Time", color: appColors.gray, size: 8.sp,),
+                  MediunText(text: out_time, color: appColors.black, size: 8.sp,)
                 ],
               ),
               Column(
@@ -217,7 +208,7 @@ class leaveListItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               MediunText(text: "Leave Reason: ", size: 10.sp,),
-              Text(leaveReason,
+              Text(description,
                 style: TextStyle(
                     color: appColors.gray,
                     fontSize: 9.sp

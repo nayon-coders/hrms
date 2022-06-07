@@ -15,4 +15,5 @@ class APIService{
     static const String leaveCount = "$baseUrl/leave/count";
     static const String regularizationList = "$baseUrl/regularization/index";
     static const String getInOutClockTime = "$baseUrl/get_in_out";
+    static const String addRegularaigetion = "$baseUrl/regularization/store";
 }

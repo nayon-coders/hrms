@@ -35,12 +35,10 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
   String? selectedLeaveTypeValue;
   late DateTime date;
   late dynamic formatingDate =  DateFormat("yyyy-MM");
-  final _selectTypeControler = TextEditingController();
   final _fromDateController = TextEditingController();
-  final _clockinTime = TextEditingController();
-  final _clockOutTime = TextEditingController();
-  final _leaveReasionController = TextEditingController();
-  final _RemarkController = TextEditingController();
+  final _clockinTimeController = TextEditingController();
+  final _clockOutTimeController = TextEditingController();
+  final _ReasonController = TextEditingController();
   final format = DateFormat("yyyy-MM-dd");
   final timeFormate = DateFormat("h:m");
   final _LeaveFormKey = GlobalKey<FormState>();
@@ -93,7 +91,7 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
         key: _LeaveFormKey,
         child: ListView(
           children: [
-            MediunText(text: "Apply for leave", size: 10.sp, color: appColors.black,),
+            MediunText(text: "Apply for Regularization", size: 10.sp, color: appColors.black,),
             const SizedBox(height: 20,),
 
             CustomDropdownButton2(
@@ -111,13 +109,29 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
               onChanged: (value) {
                 setState(() {
                   if(value == items[0]){
-                    selectedLeaveTypeValue = items[0];
-                    _isClockIN = true;
-                    print(_isClockIN);
-                  }
-                  if(value == items[1]){
-                    selectedLeaveTypeValue = items[1];
+                    selectedLeaveTypeValue = value;
+                    _isClockIN = false;
                     _isClockOut = true;
+                  }
+                  if( value == items[1]){
+                    selectedLeaveTypeValue = value;
+                    _isClockOut = false;
+                    _isClockIN = true;
+                  }
+                  if(value == items[2]){
+                    selectedLeaveTypeValue = value;
+                    _isClockOut = true;
+                    _isClockIN = false;
+                  }
+                  if(value == items[3]){
+                    selectedLeaveTypeValue = value;
+                    _isClockIN = true;
+                    _isClockOut = false;
+                  }
+                  if(value == items[4]){
+                    selectedLeaveTypeValue =value;
+                    _isClockOut = false;
+                    _isClockIN = false;
                   }
                 });
               },
@@ -170,12 +184,30 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
             //time field
             Row(
               children: [
+                //clockin time
                 Expanded(
                   flex: 2,
-                  child: DateTimeField(
+                  child: _isClockIN ?  DateTimeField(
                     format: timeFormate,
-                    readOnly: true,
-                    controller: _clockinTime,
+                    controller: _clockinTimeController,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
+                      hintText: "Clock IN",
+                      filled: true,
+                      fillColor: appColors.gray200,
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(width: 1, color: appColors.gray200)
+                      ),
+                      suffixIcon: Icon(
+                        Icons.date_range,
+                      ),
+                    ),  onShowPicker: (context, currentValue) async {
+                      return null;
+                  },
+                  ):DateTimeField(
+                    format: timeFormate,
+                    readOnly: _isClockIN,
+                    controller: _clockinTimeController,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
                       hintText: "Clock IN",
@@ -187,7 +219,7 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
                       ),
                     ),
                     onShowPicker: (context, currentValue) async {
-                      final time = await showTimePicker(
+                      final time =  await showTimePicker(
                         context: context,
                         initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
                       );
@@ -205,9 +237,28 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
                 const SizedBox(width: 10,),
                 Expanded(
                   flex: 2,
-                  child: DateTimeField(
+                  child: _isClockOut ? DateTimeField(
                     format: timeFormate,
-                    controller: _clockOutTime,
+                    controller: _clockOutTimeController,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
+                      filled: true,
+                      fillColor: appColors.gray200,
+                      hintText: "Clock Out",
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(width: 1, color: appColors.gray200)
+                      ),
+                      suffixIcon: Icon(
+                        Icons.date_range,
+                      ),
+                    ),
+                    onShowPicker: (context, currentValue) async {
+                      return null;
+                    },
+
+                  ): DateTimeField(
+                    format: timeFormate,
+                    controller: _clockOutTimeController,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
 
@@ -243,14 +294,14 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
               textInputAction: TextInputAction.newline,
               minLines: 2,
               maxLines: 10,
-              controller: _RemarkController,
+              controller: _ReasonController,
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
-                labelText: "Remark",
+                labelText: "Clarification For Regularization",
                 labelStyle: TextStyle(
                   fontSize: 10.sp,
                 ),
-                hintText: "Remark",
+                hintText: "Clarification For Regularization",
 
                 border: OutlineInputBorder(
                     borderSide: BorderSide(width: 1, color: appColors.gray200)
@@ -319,15 +370,15 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
       print(response.statusCode);
       print(checkClockTimeValues);
       setState((){
-        _clockinTime..text =  data['clock_in'].toString();
-        _clockOutTime..text = data['clock_out'].toString();
+        _clockinTimeController..text =  data['clock_in'].toString();
+        _clockOutTimeController..text = data['clock_out'].toString();
       });
       return checkClockTimeValues = data;
 
     }else{
       setState((){
-        _clockinTime..text =  "Clock IN";
-        _clockOutTime..text = "Clock Out";
+        _clockinTimeController..text =  "Clock IN";
+        _clockOutTimeController..text = "Clock Out";
         _isCurrectDate = false;
         Notify(
             title: "Date Missing",
@@ -341,54 +392,50 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
     }
   }
 
+  _applyLeaveMethod()async{
 
-  _applyLeaveMethod(){}
-  //apply menthod
-  // _applyLeaveMethod()async{
-  //
-  //   if(_LeaveFormKey.currentState!.validate()){
-  //     setState((){
-  //       _isLeaveApply = true;
-  //
-  //     });
-  //     SharedPreferences localStorage = await SharedPreferences.getInstance();
-  //     //Store Data
-  //     var token = localStorage.getString('token');
-  //
-  //     var response = await http.post(Uri.parse(APIService.leaveRequestUrl),
-  //         body: {
-  //           "leave_type_id" : "2",
-  //           "start_date" : _fromDateController.text,
-  //           "end_date" : _toDateController.text,
-  //           "leave_reason" : _leaveReasionController.text,
-  //           "remark" : _RemarkController.text,
-  //         },
-  //         headers: {
-  //           "Authorization" : "Bearer $token",
-  //
-  //         }
-  //     );
-  //
-  //     if(response.statusCode == 201){
-  //       Notify(
-  //         title: "Application submitted",
-  //         body: "Succesfully you leave application submitted",
-  //         color: appColors.successColor,
-  //       ).notify(context);
-  //     }else{
-  //       Notify(
-  //         title: "Application submitted Failed",
-  //         body: "your leave application submitted failed",
-  //         color: appColors.secondColor,
-  //       ).notify(context);
-  //     }
-  //
-  //     setState((){
-  //       _isLeaveApply = false;
-  //     });
-  //
-  //   }
-  // }
+    if(_LeaveFormKey.currentState!.validate()){
+      setState((){
+        _isLeaveApply = true;
+      });
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+      //Store Data
+      var token = localStorage.getString('token');
+
+      var response = await http.post(Uri.parse(APIService.addRegularaigetion),
+          body: {
+            "date" : _fromDateController.text,
+            "reason" : selectedLeaveTypeValue,
+            "in_time" : _clockinTimeController.text,
+            "out_time" : _clockOutTimeController.text,
+            "description" : _ReasonController.text,
+          },
+          headers: {
+            "Authorization" : "Bearer $token",
+
+          }
+      );
+
+      if(response.statusCode == 201){
+        Notify(
+          title: "Application submitted",
+          body: "Succesfully you Attendance Regularaization submitted",
+          color: appColors.successColor,
+        ).notify(context);
+      }else{
+        Notify(
+          title: "Application submitted Failed",
+          body: "your leave application submitted failed",
+          color: appColors.secondColor,
+        ).notify(context);
+      }
+
+      setState((){
+        _isLeaveApply = false;
+      });
+
+    }
+  }
 
 
 
