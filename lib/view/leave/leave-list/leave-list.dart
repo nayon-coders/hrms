@@ -21,7 +21,7 @@ class _LeaveListState extends State<LeaveList> {
   late final monthOfTheYear = DateFormat.yMMM().format(DateTime.now());
 
 
-var leaveList;
+
   Future<void> getLiveList() async{
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     //Store Data
@@ -33,8 +33,8 @@ var leaveList;
     );
     if(response.statusCode == 201){
       var data = jsonDecode(response.body.toString());
-      print(response.statusCode);
-      return leaveList = data;
+      var leaveList = data;
+      return leaveList;
 
     }else{
       print("error");
@@ -43,6 +43,12 @@ var leaveList;
     }
 
   }
+  Future? LeaveListItem;
+  @override
+  void initState(){
+    LeaveListItem = getLiveList();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +60,7 @@ var leaveList;
 
           child:Expanded(
             child: FutureBuilder(
-              future: getLiveList(),
+              future: LeaveListItem,
                 builder: (context, AsyncSnapshot<dynamic> snapshot){
 
                 if(snapshot.connectionState == ConnectionState.waiting){
@@ -64,30 +70,42 @@ var leaveList;
                     ),
                   );
                 }if(snapshot.hasData){
-                  var data = leaveList['leaves'];
-                  return ListView.builder(
-                      itemCount: leaveList['leaves'].length,
+                  var data = snapshot.data['leaves'];
+                  if(data != null) {
+                    return ListView.builder(
+                        itemCount: snapshot.data['leaves'].length,
 
-                      itemBuilder: (context, index){
-                        if(leaveList['leaves'][index]["status"] == "Pending"){
-                          color = appColors.mainColor;
-                        }else{
-                          color = appColors.successColor;
+                        itemBuilder: (context, index) {
+                          if (snapshot.data['leaves'][index]["status"] ==
+                              "Pending") {
+                            color = appColors.mainColor;
+                          } else {
+                            color = appColors.successColor;
+                          }
+                          var date = DateFormat.yMMMMd().format(DateTime.parse(
+                              snapshot.data['leaves'][index]["applied_on"]));
+                          return leaveListItem(
+                              date: date.toString(),
+                              status: "${snapshot
+                                  .data['leaves'][index]["status"]}",
+                              editFunction: () {},
+                              startDate: "${snapshot
+                                  .data['leaves'][index]["start_date"]}",
+                              endDate: "${snapshot
+                                  .data['leaves'][index]["end_date"]}",
+                              totalDays: "${snapshot
+                                  .data['leaves'][index]["total_leave_days"]}",
+                              reason: "${snapshot
+                                  .data['leaves'][index]["leave_reason"]}",
+                              leaveReason: "${snapshot
+                                  .data['leaves'][index]["remark"]}",
+                              color: color
+                          );
                         }
-                        var date = DateFormat.yMMMMd().format(DateTime.parse(leaveList['leaves'][index]["applied_on"]));
-                        return leaveListItem(
-                            date: date.toString(),
-                            status: "${leaveList['leaves'][index]["status"]}",
-                            editFunction: (){},
-                            startDate: "${leaveList['leaves'][index]["start_date"]}",
-                            endDate: "${leaveList['leaves'][index]["end_date"]}",
-                            totalDays: "${leaveList['leaves'][index]["total_leave_days"]}",
-                            reason: "${leaveList['leaves'][index]["leave_reason"]}",
-                            leaveReason: "${leaveList['leaves'][index]["remark"]}",
-                            color: color
-                        );
-                      }
-                  );
+                    );
+                  }else{
+                    return Text("No Data Found");
+                  }
                 }else{
                   return Text("some think is warng");
                 }
@@ -102,6 +120,8 @@ var leaveList;
   }
 
 }
+
+
 
 class leaveListItem extends StatelessWidget {
   final String date;

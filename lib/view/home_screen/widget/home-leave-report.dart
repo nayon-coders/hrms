@@ -23,7 +23,7 @@ class _HomeLeaveReportsState extends State<HomeLeaveReports> {
     appColors.dangerColor,
     appColors.secondColor,
   ];
-  var leaveList;
+  Future? leaveList;
   Future<void> getLiveList() async{
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     //Store Data
@@ -35,8 +35,7 @@ class _HomeLeaveReportsState extends State<HomeLeaveReports> {
     );
     if(response.statusCode == 201){
       var data = jsonDecode(response.body.toString());
-      print(data);
-      return leaveList = data;
+      return data;
 
     }else{
       print("error");
@@ -44,6 +43,13 @@ class _HomeLeaveReportsState extends State<HomeLeaveReports> {
       throw Exception("Error");
     }
 
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    ///whatever you want to run on page build
+    leaveList = getLiveList();
   }
 
 
@@ -73,7 +79,7 @@ class _HomeLeaveReportsState extends State<HomeLeaveReports> {
             MediunText(text: "Leave", size: 11.sp,),
             const SizedBox(height: 10,),
             FutureBuilder(
-                future: getLiveList(),
+                future: leaveList,
                 builder: (context, AsyncSnapshot<dynamic> snapshot){
                   if(snapshot.connectionState == ConnectionState.waiting){
                     return const Center(child: Text("Please Wait...."));
@@ -83,18 +89,18 @@ class _HomeLeaveReportsState extends State<HomeLeaveReports> {
                     var taken;
 
                     if(snapshot.data['total'] != null){
-                       total = snapshot.data['total'];
+                       total = snapshot.data['total'].toString();
                     }else{
                        total = "0";
                     }
 
                     if(snapshot.data['remaining'] != null){
-                       remaining = snapshot.data['remaining'];
+                       remaining = snapshot.data['remaining'].toString();
                     }else{
                        remaining = "0";
                     }
                     if(snapshot.data['taken'] != null){
-                      taken = snapshot.data['taken'];
+                      taken = snapshot.data['taken'].toString();
                     }else{
                       taken = "0";
                     }
@@ -130,19 +136,19 @@ class _HomeLeaveReportsState extends State<HomeLeaveReports> {
 
                         Column(
                           children: [
-                            BigText(text: "${remaining}", color: appColors.successColor, size: 12.sp,),
+                            BigText(text: "${remaining.toString()}", color: appColors.successColor, size: 12.sp,),
                             MediunText(text: "Remaining", color: appColors.black, size: 9.sp,)
                           ],
                         ),
                         Column(
                           children: [
-                            BigText(text: "${taken}", color: appColors.dangerColor, size: 12.sp,),
+                            BigText(text: "${taken.toString()}", color: appColors.dangerColor, size: 12.sp,),
                             MediunText(text: "Taken", color: appColors.black, size: 9.sp,)
                           ],
                         ),
                         Column(
                           children: [
-                            BigText(text: "${total}", color: appColors.secondColor, size: 12.sp,),
+                            BigText(text: "${total.toString()}", color: appColors.secondColor, size: 12.sp,),
                             MediunText(text: "Total", color: appColors.black, size: 9.sp,)
                           ],
                         )

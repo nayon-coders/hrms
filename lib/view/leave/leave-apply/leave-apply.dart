@@ -49,11 +49,12 @@ class _LeaveApplyState extends State<LeaveApply> {
           ),
           bottom: TabBar(
             tabs: [
-              Tab(
-                text: "Leave List",
-              ),
+
               Tab(
                 text: "Leave Apply",
+              ),
+              Tab(
+                text: "Leave List",
               ),
 
             ],
@@ -62,10 +63,11 @@ class _LeaveApplyState extends State<LeaveApply> {
         body: TabBarView(
           children: [
             Center(
-              child: LeaveList(),
+              child: LeaveForm(),
+
             ),
             Center(
-              child: LeaveForm(),
+              child: LeaveList(),
 
             ),
 

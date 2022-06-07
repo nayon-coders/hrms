@@ -254,48 +254,68 @@ class _AttendaceListState extends State<AttendaceList> {
                             );
                             return _loading();
                           }else if(snapshot.hasData){
-                            return Expanded(
-                              child: ListView.builder(
-                                itemCount: monthlyAtteandanceList['attendanceEmployee'].length,
-                                  itemBuilder: (context, index){
-                                  var data = monthlyAtteandanceList['attendanceEmployee'][index];
-                                    var status = data['status'];
-                                    var atteDate =  dateFormate.format(DateTime.parse(data['date']));
-                                    if(status == 'Late'){
-                                      return ListAttendace(
+                            if(monthlyAtteandanceList['attendanceEmployee'].length != 0) {
+                              return Expanded(
+                                child: ListView.builder(
+                                    itemCount: monthlyAtteandanceList['attendanceEmployee']
+                                        .length,
+                                    itemBuilder: (context, index) {
+                                      var data = monthlyAtteandanceList['attendanceEmployee'][index];
+                                      var status = data['status'];
+                                      var atteDate = dateFormate.format(
+                                          DateTime.parse(data['date']));
+                                      if (status == 'Late') {
+                                        return ListAttendace(
                                           color: appColors.secondColor,
-                                          date:  atteDate.toString(),
+                                          date: atteDate.toString(),
                                           status: status.toString(),
                                           clockin: data["clock_in"].toString(),
-                                          clockout: data["clock_out"].toString(),
+                                          clockout: data["clock_out"]
+                                              .toString(),
                                           late: data["late"].toString(),
-                                          earlyLeave: data["early_leaving"].toString(),
-                                      );
-                                    }else if(status == 'Present'){
-                                      return ListAttendace(
-                                        color: appColors.successColor,
-                                        date: atteDate.toString(),
-                                        status: status.toString(),
-                                        clockin: data["clock_in"].toString(),
-                                        clockout: data["clock_out"].toString(),
-                                        late: data["late"].toString(),
-                                        earlyLeave: data["early_leaving"].toString(),
-                                      );
-                                    }else{
-                                      return ListAttendace(
-                                        color: appColors.dangerColor,
-                                        date:atteDate.toString(),
-                                        status: status.toString(),
-                                        clockin: data["clock_in"].toString(),
-                                        clockout: data["clock_out"].toString(),
-                                        late: data["late"].toString(),
-                                        earlyLeave: data["early_leaving"].toString(),
-                                      );
+                                          earlyLeave: data["early_leaving"]
+                                              .toString(),
+                                        );
+                                      } else if (status == 'Present') {
+                                        return ListAttendace(
+                                          color: appColors.successColor,
+                                          date: atteDate.toString(),
+                                          status: status.toString(),
+                                          clockin: data["clock_in"].toString(),
+                                          clockout: data["clock_out"]
+                                              .toString(),
+                                          late: data["late"].toString(),
+                                          earlyLeave: data["early_leaving"]
+                                              .toString(),
+                                        );
+                                      } else {
+                                        return ListAttendace(
+                                          color: appColors.dangerColor,
+                                          date: atteDate.toString(),
+                                          status: status.toString(),
+                                          clockin: data["clock_in"].toString(),
+                                          clockout: data["clock_out"]
+                                              .toString(),
+                                          late: data["late"].toString(),
+                                          earlyLeave: data["early_leaving"]
+                                              .toString(),
+                                        );
+                                      }
                                     }
-
-                                  }
-                              ),
-                            );
+                                ),
+                              );
+                            }else{
+                              return Center(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                     Container(margin:EdgeInsets.only(top: 20, bottom: 20), child: Image.asset("assets/images/nodata.png", width: 100, height: 100, fit: BoxFit.cover,)),
+                                      MediunText(text: "No Data Found"),
+                                  ],
+                                ),
+                              );
+                            }
                           }else{
                              return Expanded(
                                child: Center(

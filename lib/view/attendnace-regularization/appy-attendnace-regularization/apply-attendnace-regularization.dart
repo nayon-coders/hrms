@@ -16,6 +16,7 @@ import '../../profile/profile.dart';
 
 class AttendanceRegularization extends StatefulWidget {
   int index;
+
   AttendanceRegularization({Key? key, required this.index}) : super(key: key);
 
   @override
@@ -51,11 +52,12 @@ class _AttendanceRegularizationState extends State<AttendanceRegularization> {
           ),
           bottom: TabBar(
             tabs: [
-              Tab(
-                text: "List",
-              ),
+
               Tab(
                 text: "Apply",
+              ),
+              Tab(
+                text: "List",
               ),
 
             ],
@@ -63,12 +65,13 @@ class _AttendanceRegularizationState extends State<AttendanceRegularization> {
         ),
         body: const TabBarView(
           children: [
-            Center(
-              child: ApplyAttendanceRegularizationList(),
-            ),
+
             Center(
               child: RegularaizationForm(),
 
+            ),
+            Center(
+              child: ApplyAttendanceRegularizationList(),
             ),
 
           ],

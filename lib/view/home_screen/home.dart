@@ -280,7 +280,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.push(context, MaterialPageRoute(
-                                    builder: (context) => LeaveApply(index: 1)));
+                                    builder: (context) => LeaveApply(index: 0)));
                               },
                               child: ListOfMenu(
                                 text: 'Leave List',

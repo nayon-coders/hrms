@@ -59,13 +59,16 @@ class _ProfileState extends State<Profile> {
     // TODO: implement initState
     super.initState();
     _UserInfo();
+    UserProfileController _userProfileControllor = UserProfileController();
+    userProfile = _userProfileControllor.getUserProfile();
   }
   bool _isProfileUpdate = false;
 String check = '';
 
+Future? userProfile;
+
   @override
   Widget build(BuildContext context) {
-    UserProfileController _userProfileControllor = UserProfileController();
     return _isLogout ? Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -124,8 +127,8 @@ String check = '';
                           ),
                           child:Expanded(
                                   child: FutureBuilder(
-                                    future: _userProfileControllor.getUserProfile(),
-                                    builder: (context, AsyncSnapshot<UserInfoModel> snapshot){
+                                    future: userProfile,
+                                    builder: (context, AsyncSnapshot snapshot){
                                       if(snapshot.connectionState == ConnectionState.waiting){
                                         return Column(
                                           children: [

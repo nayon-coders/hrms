@@ -84,7 +84,7 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
           ),
           SizedBox(height: 10,),
           Center(
-            child: MediunText(text: "Applying for leave..."),
+            child: MediunText(text: "Applying..."),
           ),
         ],
       ): Form(
@@ -187,30 +187,14 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
                 //clockin time
                 Expanded(
                   flex: 2,
-                  child: _isClockIN ?  DateTimeField(
-                    format: timeFormate,
-                    controller: _clockinTimeController,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
-                      hintText: "Clock IN",
-                      filled: true,
-                      fillColor: appColors.gray200,
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1, color: appColors.gray200)
-                      ),
-                      suffixIcon: Icon(
-                        Icons.date_range,
-                      ),
-                    ),  onShowPicker: (context, currentValue) async {
-                      return null;
-                  },
-                  ):DateTimeField(
-                    format: timeFormate,
+                  child: TextFormField(
                     readOnly: _isClockIN,
                     controller: _clockinTimeController,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
                       hintText: "Clock IN",
+                      filled: true,
+                      fillColor:_isClockIN ? appColors.gray200 : appColors.white,
                       border: OutlineInputBorder(
                           borderSide: BorderSide(width: 1, color: appColors.gray200)
                       ),
@@ -218,13 +202,6 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
                         Icons.date_range,
                       ),
                     ),
-                    onShowPicker: (context, currentValue) async {
-                      final time =  await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
-                      );
-                      return DateTimeField.convert(time);
-                    },
                     validator: (value){
                       if(value == null){
                         return "Field must not be empty...";
@@ -237,14 +214,14 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
                 const SizedBox(width: 10,),
                 Expanded(
                   flex: 2,
-                  child: _isClockOut ? DateTimeField(
-                    format: timeFormate,
+                  child: TextFormField(
+                    readOnly: _isClockOut,
                     controller: _clockOutTimeController,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
+                      hintText: "Clock Out",
                       filled: true,
-                      fillColor: appColors.gray200,
-                      hintText: "Clock Out",
+                      fillColor:_isClockOut ? appColors.gray200 : appColors.white,
                       border: OutlineInputBorder(
                           borderSide: BorderSide(width: 1, color: appColors.gray200)
                       ),
@@ -252,31 +229,6 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
                         Icons.date_range,
                       ),
                     ),
-                    onShowPicker: (context, currentValue) async {
-                      return null;
-                    },
-
-                  ): DateTimeField(
-                    format: timeFormate,
-                    controller: _clockOutTimeController,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
-
-                      hintText: "Clock Out",
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1, color: appColors.gray200)
-                      ),
-                      suffixIcon: Icon(
-                        Icons.date_range,
-                      ),
-                    ),
-                    onShowPicker: (context, currentValue) async {
-                      final time = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
-                      );
-                      return DateTimeField.convert(time);
-                    },
                     validator: (value){
                       if(value == null){
                         return "Field must not be empty...";
