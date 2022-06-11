@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:HRMS/service/api-service.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
+import 'package:HRMS/view/global_widget/show-toast.dart';
 import 'package:http/http.dart' as http;
 import 'package:HRMS/view/global_widget/notify.dart';
 import 'package:HRMS/utility/colors.dart';
@@ -148,15 +149,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           )),
                         ): loadingBtn(),
-                      ), 
-                      
+                      ),
+
                       SizedBox(height: 20,),
-                      TextButton(
-                          onPressed: () {
-                            TramsCondition();
-                          },
-                          child: MediunText(text: "Privacy Policy and Terms & Conditions.", color: appColors.white,)
-                      )
                     ],
                   )
               ),
@@ -210,18 +205,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
           print(body['email']);
 
-          Notify(
-            title: 'Login Success',
-            body: 'Your are login successfully',
-            color: appColors.successColor,
-          ).notify(context);
+          ShowToast("Login Success").successToast();
         } else {
-          Notify(
-            title: 'Login Faild',
-            body: 'Sorry, Something was wrong',
-            color: appColors.secondColor,
-          ).notify(context);
-          print(response.statusCode);
+          ShowToast('Unauthorized').errorToast();
         }
         setState(() {
           isLogin = true;
@@ -233,8 +219,5 @@ class _LoginScreenState extends State<LoginScreen> {
      }
     }//end login method
 
-void TramsCondition()async{
-    if (!await launchUrl(_policayUrl)) throw 'Could not launch $_policayUrl';
-}
 
 }

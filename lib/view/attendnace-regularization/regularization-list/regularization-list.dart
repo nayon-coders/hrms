@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/global_widget/bottom-navigation-button.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
+import 'package:HRMS/view/global_widget/no-data.dart';
+import 'package:HRMS/view/global_widget/show-toast.dart';
 import 'package:HRMS/view/global_widget/tob-bar.dart';
 import 'package:HRMS/view/home_screen/home.dart';
 import 'package:HRMS/view/leave/leave-apply/widget/leave-form.dart';
@@ -11,6 +13,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:dropdown_button2/custom_dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
@@ -33,10 +36,12 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
   late final monthOfTheYear = DateFormat.yMMM().format(DateTime.now());
   late Color color;
 
+
   @override
-  initState(){
+  void initState() {
+    super.initState();
     regularaizationList = getRegularaization();
-    editRegularaizationList  = getEditRegularaization();
+
   }
 
   final List<String> items = [
@@ -95,22 +100,25 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
   }
 
   Future<void> getEditRegularaization() async{
+
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     //Store Data
     var token = localStorage.getString('token');
-    final response = await http.get(Uri.parse("${APIService.baseUrl}regularization/edit/$regularaizID"),
+    final response = await http.get(Uri.parse("${APIService.baseUrl}/regularization/edit/${regularaizID}"),
         headers: {
+          "Accept" : "application/json",
+          'content-Type': 'application/json',
           "Authorization" : "Bearer $token"
         }
     );
     if(response.statusCode == 201){
       var data = jsonDecode(response.body.toString());
-
+      print(response.statusCode);
       var reguList = data;
       return reguList;
 
     }else{
-      print("error");
+      print(token);
       print(response.statusCode);
       throw Exception("Error");
     }
@@ -138,36 +146,47 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
                   }
 
                   if(snapshot.hasData){
+                    bool isPending;
                     var data = snapshot.data['regularize_attendance'];
-                    return ListView.builder(
-                        itemCount: data.length,
+                    if(data.length != 0){
+                      return ListView.builder(
+                          itemCount: data.length,
 
-                        itemBuilder: (context, index){
-                          if(data[index]["status"] == "Pending"){
-                            color = appColors.mainColor;
-                          }else{
-                            color = appColors.successColor;
+                          itemBuilder: (context, index){
+
+                            if(data[index]["status"] == "Pending"){
+                              color = appColors.mainColor;
+                                isPending = true;
+                            }else{
+                              color = appColors.successColor;
+                                isPending = false;
+                            }
+                            var date = DateFormat.yMMMMd().format(DateTime.parse(data[index]["date"]));
+                            return leaveListItem(
+                                date: date,
+                                status: data[index]["status"].toString(),
+                                editStatus: data[index]["status"] == "Pending" ? true : false,
+                                editFunction: (){
+                                  setState((){
+                                    regularaizID =  data[index]['id'].toString();
+                                    editRegularaizationList  = getEditRegularaization();
+                                  });
+                                  _editeRegularaization();
+                                },
+                                in_time: data[index]['regularized_in_time'].toString(),
+                                out_time: data[index]['regularized_out_time'].toString(),
+                                reason: data[index]['reason'].toString(),
+                                description: data[index]['description'],
+                                color: color
+                            );
                           }
-                          var date = DateFormat.yMMMMd().format(DateTime.parse(data[index]["date"]));
-                          return leaveListItem(
-                              date: date,
-                              status: data[index]["status"].toString(),
-                              editFunction: (){
-                               setState((){
-                                 regularaizID =  data[index]['id'].toString();
-                               });
-                                _editeRegularaization();
-                              },
-                              in_time: data[index]['regularized_in_time'].toString(),
-                              out_time: data[index]['regularized_out_time'].toString(),
-                              reason: data[index]['reason'].toString(),
-                              description: data[index]['description'],
-                              color: color
-                          );
-                        }
-                    );
+                      );
+                    }else{
+                      return NoDataFound();
+                    }
+
                   }else{
-                    return const Text("some think is warng");
+                    return const Text("some think is wearing");
                   }
 
                 }
@@ -189,7 +208,6 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
         return StatefulBuilder(
          builder: (context, setState) {
            return AlertDialog(
-             title: const Text('AlertDialog Title'),
              content: Container(
                width: MediaQuery
                    .of(context)
@@ -203,12 +221,17 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
                  future: editRegularaizationList,
                  builder: (context, AsyncSnapshot snapshot){
                      if(snapshot.connectionState == ConnectionState.waiting){
-                       return CircularProgressIndicator(
-                         strokeWidth: 3,
+                       return Container(
+                         width: 50,
+                         height: 50,
+                         child: Center(
+                           child: CircularProgressIndicator(
+                             strokeWidth: 5,
+                           ),
+                         ),
                        );
                      }else if(snapshot.hasData){
                        var data = snapshot.data["regularize_attendance"];
-
                        return Form(
                          key: _LeaveFormKey,
                          child: ListView(
@@ -219,7 +242,7 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
                              const SizedBox(height: 20,),
 
                              CustomDropdownButton2(
-                               hint: 'Select Type',
+                               hint: "${data["reason"]}",
                                buttonHeight: 55,
                                buttonWidth: MediaQuery
                                    .of(context)
@@ -275,11 +298,10 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
                                decoration: InputDecoration(
                                  contentPadding: EdgeInsets.only(
                                      top: 15, bottom: 15, left: 10, right: 10),
-                                 labelText: "Date",
                                  labelStyle: TextStyle(
                                    fontSize: 10.sp,
                                  ),
-                                 hintText: "Date",
+                                 hintText: data["date"],
                                  border: OutlineInputBorder(
                                      borderSide: BorderSide(width: 1,
                                          color: _isCurrectDate
@@ -326,7 +348,7 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
                                      decoration: InputDecoration(
                                        contentPadding: EdgeInsets.only(
                                            top: 15, bottom: 15, left: 10, right: 10),
-                                       hintText: "Clock IN",
+                                       hintText: data["regularized_in_time"],
                                        filled: true,
                                        fillColor: _isClockIN
                                            ? appColors.gray200
@@ -357,7 +379,7 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
                                      decoration: InputDecoration(
                                        contentPadding: EdgeInsets.only(
                                            top: 15, bottom: 15, left: 10, right: 10),
-                                       hintText: "Clock Out",
+                                       hintText:  data["regularized_out_time"],
                                        filled: true,
                                        fillColor: _isClockOut
                                            ? appColors.gray200
@@ -391,11 +413,10 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
                                decoration: InputDecoration(
                                  contentPadding: EdgeInsets.only(
                                      top: 15, bottom: 15, left: 10, right: 10),
-                                 labelText: "Clarification For Regularization",
                                  labelStyle: TextStyle(
                                    fontSize: 10.sp,
                                  ),
-                                 hintText: "Clarification For Regularization",
+                                 hintText:  data["description"],
 
                                  border: OutlineInputBorder(
                                      borderSide: BorderSide(
@@ -443,7 +464,7 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
                          ),
                        );
                      }else{
-                       return Center();
+                       return Center(child: Text("some thing is warng"),);
                      }
                    }
                ),
@@ -467,6 +488,7 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
 
 
   _checkClockTimeWithSelectedDate(DateTime selectedDate) async{
+    EasyLoading.show();
     print(DateFormat('yyyy-MM-dd').format(selectedDate));
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     //Store Data
@@ -487,8 +509,11 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
       print(response.statusCode);
       print(checkClockTimeValues);
       setState((){
+        ShowToast("Selected date is Match").successToast();
+        print("date is match") ;
         _clockinTimeController..text =  data['clock_in'].toString();
         _clockOutTimeController..text = data['clock_out'].toString();
+        EasyLoading.dismiss();
       });
       return checkClockTimeValues = data;
 
@@ -497,57 +522,76 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
         _clockinTimeController..text =  "Clock IN";
         _clockOutTimeController..text = "Clock Out";
         _isCurrectDate = false;
-        Notify(
-          title: "Date Missing",
-          body: "Your selected date is missing...",
-          color: appColors.secondColor,
-        )..notify(context);
+
       });
+      ShowToast("Selected date is missing").errorToast();
       print(response.statusCode);
       print(_isCurrectDate);
       throw Exception("Error");
     }
   }
 
-
   //update
   _applyLeaveMethod()async{
 
     if(_LeaveFormKey.currentState!.validate()){
-      setState((){
+      setState(() async {
         _isLeaveApply = true;
-      });
-      SharedPreferences localStorage = await SharedPreferences.getInstance();
-      //Store Data
-      var token = localStorage.getString('token');
+        print(regularaizID);
 
-      var response = await http.post(Uri.parse(APIService.addRegularaigetion),
-          body: {
-            "date" : _fromDateController.text,
-            "reason" : selectedLeaveTypeValue,
-            "in_time" : _clockinTimeController.text,
-            "out_time" : _clockOutTimeController.text,
-            "description" : _ReasonController.text,
-          },
-          headers: {
-            "Authorization" : "Bearer $token",
 
+        if(selectedLeaveTypeValue != null){
+
+
+          SharedPreferences localStorage = await SharedPreferences.getInstance();
+          //Store Data
+          var token = localStorage.getString('token');
+
+          var response = await http.post(Uri.parse("https://asia.net.in/api/regularization/update/255"),
+              body: {
+                "date" : _fromDateController.text,
+                "reason" : selectedLeaveTypeValue,
+                "in_time" : _clockinTimeController.text,
+                "out_time" : _clockOutTimeController.text,
+                "description" : _ReasonController.text,
+              },
+              headers: {
+                "Authorization" : "Bearer $token",
+
+              }
+          );
+
+          if(response.statusCode == 201){
+            Navigator.pop(context);
+            Notify(
+              title: "Updated",
+              body: "Updated Successfully",
+              color: appColors.successColor,
+            ).notify(context);
+
+          }else{
+            print(response.statusCode);
+            Notify(
+              title: "Application submitted Failed",
+              body: "your leave application submitted failed",
+              color: appColors.secondColor,
+            ).notify(context);
           }
-      );
 
-      if(response.statusCode == 201){
-        Notify(
-          title: "Application submitted",
-          body: "Succesfully you Attendance Regularaization submitted",
-          color: appColors.successColor,
-        ).notify(context);
-      }else{
-        Notify(
-          title: "Application submitted Failed",
-          body: "your leave application submitted failed",
-          color: appColors.secondColor,
-        ).notify(context);
-      }
+
+        }else{
+          ShowToast("text").errorToast();
+          Notify(
+            title: "Reason Empty",
+            body: "You have to mush select Reason ",
+            color: appColors.secondColor,
+          ).notify(context);
+        }
+
+
+      });
+
+
 
       setState((){
         _isLeaveApply = false;
@@ -571,6 +615,7 @@ class leaveListItem extends StatelessWidget {
   final String reason;
   final String description;
   final Color color;
+  final bool editStatus;
   leaveListItem({
     required this.date,
     required this.status,
@@ -580,6 +625,7 @@ class leaveListItem extends StatelessWidget {
     required this.reason,
     required this.description,
     required this.color,
+    required this.editStatus,
   });
 
   @override
@@ -615,14 +661,15 @@ class leaveListItem extends StatelessWidget {
                 children: [
                   BigText(text: status, size: 12, color: color,),
                   const SizedBox(width: 10,),
-                  IconButton(
+
+                  editStatus? IconButton(
                     onPressed: editFunction,
                     icon: Icon(
                       Icons.edit,
                       color: color,
                       size: 20,
                     ),
-                  )
+                  ) : Center(),
                 ],
               )
             ],

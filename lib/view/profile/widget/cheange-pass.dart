@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
 import 'package:HRMS/view/global_widget/notify.dart';
+import 'package:HRMS/view/global_widget/show-toast.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
@@ -64,90 +65,79 @@ class _ChangePassState extends State<ChangePass> {
               ),
               const SizedBox(height: 20,),
 
-              TextFormField(
-                controller: _newPass,
-                decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        borderSide: BorderSide(
-                          width: 3,
-                          color: appColors.bg,
-                        )
+              _isChange ? Center(
+                child: CircularProgressIndicator(strokeWidth: 5, color: appColors.secondColor,),
+              ) : Column(
+                children: [
+                  TextFormField(
+                    controller: _newPass,
+                    decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            borderSide: BorderSide(
+                              width: 3,
+                              color: appColors.bg,
+                            )
+                        ),
+                        hintText: "Enter New Password",
+                        labelText: "New Password"
                     ),
-                    hintText: "Enter New Password",
-                    labelText: "New Password"
-                ),
-                validator: (value){
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter New Password';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 15,),
-              TextFormField(
-                controller: _reTypePass,
-                decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        borderSide: BorderSide(
-                            width: 3,
-                            color: appColors.bg
-                        )
-                    ),
-                    hintText: "Retype Password",
-                    labelText: "Retype Password"
-                ),
-                validator: (value){
-                  if (value == null || value.isEmpty) {
-                    return 'Please Retype Password';
-                  }
-                  return null;
-                },
-              ),
-
-              GestureDetector(
-                onTap: (){
-                  _changePass();
-                },
-                child: Container(
-                  margin: EdgeInsets.only(top: 15),
-                  width: MediaQuery.of(context).size.width/3,
-                  padding: EdgeInsets.only(top: 10, bottom: 10),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: appColors.secondColor
+                    validator: (value){
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter New Password';
+                      }
+                      return null;
+                    },
                   ),
-                  child: Center(child:
-                  _isChange != true ? Text("Save Changes",
-                    style: TextStyle(
-                        color: appColors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 9.sp
+                  const SizedBox(height: 15,),
+                  TextFormField(
+                    controller: _reTypePass,
+                    decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            borderSide: BorderSide(
+                                width: 3,
+                                color: appColors.bg
+                            )
+                        ),
+                        hintText: "Retype Password",
+                        labelText: "Retype Password"
                     ),
-                  ): Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(
-                        value: 2,
-                        strokeWidth: 2,
-                        color: appColors.white,
-                        backgroundColor: appColors.successColor,
+                    validator: (value){
+                      if (value == null || value.isEmpty) {
+                        return 'Please Retype Password';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  GestureDetector(
+                    onTap: (){
+                      _changePass();
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(top: 15),
+                      width: MediaQuery.of(context).size.width/3,
+                      padding: EdgeInsets.only(top: 10, bottom: 10),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          color: appColors.secondColor
                       ),
-                      const SizedBox(width: 10,),
-                      Text("Saving...",
-                      style: TextStyle(
-                          color: appColors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 11.sp
+                      child: Center(
+                          child: Text("Save Changes",
+                            style: TextStyle(
+                                color: appColors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 9.sp
+                            ),
+                          )
                       ),
-                ),
-                    ],
-                  )),
-                ),
-              ),
+                    ),
+                  ),
+                ],
+              )
             ],
           )
       ),
@@ -155,10 +145,11 @@ class _ChangePassState extends State<ChangePass> {
   }
 
   void _changePass() async{
+    setState(() {
+      _isChange = true;
+    });
     if(_changePassKey.currentState!.validate()){
-      setState(() {
-        _isChange = true;
-      });
+
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       //Store Data
       var data = {
@@ -181,20 +172,18 @@ class _ChangePassState extends State<ChangePass> {
           _isChange = false;
           _newPass.clear();
           _reTypePass.clear();
-          Notify(
-            title: "Password Changed",
-            body: "Recently Your Password is changed. New Password is set. ",
-            color: appColors.successColor,
-          ).notify(context);
+          ShowToast("Password Changed").successToast();
         });
 
       } else {
-        // If the server did not return a 201 CREATED response,
-        // then throw an exception.
-        print(response.statusCode);
-        print(response.body.toString());
-        throw Exception('Failed to create album.');
+        ShowToast("Password Changing failed").errorToast();
+        setState(() {
+          _isChange = false;
+        });
+
       }
+
+    }else{
       setState(() {
         _isChange = false;
       });

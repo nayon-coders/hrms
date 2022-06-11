@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:HRMS/view/global_widget/no-data.dart';
 import 'package:http/http.dart' as http;
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
@@ -305,16 +306,7 @@ class _AttendaceListState extends State<AttendaceList> {
                                 ),
                               );
                             }else{
-                              return Center(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                     Container(margin:EdgeInsets.only(top: 20, bottom: 20), child: Image.asset("assets/images/nodata.png", width: 100, height: 100, fit: BoxFit.cover,)),
-                                      MediunText(text: "No Data Found"),
-                                  ],
-                                ),
-                              );
+                              return NoDataFound();
                             }
                           }else{
                              return Expanded(

@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:HRMS/view/attendance/attendance-list/attendance-list.dart';
+import 'package:HRMS/view/global_widget/show-toast.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:HRMS/model/TodayAttendanceModel.dart';
@@ -96,7 +98,7 @@ class _AttendanceState extends State<Attendance> {
                 },
 
               iconNavigate: (){
-                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>AttendaceList()));
               },
               icon:Icons.info_outline,
                 bottomRoundedColor: appColors.bg,
@@ -387,27 +389,7 @@ class _AttendanceState extends State<Attendance> {
             context,
             MaterialPageRoute(
                 builder: (BuildContext context) => super.widget));
-        Flushbar(
-          title: "Clock In Success",
-          titleColor: appColors.white,
-          message: "You're Present. Your Attendance successfully Clock In",
-          icon:  Icon(
-            Icons.done,
-            size: 28.0,
-            color: appColors.successColor,
-          ),
-          messageSize: 12.sp,
-          messageColor: appColors.successColor,
-          borderWidth: 1,
-          borderColor: Colors.grey,
-          margin: EdgeInsets.all(6.0),
-          flushbarStyle: FlushbarStyle.FLOATING,
-          flushbarPosition: FlushbarPosition.TOP,
-          textDirection: Directionality.of(context),
-          borderRadius: BorderRadius.circular(12),
-          duration: Duration(seconds: 4),
-          leftBarIndicatorColor: appColors.successColor,
-        ).show(context);
+        ShowToast("Clock In Success").successToast();
       }else{
         _waring();
       }
@@ -435,27 +417,7 @@ class _AttendanceState extends State<Attendance> {
           context,
           MaterialPageRoute(
               builder: (BuildContext context) => super.widget));
-      Flushbar(
-        title: "Clock Out Success",
-        titleColor: appColors.white,
-        message: "You're Leave. Your Attendance successfully Clock Out",
-        icon:  Icon(
-          Icons.done,
-          size: 28.0,
-          color: appColors.secondColor,
-        ),
-        messageSize: 12.sp,
-        messageColor: appColors.secondColor,
-        borderWidth: 1,
-        borderColor: Colors.grey,
-        margin: EdgeInsets.all(6.0),
-        flushbarStyle: FlushbarStyle.FLOATING,
-        flushbarPosition: FlushbarPosition.TOP,
-        textDirection: Directionality.of(context),
-        borderRadius: BorderRadius.circular(12),
-        duration: Duration(seconds: 4),
-        leftBarIndicatorColor: appColors.secondColor,
-      ).show(context);
+     ShowToast("Clock Out Success",).secounderyToast();
     }else{
       _waring();
     }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:HRMS/service/api-service.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
 import 'package:HRMS/view/global_widget/notify.dart';
+import 'package:HRMS/view/global_widget/show-toast.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:http/http.dart' as http;
 import 'package:HRMS/controller/profile/profile-coltroller.dart';
@@ -134,12 +135,12 @@ Future? userProfile;
                                           children: [
                                             Center(
                                               child: CircularProgressIndicator(
-                                                strokeWidth: 2,
+                                                strokeWidth: 3,
                                                 backgroundColor: appColors.secondColor,
                                               ),
                                             ),
                                             const SizedBox(height: 10,),
-                                            MediunText(text: "Checking Update...", color: appColors.gray, size: 7,),
+                                            MediunText(text: "Checking Update...", color: appColors.gray, size: 8.sp,),
                                           ],
                                         );
                                       }else if(snapshot.hasData){
@@ -393,45 +394,62 @@ Future? userProfile;
             content: Container(
               height: 200,
               margin: EdgeInsets.only(top: 10),
-              child: Column(
-                children: [
-                  TextField(
-                    onChanged: (value) {
-                    },
-                    controller: _name,
-                    decoration: InputDecoration(
-                        hintText: "Enter Your Name"
-                    ),
-                  ),
-                  TextField(
-                    controller: _email,
-                    decoration: InputDecoration(
-                        hintText: "Enter your email"
-                    ),
-                  ),
-
-                  GestureDetector(
-                    onTap: (){
-                      _userInfoUpdate();
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 15),
-                      width: MediaQuery.of(context).size.width/3,
-                      padding: EdgeInsets.only(top: 10, bottom: 10),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(100),
-                          color: appColors.secondColor
+              child: Form(
+                key: changeInfoForm,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      onChanged: (value) {
+                      },
+                      controller: _name,
+                      decoration: InputDecoration(
+                          hintText: "Enter Your Name"
                       ),
-                      child: Center(child: Text("Save Changes",
-                        style: TextStyle(
-                            color: appColors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 11.sp
-                        ),
-                      )),
+                      validator: (value){
+                        if(value != null){
+                          return "Name field much not be empty";
+                        }else{
+                          return null;
+                        }
+                      },
                     ),
-                  ),
-                ],
+                    TextFormField(
+                      controller: _email,
+                      decoration: InputDecoration(
+                          hintText: "Enter your email"
+                      ),
+                      validator: (value){
+                        if(value != null){
+                          return "Email field much not be empty";
+                        }else{
+                          return null;
+                        }
+                      },
+                    ),
+
+                    GestureDetector(
+                      onTap: (){
+                        _userInfoUpdate();
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 15),
+                        width: MediaQuery.of(context).size.width/3,
+                        padding: EdgeInsets.only(top: 10, bottom: 10),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            color: appColors.secondColor
+                        ),
+                        child: Center(child: Text("Save Changes",
+                          style: TextStyle(
+                              color: appColors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 11.sp
+                          ),
+                        )),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             )
 
@@ -440,49 +458,6 @@ Future? userProfile;
   }
 
 
-  void _userInfoUpdate() async{
-    String name;
-    String email;
-    setState(() {
-      _isProfileUpdate = true;
-      if(_name.text == null && _email.text == null ){
-        check = "check all";
-      }
-    });
-    if(_name.text == null && _email.text == null ){
-      name = Name;
-      email = Email;
-    }else{
-      name = _name.text;
-      email = _email.text;
-    }
-
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    //Store Data
-    var token = localStorage.getString('token');
-    final response = await http.post(Uri.parse(APIService.updateProfileUrl),
-        body: {
-          "name":name,
-          "email" : email,
-        },
-        headers: {
-          "Authorization" : "Bearer $token",
-          "Accept" : "application/json",
-        }
-    );
-    if(response.statusCode == 201){
-      Navigator.pop(context);
-      Notify(
-        title: 'Profile Updated',
-        body: 'Your profile is updated. ',
-        color: appColors.successColor,
-      ).notify(context);
-    }
-    setState(() {
-      _isProfileUpdate = false;
-    });
-
-  }
 
   void _shoBottomSheet(BuildContext context){
     showModalBottomSheet(
@@ -566,18 +541,10 @@ Future? userProfile;
        print(response.statusCode);
        if (response.statusCode == 201) {
          Navigator.pop(context);
-         Notify(
-             title: "Profile uploaded",
-             body: "Profile image is upload successfully",
-             color: appColors.successColor
-         ).notify(context);
+        ShowToast("Profile Picture uploaded").successToast();
        } else {
          print(response.statusCode);
-         Notify(
-             title: "Profile uploaded Faild",
-             body: "Profile image is upload Faild",
-             color: appColors.secondColor
-         ).notify(context);
+         ShowToast("Profile uploaded Faild").errorToast();
        }
        setState((){
          imagePickFile = File(pickPhoto.path);
@@ -589,6 +556,51 @@ Future? userProfile;
        debugPrint(e.toString());
      }
   }
+
+
+//CHANGE PROFILE input METHOD
+  void _userInfoUpdate() async{
+
+      String name;
+      String email;
+      setState(() {
+        _isProfileUpdate = true;
+        if(_name.text == null && _email.text == null ){
+          check = "check all";
+        }
+      });
+      if(_name.text == null && _email.text == null ){
+        name = Name;
+        email = Email;
+      }else{
+        name = _name.text;
+        email = _email.text;
+      }
+
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+      //Store Data
+      var token = localStorage.getString('token');
+      final response = await http.post(Uri.parse(APIService.updateProfileUrl),
+          body: {
+            "name":name,
+            "email" : email,
+          },
+          headers: {
+            "Authorization" : "Bearer $token",
+            "Accept" : "application/json",
+          }
+      );
+      if(response.statusCode == 201){
+        Navigator.pop(context);
+        ShowToast('Profile Information Updated').successToast();
+      }else{
+        ShowToast("Field must not be empty").errorToast();
+      }
+      setState(() {
+        _isProfileUpdate = false;
+      });
+    }
+
 
 
 }
