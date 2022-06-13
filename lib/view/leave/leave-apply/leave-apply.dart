@@ -2,12 +2,14 @@ import 'package:HRMS/controller/Leave/leave-list.dart';
 import 'package:HRMS/controller/Leave/leaveType-controller.dart';
 import 'package:HRMS/service/api-service.dart';
 import 'package:HRMS/utility/colors.dart';
+import 'package:HRMS/view/global_widget/mediun_text.dart';
 import 'package:http/http.dart' as http;
 import 'package:HRMS/view/leave/leave-apply/widget/leave-form.dart';
 import 'package:HRMS/view/leave/leave-list/leave-list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../attendance/attendance.dart';
 import '../../profile/profile.dart';
@@ -35,6 +37,7 @@ class _LeaveApplyState extends State<LeaveApply> {
       child: Scaffold(
         appBar: AppBar(
           //
+          title: MediunText(text: "Leave", color:  appColors.white, size: 10.sp,),
           flexibleSpace: Container(
             decoration: BoxDecoration(
                 gradient: LinearGradient(

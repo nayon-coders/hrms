@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:HRMS/controller/profile/profile-coltroller.dart';
 import 'package:HRMS/service/api-service.dart';
 import 'package:HRMS/view/global_widget/notify.dart';
+import 'package:HRMS/view/pay-slip.dart';
 import 'package:http/http.dart' as http;
 import 'package:HRMS/controller/auth-controller/logout-controller.dart';
 import 'package:HRMS/utility/colors.dart';
@@ -52,12 +53,12 @@ class _HomeScreenState extends State<HomeScreen> {
   String greeting() {
     var hour = DateTime.now().hour;
     if (hour <= 12) {
-      return 'Good Morning';
+      return 'GOOD MORNING';
     }
     if (hour <= 17) {
-      return 'Good Afternoon';
+      return 'GOOD AFTERNOON';
     }
-    return 'Good Evening';
+    return 'GOOD EVENING';
   }
   bool _isLogout = false;
   @override
@@ -131,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   _isProfilePic = true;
                                 }
                                 return ClipOval(
-                                  child:  _isProfilePic ? Image.network("https://asia.net.in/storage/uploads/avatar/$avatar",
+                                  child:  _isProfilePic ? Image.network("https://asiasolutions.xyz/storage/uploads/avatar/$avatar",
                                     height: 60,
                                     width: 60,
 
@@ -237,10 +238,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       Row(
                         children: [
                           Expanded(
+                            child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) =>
+                                      PaySlip()));
+                            },
                             child: ListOfMenu(
                               text: 'Pay Slip',
                               image: 'assets/images/payslip.png',
                             ),
+                          ),
                           ),
                           SizedBox(width: 20,),
                           Expanded(
@@ -280,7 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.push(context, MaterialPageRoute(
-                                    builder: (context) => LeaveApply(index: 0)));
+                                    builder: (context) => LeaveApply(index: 1)));
                               },
                               child: ListOfMenu(
                                 text: 'Leave List',

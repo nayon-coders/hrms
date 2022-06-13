@@ -54,6 +54,9 @@ dependencies:
   toast: ^0.2.9
   fluttertoast: ^8.0.8
   flutter_easyloading: ^3.0.5
+  rating_dialog: ^2.0.4
+  pdf: ^3.8.1
+
 
 
 

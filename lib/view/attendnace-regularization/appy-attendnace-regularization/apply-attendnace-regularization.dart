@@ -10,8 +10,10 @@ import 'package:HRMS/view/leave/leave-list/leave-list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../attendance/attendance.dart';
+import '../../global_widget/mediun_text.dart';
 import '../../profile/profile.dart';
 
 class AttendanceRegularization extends StatefulWidget {
@@ -38,6 +40,7 @@ class _AttendanceRegularizationState extends State<AttendanceRegularization> {
       child: Scaffold(
         appBar: AppBar(
           //
+          title: MediunText(text: "Attendance Regularization", color:  appColors.white, size: 10.sp,),
           flexibleSpace: Container(
             decoration: BoxDecoration(
                 gradient: LinearGradient(

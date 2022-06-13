@@ -159,7 +159,7 @@ Future? userProfile;
                                                   height: 130,
                                                   width: 130,
 
-                                                ):  _isProfilePic ? Image.network("https://asia.net.in/storage/uploads/avatar/$avatar",
+                                                ): _isProfilePic ? Image.network("https://asiasolutions.xyz/storage/uploads/avatar/$avatar",
                                                 height: 130,
                                                 width: 130,
 

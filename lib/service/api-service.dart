@@ -1,5 +1,5 @@
 class APIService{
-    static const String baseUrl = "https://asia.net.in/api";
+    static const String baseUrl = "https://asiasolutions.xyz/api";
     static const String loginUrl = baseUrl + "/login";
     static const String logoutUrl = baseUrl + "/logout";
     static const String clockInUrl = baseUrl + "/attendanceemployee/clock_in";
@@ -17,4 +17,5 @@ class APIService{
     static const String getInOutClockTime = "$baseUrl/get_in_out";
     static const String addRegularaigetion = "$baseUrl/regularization/store";
     static const String editLeave = "$baseUrl/leave/update/125";
+    static const String paySlip = "$baseUrl/employee/payslip";
 }
