@@ -127,12 +127,16 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
   @override
   Widget build(BuildContext context) {
 
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
     return  Scaffold(
       backgroundColor: appColors.white,
       body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 2.h, vertical: 2.h),
 
-          child:Expanded(
+          child:Container(
+            width: width,
+            height: height,
             child: FutureBuilder(
                 future: regularaizationList,
                 builder: (context, AsyncSnapshot<dynamic> snapshot){
@@ -148,7 +152,7 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
                   if(snapshot.hasData){
                     bool isPending;
                     var data = snapshot.data['regularize_attendance'];
-                    if(data.length != 0){
+                    if(snapshot.data['regularize_attendance'].length > 0){
                       return ListView.builder(
                           itemCount: data.length,
 

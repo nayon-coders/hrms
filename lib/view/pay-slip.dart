@@ -75,6 +75,8 @@ class _PaySlipState extends State<PaySlip> {
   @override
   Widget build(BuildContext context) {
 
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
     return  Scaffold(
       backgroundColor: appColors.white,
       appBar: AppBar(
@@ -96,7 +98,9 @@ class _PaySlipState extends State<PaySlip> {
       body:  Padding(
           padding: EdgeInsets.symmetric(horizontal: 2.h, vertical: 2.h),
 
-          child:Expanded(
+          child:Container(
+            width: width,
+            height: height,
             child: FutureBuilder(
                 future: paySlipList,
                 builder: (context, AsyncSnapshot<dynamic> snapshot){

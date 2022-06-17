@@ -18,8 +18,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _policayUrl = Uri.parse("https://sites.google.com/view/aisa-solution-ltd/home");
-  bool isLogin = true;
+  bool isLogin = false;
   //form key
   final _loginFormKey = GlobalKey<FormState>();
   late bool _passwordVisible;
@@ -134,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onTap: (){
                           login();
                         },
-                        child: isLogin ? Container(
+                        child: isLogin == false ? Container(
                           width: double.infinity,
                           padding: EdgeInsets.only(top: 15, bottom: 15),
                           decoration: BoxDecoration(
@@ -183,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void login() async{
     if(_loginFormKey.currentState!.validate()){
       setState(() {
-        isLogin = false;
+        isLogin = true;
       });
       try {
         var response = await http.post(Uri.parse(APIService.loginUrl),
@@ -210,12 +209,15 @@ class _LoginScreenState extends State<LoginScreen> {
           ShowToast('Unauthorized').errorToast();
         }
         setState(() {
-          isLogin = true;
+          isLogin = false;
         });
 
       }catch(e){
 
       }
+      setState(() {
+        isLogin = false;
+      });
      }
     }//end login method
 

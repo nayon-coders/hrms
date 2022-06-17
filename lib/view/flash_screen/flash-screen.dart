@@ -94,7 +94,7 @@ class _FlashScreenState extends State<FlashScreen> with TickerProviderStateMixin
             Container(
               margin: EdgeInsets.only(bottom: 3.h),
               child: (
-                  Text("Version 1.0.0",
+                  Text("Version 1.0.1",
                     style: TextStyle(
                       color: appColors.white,
                       fontSize: 12.sp,

@@ -7,7 +7,7 @@ import 'package:HRMS/view/global_widget/show-toast.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-import '../../../service/api-service.dart';
+import '../../service/api-service.dart';
 import 'package:http/http.dart' as http;
 class ChangePass extends StatefulWidget {
 

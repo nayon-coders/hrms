@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:HRMS/view/global_widget/no-data.dart';
 import 'package:HRMS/view/global_widget/show-toast.dart';
 import 'package:HRMS/view/leave/leave-apply/widget/leave-form.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
@@ -98,13 +99,16 @@ bool isPending = false;
 
   @override
   Widget build(BuildContext context) {
-
+var width = MediaQuery.of(context).size.width;
+var height = MediaQuery.of(context).size.height;
     return  Scaffold(
       backgroundColor: appColors.white,
       body:  Padding(
           padding: EdgeInsets.symmetric(horizontal: 2.h, vertical: 2.h),
 
-          child:Expanded(
+          child:Container(
+            width: width,
+            height: height,
             child: FutureBuilder(
               future: LeaveListItem,
                 builder: (context, AsyncSnapshot<dynamic> snapshot){
@@ -117,7 +121,7 @@ bool isPending = false;
                   );
                 }if(snapshot.hasData){
                   var data = snapshot.data['leaves'];
-                  if(data != null) {
+                  if(snapshot.data['leaves'].length > 0) {
                     return ListView.builder(
                         itemCount: snapshot.data['leaves'].length,
 
@@ -198,210 +202,215 @@ bool isPending = false;
                               ),
                             );
                           }else if(snapshot.hasData){
-                            return Container(
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width,
-                              height: 500,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Form(
-                                key: _LeaveFormKey,
-                                child: ListView(
-                                  children: [
-                                    MediunText(text: "Apply for leave",
-                                      size: 10.sp,
-                                      color: appColors.black,),
-                                    const SizedBox(height: 20,),
-                                    CustomDropdownButton2(
-                                      hint: "${snapshot.data["leavetypes"]["6"]}",
-                                      buttonHeight: 55,
-                                      buttonWidth: MediaQuery
-                                          .of(context)
-                                          .size
-                                          .width,
-                                      buttonPadding: EdgeInsets.all(10),
-                                      dropdownWidth: MediaQuery
-                                          .of(context)
-                                          .size
-                                          .width / 2,
-                                      buttonDecoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1, color: appColors.gray),
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                      dropdownItems: items,
-                                      value: selectedLeaveTypeValue,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          selectedLeaveTypeValue = value;
-                                        });
-                                      },
-                                    ),
-
-                                    const SizedBox(height: 20,),
-                                    DateTimeField(
-                                      format: format,
-                                      controller: _fromDateController,
-                                      decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.only(
-                                            top: 15, bottom: 15, left: 10, right: 10),
-                                        labelText: "${snapshot.data["leave"]["start_date"]}",
-                                        labelStyle: TextStyle(
-                                          fontSize: 10.sp,
-                                        ),
-                                        hintText: "${snapshot.data["leave"]["start_date"]}",
-                                        border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                width: 1, color: appColors.gray200)
-                                        ),
-                                        suffixIcon: Icon(
-                                          Icons.date_range,
-                                        ),
-                                      ),
-                                      onShowPicker: (context, currentValue) {
-                                        return showDatePicker(
-                                            context: context,
-                                            firstDate: DateTime.now(),
-                                            initialDate: currentValue ?? DateTime.now(),
-                                            lastDate: DateTime(2100)
-                                        );
-                                      },
-                                      validator: (value) {
-                                        if (value == null) {
-                                          return "Field must not be empty...";
-                                        } else {
-                                          return null;
-                                        }
-                                      },
-                                    ),
-                                    const SizedBox(height: 20,),
-                                    DateTimeField(
-                                      format: format,
-                                      controller: _toDateController,
-                                      decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.only(
-                                            top: 15, bottom: 15, left: 10, right: 10),
-                                        labelText: "${snapshot.data["leave"]["end_date"]}",
-                                        labelStyle: TextStyle(
-                                          fontSize: 10.sp,
-                                        ),
-                                        hintText: "${snapshot.data["leave"]["end_date"]}",
-                                        border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                width: 1, color: appColors.gray200)
-                                        ),
-                                        suffixIcon: Icon(
-                                          Icons.date_range,
-                                        ),
-                                      ),
-
-                                      onShowPicker: (context, currentValue) {
-                                        return showDatePicker(
-                                            context: context,
-                                            firstDate: DateTime.now(),
-                                            initialDate: currentValue ?? DateTime.now(),
-                                            lastDate: DateTime(2100)
-                                        );
-                                      },
-                                      validator: (value) {
-                                        if (value == null) {
-                                          return "Field must not be empty...";
-                                        } else {
-                                          return null;
-                                        }
-                                      },
-                                    ),
-                                    const SizedBox(height: 20,),
-                                    TextFormField(
-                                      keyboardType: TextInputType.multiline,
-                                      textInputAction: TextInputAction.newline,
-                                      minLines: 2,
-                                      maxLines: 10,
-                                      controller: _leaveReasionController,
-                                      decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.only(
-                                            top: 15, bottom: 15, left: 10, right: 10),
-                                        labelText: "${snapshot.data["leave"]["leave_reason"]}",
-                                        labelStyle: TextStyle(
-                                          fontSize: 10.sp,
-                                        ),
-                                        hintText:  "${snapshot.data["leave"]["leave_reason"]}",
-
-                                        border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                width: 1, color: appColors.gray200)
-                                        ),
-
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return "Field must not be empty... ";
-                                        } else {
-                                          return null;
-                                        }
-                                      },
-                                    ),
-                                    const SizedBox(height: 20,),
-                                    TextFormField(
-                                      keyboardType: TextInputType.multiline,
-                                      textInputAction: TextInputAction.newline,
-                                      minLines: 2,
-                                      maxLines: 10,
-                                      controller: _RemarkController,
-                                      decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.only(
-                                            top: 15, bottom: 15, left: 10, right: 10),
-                                        labelText:  "${snapshot.data["leave"]["remark"]}",
-                                        labelStyle: TextStyle(
-                                          fontSize: 10.sp,
-                                        ),
-                                        hintText: "${snapshot.data["leave"]["remark"]}",
-
-                                        border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                width: 1, color: appColors.gray200)
-                                        ),
-
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return "Field must not be empty... ";
-                                        } else {
-                                          return null;
-                                        }
-                                      },
-                                    ),
-                                    const SizedBox(height: 30,),
-                                    GestureDetector(
-                                      onTap: () {
-                                        getLiveList();
-                                        _editLeaveList(leaveID);
-                                      },
-                                      child: Container(
-                                        width: double.infinity,
-                                        padding: EdgeInsets.only(top: 15, bottom: 15),
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(100),
-                                            color: appColors.secondColor
-                                        ),
-                                        child: Center(child: Text("Apply",
-                                          style: TextStyle(
-                                              color: appColors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16.sp
-                                          ),
-                                        )),
-                                      ),
-                                    ),
-
-
-                                  ],
+                            if(snapshot.data["leave"].length > 0){
+                              return Container(
+                                width: MediaQuery
+                                    .of(context)
+                                    .size
+                                    .width,
+                                height: 500,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                              ),
-                            );
+                                child: Form(
+                                  key: _LeaveFormKey,
+                                  child: ListView(
+                                    children: [
+                                      MediunText(text: "Apply for leave",
+                                        size: 10.sp,
+                                        color: appColors.black,),
+                                      const SizedBox(height: 20,),
+                                      CustomDropdownButton2(
+                                        hint: "${snapshot.data["leavetypes"]["6"]}",
+                                        buttonHeight: 55,
+                                        buttonWidth: MediaQuery
+                                            .of(context)
+                                            .size
+                                            .width,
+                                        buttonPadding: EdgeInsets.all(10),
+                                        dropdownWidth: MediaQuery
+                                            .of(context)
+                                            .size
+                                            .width / 2,
+                                        buttonDecoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 1, color: appColors.gray),
+                                          borderRadius: BorderRadius.circular(5),
+                                        ),
+                                        dropdownItems: items,
+                                        value: selectedLeaveTypeValue,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            selectedLeaveTypeValue = value;
+                                          });
+                                        },
+                                      ),
+
+                                      const SizedBox(height: 20,),
+                                      DateTimeField(
+                                        format: format,
+                                        controller: _fromDateController,
+                                        decoration: InputDecoration(
+                                          contentPadding: EdgeInsets.only(
+                                              top: 15, bottom: 15, left: 10, right: 10),
+                                          labelText: "${snapshot.data["leave"]["start_date"]}",
+                                          labelStyle: TextStyle(
+                                            fontSize: 10.sp,
+                                          ),
+                                          hintText: "${snapshot.data["leave"]["start_date"]}",
+                                          border: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1, color: appColors.gray200)
+                                          ),
+                                          suffixIcon: Icon(
+                                            Icons.date_range,
+                                          ),
+                                        ),
+                                        onShowPicker: (context, currentValue) {
+                                          return showDatePicker(
+                                              context: context,
+                                              firstDate: DateTime.now(),
+                                              initialDate: currentValue ?? DateTime.now(),
+                                              lastDate: DateTime(2100)
+                                          );
+                                        },
+                                        validator: (value) {
+                                          if (value == null) {
+                                            return "Field must not be empty...";
+                                          } else {
+                                            return null;
+                                          }
+                                        },
+                                      ),
+                                      const SizedBox(height: 20,),
+                                      DateTimeField(
+                                        format: format,
+                                        controller: _toDateController,
+                                        decoration: InputDecoration(
+                                          contentPadding: EdgeInsets.only(
+                                              top: 15, bottom: 15, left: 10, right: 10),
+                                          labelText: "${snapshot.data["leave"]["end_date"]}",
+                                          labelStyle: TextStyle(
+                                            fontSize: 10.sp,
+                                          ),
+                                          hintText: "${snapshot.data["leave"]["end_date"]}",
+                                          border: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1, color: appColors.gray200)
+                                          ),
+                                          suffixIcon: Icon(
+                                            Icons.date_range,
+                                          ),
+                                        ),
+
+                                        onShowPicker: (context, currentValue) {
+                                          return showDatePicker(
+                                              context: context,
+                                              firstDate: DateTime.now(),
+                                              initialDate: currentValue ?? DateTime.now(),
+                                              lastDate: DateTime(2100)
+                                          );
+                                        },
+                                        validator: (value) {
+                                          if (value == null) {
+                                            return "Field must not be empty...";
+                                          } else {
+                                            return null;
+                                          }
+                                        },
+                                      ),
+                                      const SizedBox(height: 20,),
+                                      TextFormField(
+                                        keyboardType: TextInputType.multiline,
+                                        textInputAction: TextInputAction.newline,
+                                        minLines: 2,
+                                        maxLines: 10,
+                                        controller: _leaveReasionController,
+                                        decoration: InputDecoration(
+                                          contentPadding: EdgeInsets.only(
+                                              top: 15, bottom: 15, left: 10, right: 10),
+                                          labelText: "${snapshot.data["leave"]["leave_reason"]}",
+                                          labelStyle: TextStyle(
+                                            fontSize: 10.sp,
+                                          ),
+                                          hintText:  "${snapshot.data["leave"]["leave_reason"]}",
+
+                                          border: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1, color: appColors.gray200)
+                                          ),
+
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return "Field must not be empty... ";
+                                          } else {
+                                            return null;
+                                          }
+                                        },
+                                      ),
+                                      const SizedBox(height: 20,),
+                                      TextFormField(
+                                        keyboardType: TextInputType.multiline,
+                                        textInputAction: TextInputAction.newline,
+                                        minLines: 2,
+                                        maxLines: 10,
+                                        controller: _RemarkController,
+                                        decoration: InputDecoration(
+                                          contentPadding: EdgeInsets.only(
+                                              top: 15, bottom: 15, left: 10, right: 10),
+                                          labelText:  "${snapshot.data["leave"]["remark"]}",
+                                          labelStyle: TextStyle(
+                                            fontSize: 10.sp,
+                                          ),
+                                          hintText: "${snapshot.data["leave"]["remark"]}",
+
+                                          border: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1, color: appColors.gray200)
+                                          ),
+
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return "Field must not be empty... ";
+                                          } else {
+                                            return null;
+                                          }
+                                        },
+                                      ),
+                                      const SizedBox(height: 30,),
+                                      GestureDetector(
+                                        onTap: () {
+                                          getLiveList();
+                                          _editLeaveList(leaveID);
+                                        },
+                                        child: Container(
+                                          width: double.infinity,
+                                          padding: EdgeInsets.only(top: 15, bottom: 15),
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(100),
+                                              color: appColors.secondColor
+                                          ),
+                                          child: Center(child: Text("Apply",
+                                            style: TextStyle(
+                                                color: appColors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16.sp
+                                            ),
+                                          )),
+                                        ),
+                                      ),
+
+
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }else{
+                              return NoDataFound();
+                            }
+
                           }else{
                             return MediunText(text: "Something with wearing");
                           }
