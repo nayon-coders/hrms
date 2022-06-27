@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:HRMS/service/api-service.dart';
+import 'package:HRMS/view/attendnace-regularization/appy-attendnace-regularization/apply-attendnace-regularization.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
 import 'package:HRMS/view/global_widget/notify.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
@@ -11,9 +12,8 @@ import 'package:dropdown_button2/custom_dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
-import 'package:toast/toast.dart';
-import '../../../../controller/Leave/leaveType-controller.dart';
 class RegularaizationForm extends StatefulWidget {
   const RegularaizationForm({Key? key}) : super(key: key);
 
@@ -29,6 +29,8 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
     'Early Leaving',
     'Business Visit',
   ];
+
+  bool _isDataMatching = false;
   var checkClockTimeValues;
   var clockInTime;
   var clockOutTime;
@@ -158,7 +160,10 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
               ),
               onChanged: (value){
                 setState((){
-                  _checkClockTimeWithSelectedDate(value!);
+                  if(selectedLeaveTypeValue != items[4]){
+                    _checkClockTimeWithSelectedDate(value!);
+                  }
+
                 });
               },
               onShowPicker: (context, currentValue) {
@@ -182,7 +187,70 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
             const SizedBox(height: 20,),
 
             //time field
-            Row(
+            _isDataMatching ? Shimmer.fromColors(
+
+              highlightColor: appColors.gray200,
+              baseColor: appColors.white,
+              child: Row(
+                children: [
+                  //clockin time
+                  Expanded(
+                    flex: 2,
+                    child: TextFormField(
+                      readOnly: _isClockIN,
+                      controller: _clockinTimeController,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
+                        hintText: "Clock IN",
+                        filled: true,
+                        fillColor:_isClockIN ? appColors.gray200 : appColors.white,
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide(width: 1, color: appColors.gray200)
+                        ),
+                        suffixIcon: Icon(
+                          Icons.date_range,
+                        ),
+                      ),
+                      validator: (value){
+                        if(value == null){
+                          return "Field must not be empty...";
+                        }else{
+                          return null;
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    flex: 2,
+                    child: TextFormField(
+                      readOnly: _isClockOut,
+                      controller: _clockOutTimeController,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
+                        hintText: "Clock Out",
+                        filled: true,
+                        fillColor:_isClockOut ? appColors.gray200 : appColors.white,
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide(width: 1, color: appColors.gray200)
+                        ),
+                        suffixIcon: Icon(
+                          Icons.date_range,
+                        ),
+                      ),
+                      validator: (value){
+                        if(value == null){
+                          return "Field must not be empty...";
+                        }else{
+                          return null;
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            )
+               : Row(
               children: [
                 //clockin time
                 Expanded(
@@ -240,6 +308,9 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
                 ),
               ],
             ),
+
+
+
             const SizedBox(height: 20,),
             TextFormField(
               keyboardType: TextInputType.multiline,
@@ -302,6 +373,9 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
   }
 
   _checkClockTimeWithSelectedDate(DateTime selectedDate) async{
+    setState((){
+      _isDataMatching = true;
+    });
     print(DateFormat('yyyy-MM-dd').format(selectedDate));
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     //Store Data
@@ -319,9 +393,8 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
         _isCurrectDate = true;
       });
       var data = jsonDecode(response.body.toString());
-      print(response.statusCode);
-      print(checkClockTimeValues);
       setState((){
+        _isDataMatching = false;
         _clockinTimeController..text =  data['clock_in'].toString();
         _clockOutTimeController..text = data['clock_out'].toString();
       });
@@ -329,19 +402,18 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
 
     }else{
       setState((){
+        _isDataMatching = false;
         _clockinTimeController..text =  "Clock IN";
         _clockOutTimeController..text = "Clock Out";
         _isCurrectDate = false;
-        Notify(
-            title: "Date Missing",
-            body: "Your selected date is missing...",
-            color: appColors.secondColor,
-        )..notify(context);
+        _dataMissing();
       });
       print(response.statusCode);
       print(_isCurrectDate);
       throw Exception("Error");
     }
+
+
   }
 
   _applyLeaveMethod()async{
@@ -389,7 +461,65 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
     }
   }
 
+//show error
+  Future<void> _dataMissing() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(32.0))),
+          contentPadding: EdgeInsets.only(top: 30.0),
+          content: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
 
+            ),
+            height: 330,
+            child: Column(
+              children: [
+                ClipOval(
+                  child: Image.asset("assets/images/error.png",width: 150,height: 150,),
+                ),
+                SizedBox(height: 5.h,),
+                Padding(
+                    padding: const EdgeInsets.only(left: 40, right: 40),
+                    child: Text("Sorry...! Attendance date is messing. Try again currect date. ",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12.sp
+                      ),
+                    )
+                ),
+                SizedBox(height: 5.h,),
+                MaterialButton(
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>AttendanceRegularization(index: 0)));
+                  },
+                  child: Container(
+                    padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        color: appColors.secondColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.8),
+                            spreadRadius: 2,
+                            blurRadius: 20,
+                            offset: Offset(0, 7), // changes position of shadow
+                          ),
+                        ]
+                    ),
+                    child: Center(child: MediunText(text: "Try again", size: 12.sp, color: appColors.white,)),
+                  ),
+                )
+              ],
+            ),
+          )
+      ),
+    );
+  }
 
 }
 

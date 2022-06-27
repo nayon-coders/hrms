@@ -213,6 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
         });
 
       }catch(e){
+        _serverError();
 
       }
       setState(() {
@@ -220,6 +221,67 @@ class _LoginScreenState extends State<LoginScreen> {
       });
      }
     }//end login method
+
+
+  Future<void> _serverError() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(32.0))),
+          contentPadding: EdgeInsets.only(top: 30.0),
+          content: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+
+            ),
+            height: 330,
+            child: Column(
+              children: [
+                ClipOval(
+                  child: Image.asset("assets/images/server.png",width: 150,height: 150,),
+                ),
+                SizedBox(height: 5.h,),
+                Padding(
+                    padding: const EdgeInsets.only(left: 40, right: 40),
+                    child: Text("Server Error. Please try after sometimes. ",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12.sp
+                      ),
+                    )
+                ),
+                SizedBox(height: 5.h,),
+                MaterialButton(
+                  onPressed: (){
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        color: appColors.mainColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.8),
+                            spreadRadius: 2,
+                            blurRadius: 20,
+                            offset: Offset(0, 7), // changes position of shadow
+                          ),
+                        ]
+                    ),
+                    child: Center(child: MediunText(text: "Try again", size: 12.sp, color: appColors.white,)),
+                  ),
+                )
+              ],
+            ),
+          )
+      ),
+    );
+  }
+
 
 
 }

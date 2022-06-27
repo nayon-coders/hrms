@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:HRMS/view/global_widget/no-data.dart';
+import 'package:HRMS/view/global_widget/server-error.dart';
 import 'package:HRMS/view/global_widget/show-toast.dart';
 import 'package:HRMS/view/leave/leave-apply/widget/leave-form.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
@@ -144,7 +145,7 @@ class _PaySlipState extends State<PaySlip> {
                       return NoDataFound();
                     }
                   }else{
-                    return Text("some think is warng");
+                    return ServerError();
                   }
 
                 }

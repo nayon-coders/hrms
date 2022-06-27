@@ -61,6 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return 'GOOD EVENING';
   }
   bool _isLogout = false;
+
   @override
   Widget build(BuildContext context) {
     UserProfileController _userProfileControllor = UserProfileController();
@@ -82,6 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ): Column(
         children: [
+          //TODO:Stack topbar
           Stack(
             alignment: Alignment.topCenter,
             children: [
@@ -166,24 +168,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    IconButton(
-                      onPressed: () {
-                        _logout();
-
-                      },
-                      icon: Icon(
-                        Icons.logout,
-                        color: appColors.white,
-                        size: 30,
-                      ),
-                    )
 
                   ],
                 ),
               ),
 
               Container(
-                padding: const EdgeInsets.only(top: 162),
+                padding: EdgeInsets.only(top: 20.h),
                 child: Container(
                   height: 40,
                   decoration: const BoxDecoration(
@@ -197,6 +188,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
+
+          //TODO: Body part
           Expanded(
             child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
@@ -259,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         AttendanceRegularization(index: 0,)));
                               },
                               child: ListOfMenu(
-                                text: 'Attendance \nRegulizetion',
+                                text: 'Attendance \nRegularization',
                                 TextSize: 10,
                                 image: 'assets/images/listattendance.png',
                               ),
@@ -429,33 +422,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _logout() async{
-    setState(() {
-      _isLogout = true;
-    });
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    //Store Data
-    var token = localStorage.getString('token');
 
-    final respons = await http.post(Uri.parse(APIService.logoutUrl),
-      body: jsonEncode("object"),
-        headers: {
-        "Authorization" : "Bearer $token"
-        }
-    );
-    if(respons.statusCode == 200){
-      localStorage.remove('token');
-      localStorage.remove('name');
-      localStorage.remove('email');
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
-
-    }else{
-      print("faild");
-    }
-
-    setState(() {
-      _isLogout = false;
-    });
-  }
 
 }

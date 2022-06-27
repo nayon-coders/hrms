@@ -1,12 +1,10 @@
 import 'dart:convert';
 import 'package:HRMS/view/global_widget/no-data.dart';
 import 'package:HRMS/view/global_widget/show-toast.dart';
-import 'package:HRMS/view/leave/leave-apply/widget/leave-form.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:dropdown_button2/custom_dropdown_button2.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:HRMS/model/leave-list-model.dart';
 import 'package:HRMS/utility/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,6 +12,7 @@ import 'package:sizer/sizer.dart';
 import '../../../service/api-service.dart';
 import '../../global_widget/big_text.dart';
 import '../../global_widget/mediun_text.dart';
+import '../../global_widget/server-error.dart';
 class LeaveList extends StatefulWidget {
   const LeaveList({Key? key}) : super(key: key);
 
@@ -163,10 +162,10 @@ var height = MediaQuery.of(context).size.height;
                         }
                     );
                   }else{
-                    return Text("No Data Found");
+                    return NoDataFound();
                   }
                 }else{
-                  return Text("some think is warng");
+                  return ServerError();
                 }
 
                 }

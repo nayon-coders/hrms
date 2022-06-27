@@ -4,17 +4,10 @@ import 'package:HRMS/service/api-service.dart';
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/attendnace-regularization/appy-attendnace-regularization/regularaization-form.dart';
 import 'package:HRMS/view/attendnace-regularization/regularization-list/regularization-list.dart';
-import 'package:http/http.dart' as http;
-import 'package:HRMS/view/leave/leave-apply/widget/leave-form.dart';
-import 'package:HRMS/view/leave/leave-list/leave-list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-
-import '../../attendance/attendance.dart';
 import '../../global_widget/mediun_text.dart';
-import '../../profile/profile.dart';
 
 class AttendanceRegularization extends StatefulWidget {
   int index;

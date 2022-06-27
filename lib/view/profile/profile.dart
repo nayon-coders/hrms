@@ -2,20 +2,18 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:HRMS/service/api-service.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
-import 'package:HRMS/view/global_widget/notify.dart';
+import 'package:HRMS/view/global_widget/server-error.dart';
 import 'package:HRMS/view/global_widget/show-toast.dart';
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:http/http.dart' as http;
 import 'package:HRMS/controller/profile/profile-coltroller.dart';
-import 'package:HRMS/model/user-info-model.dart';
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/attendance/attendance.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
 import 'package:HRMS/view/home_screen/home.dart';
-import 'package:HRMS/view/profile/cheange-pass.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 
 import '../global_widget/tob-bar.dart';
@@ -43,6 +41,10 @@ class _ProfileState extends State<Profile> {
   final TextEditingController _name = TextEditingController();
 
   final TextEditingController _email = TextEditingController();
+  TextEditingController _newPass = TextEditingController();
+
+  TextEditingController _reTypePass = TextEditingController();
+
 
 
   void _UserInfo() async {
@@ -62,15 +64,22 @@ class _ProfileState extends State<Profile> {
     _UserInfo();
     UserProfileController _userProfileControllor = UserProfileController();
     userProfile = _userProfileControllor.getUserProfile();
+
   }
   bool _isProfileUpdate = false;
-String check = '';
+  String check = '';
 
 Future? userProfile;
 
+  bool _isChange = false;
+  final _changePassKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
     return Scaffold(
+
           backgroundColor: appColors.bg,
           body: _isLogout ? Center(
             child: Column(
@@ -85,145 +94,360 @@ Future? userProfile;
                 MediunText(text: "Logout processing..."),
               ],
             ),
-          ): ListView(
-            children: [
-              TopBar(
-                  text: "Employee Profile",
-                  goToBack: (){
-                    Navigator.pop(context);
-                  },
+          ): SingleChildScrollView(
+            child: Column(
+              children: [
 
-                  iconNavigate: (){
+                Container(
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height/2.2,
+                  decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: <Color>[
+                          Color(0xff00315E),
+                          Color(0xff580082),
+                        ],
+                      )),
+                  child: Stack(
+                      clipBehavior: Clip.antiAlias,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 20, right: 20, top: 6.h, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Row(
+                              children: [
+                                IconButton(
+                                    onPressed: (){
+                                      Navigator.pop(context);
+                                    },
+                                    icon: Icon(
+                                      Icons.arrow_back_ios,
+                                      color: appColors.white,
+                                    )
+                                ),
+                                MediunText(text: "Employee Profile", size: 11.sp, color: appColors.white,),
+                              ],
+                            ),
+                             IconButton(
+                                onPressed: (){
+                                  _logout();
+
+                                },
+                                icon: Icon(
+                                  Icons.logout,
+                                  color: appColors.white,
+                                )
+                            )
+
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                          child:Container(
+                            height: 5.h,
+                            width: width,
+                            decoration:  BoxDecoration(
+                                color: appColors.bg,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(30),
+                                  topRight: Radius.circular(30),
+                                )
+                            ),
+
+                          ),
+                      )
+                    ],
+                  ),
+                ),
+
+                Container(
+                  width: width,
+                  margin: EdgeInsets.only(left: 20, right: 20),
+                  transform: Matrix4.translationValues(0.0, -12.h, 0.0),
+                  height: MediaQuery.of(context).size.height/6,
+                  decoration:  BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.8),
+                        spreadRadius: 3,
+                        blurRadius: 20,
+                        offset: Offset(0, 7), // changes position of shadow
+                      ),
+                    ],
+                    color: appColors.white,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: FutureBuilder(
+                          future: userProfile,
+                          builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                            if(snapshot.connectionState == ConnectionState.waiting){
+                              return Shimmer.fromColors(
+                                baseColor: Colors.white,
+                                highlightColor: Colors.grey,
+                                child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                      margin: const EdgeInsets.all(30),
+                                      width: 100,
+                                      height: 150,
+                                      decoration: BoxDecoration(
+                                        color: appColors.white,
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(
+                                              width: 2, color: appColors.white),
+                                      ),
+                                    ),
+
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 20),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          width: 150,
+                                          height: 30,
+                                          color: appColors.white,
+
+                                        ),
+                                        SizedBox(height: 5,),
+                                        Container(
+                                          width: 100,
+                                          height: 15,
+                                          color: appColors.white,
+                                        ),
+                                        SizedBox(height: 10,),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment
+                                              .spaceBetween,
+                                          children: [
+                                            InkWell(
+                                              onTap: () => _shoBottomSheet(context),
+                                              child: Container(
+                                                padding: EdgeInsets.only(left: 10,
+                                                    right: 10,
+                                                    top: 5,
+                                                    bottom: 5),
+                                                width: 60,
+                                                height: 30,
+                                                decoration: BoxDecoration(
+                                                    color: appColors.mainColor,
+                                                    borderRadius: BorderRadius
+                                                        .circular(100)
+                                                ),
+                                              ),
+                                            ),
+
+
+                                            SizedBox(width: 10,),
+                                            Container(
+                                              padding: EdgeInsets.only(left: 10,
+                                                  right: 10,
+                                                  top: 5,
+                                                  bottom: 5),
+                                              width: 60,
+                                              height: 30,
+                                              decoration: BoxDecoration(
+                                                  color: appColors.secondColor,
+                                                  borderRadius: BorderRadius
+                                                      .circular(100)
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                                )
+                              ); 
+                            }else if(snapshot.hasData){
+                              var avatar = snapshot.data?.userDetail.avatar;
+                              if(avatar != null){
+                                _isProfilePic = true;
+                              }
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    transform: Matrix4.translationValues(
+                                        0.0, -5.h, 0.0),
+                                    margin: EdgeInsets.only(left: 10, right: 20),
+                                    width: 100,
+                                    height: 150,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                            width: 2, color: appColors.white),
+
+                                    ),
+                                    child: imagePickFile !=null ? Image.file(imagePickFile!,
+                                      height: 130,
+                                      width: 130,
+
+                                    ): _isProfilePic ? Image.network("https://asiasolutions.xyz/storage/uploads/avatar/$avatar",
+                                      height: 130,
+                                      width: 130,
+                                      fit: BoxFit.cover,
+
+                                    ): Image.asset("assets/images/user.jpg",
+                                      height: 130,
+                                      width: 130,
+                                    ),
+                                  ),
+
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 20),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        BigText(text: "${snapshot.data?.userDetail.name}", size: 12
+                                            .sp,),
+                                        SizedBox(height: 5,),
+                                        MediunText(text: "${snapshot.data?.userDetail.email}"),
+                                        SizedBox(height: 10,),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment
+                                              .spaceBetween,
+                                          children: [
+                                            InkWell(
+                                              onTap: () => _shoBottomSheet(context),
+                                              child: Container(
+                                                padding: EdgeInsets.only(left: 10,
+                                                    right: 10,
+                                                    top: 5,
+                                                    bottom: 5),
+                                                decoration: BoxDecoration(
+                                                    color: appColors.mainColor,
+                                                    borderRadius: BorderRadius
+                                                        .circular(100)
+                                                ),
+                                                child: Center(
+                                                  child: Text("Upload Image",
+                                                    style: TextStyle(
+                                                      color: appColors.white,
+                                                      fontWeight: FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+
+
+                                            SizedBox(width: 10,),
+                                            Container(
+                                              padding: EdgeInsets.only(left: 10,
+                                                  right: 10,
+                                                  top: 5,
+                                                  bottom: 5),
+                                              decoration: BoxDecoration(
+                                                  color: appColors.secondColor,
+                                                  borderRadius: BorderRadius
+                                                      .circular(100)
+                                              ),
+                                              child: Center(
+                                                child: Text("${snapshot.data?.userDetail.type}",
+                                                  style: TextStyle(
+                                                    color: appColors.white,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }else{
+                              return Center(
+                                child: ServerError(),
+                              );
+                            }
+                            
+                          }
+                  ),
+                ),
+
+                //TODO: body
+                InkWell(
+                  onTap: (){
                     _profileUpdatePopUp(context);
                   },
-                  icon:Icons.edit,
-                  
-                  bottomRoundedColor: appColors.bg,
-
-              ),
-      Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding: const EdgeInsets.all(20),
-                    margin: EdgeInsets.only(left: 20, right: 20, bottom: 30, top: 20),
+                  child: Container(
+                    transform: Matrix4.translationValues(0.0, -5.h, 0.0),
+                    margin: EdgeInsets.only(left: 20, right: 20),
+                    padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: appColors.white,
-                      borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
-                          color: appColors.mainColor.withOpacity(0.3),
-                          spreadRadius: 1,
-                          blurRadius: 5,
-                          offset: Offset(0, 1), // changes position of shadow
+                          color: Colors.grey.withOpacity(0.8),
+                          spreadRadius: 3,
+                          blurRadius: 10,
+                          offset: Offset(0, 7), // changes position of shadow
                         ),
                       ],
+                      color: appColors.white,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Column(
-                        children: [
-                          FutureBuilder(
-                              future: userProfile,
-                              builder: (context, AsyncSnapshot snapshot){
-                                if(snapshot.connectionState == ConnectionState.waiting){
-                                  return Column(
-                                    children: [
-                                      Center(
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 3,
-                                          backgroundColor: appColors.secondColor,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10,),
-                                      MediunText(text: "Checking Update...", color: appColors.gray, size: 8.sp,),
-                                    ],
-                                  );
-                                }else if(snapshot.hasData){
-                                  var avatar = snapshot.data?.userDetail.avatar;
-                                  if(avatar != null){
-                                    _isProfilePic = true;
-                                  }
-                                  return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Stack(
-                                        children: [
-                                          ClipOval(
-                                            child:imagePickFile !=null ? Image.file(imagePickFile!,
-                                              height: 130,
-                                              width: 130,
-          
-                                            ): _isProfilePic ? Image.network("https://asiasolutions.xyz/storage/uploads/avatar/$avatar",
-                                              height: 130,
-                                              width: 130,
-          
-                                            ): Image.asset("assets/images/user.jpg",
-                                              height: 130,
-                                              width: 130,
-                                            ),
-                                          ),
-                                          Positioned(
-                                            bottom: 0,
-                                            right: 0,
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(100),
-                                                  color: appColors.white
-                                              ),
-                                              child: IconButton(
-                                                  onPressed: (){
-                                                    _shoBottomSheet(context);
-                                                  },
-                                                  icon: Icon(
-                                                    Icons.add_a_photo,
-                                                    color: appColors.gray,
-                                                    size: 25,
-                                                  )
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-          
-                                      const SizedBox(height: 10,),
-                                      Center(
-                                        child: BigText(text: "${snapshot.data?.userDetail.name}",
-                                          color: appColors.mainColor,
-                                          size: 10.sp,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 5,),
-                                      Container(
-                                        padding: EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 10),
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(100),
-                                            color: appColors.secondColor
-                                        ),
-                                        child: MediunText(
-                                          text: "${snapshot.data?.userDetail.type}",
-                                          color: appColors.white,
-                                          size: 8,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10,),
-                                      Center(
-                                        child: MediunText(
-                                          text: "${snapshot.data?.userDetail.email}",
-                                          color: appColors.gray,
-                                          size: 8,
-                                        ),
-                                      ),
-          
-                                    ],
-                                  );
-                                }else{
-                                  return Center(child: Text("Server Error"));
-                                }
-                              }
-                          ),
-                          ChangePass(),
-          
-                  ],)
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.account_circle_rounded,
+                          color: appColors.black,
+                          size: 20.sp,
+                        ),
+                        SizedBox(width: 10,),
+                        BigText(text: "Change Profile Information",size: 10.sp,),
+                      ],
+                    ),
+                  ),
                 ),
-            ],
+                InkWell(
+                  onTap: (){
+                    changepassword();
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(left: 20, right: 20),
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.8),
+                          spreadRadius: 3,
+                          blurRadius: 10,
+                          offset: Offset(0, 7), // changes position of shadow
+                        ),
+                      ],
+                      color: appColors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.list_alt_outlined,
+                          color: appColors.black,
+                          size: 20.sp,
+                        ),
+                        SizedBox(width: 10,),
+                        BigText(text: "Change Password",size: 10.sp,),
+                      ],
+                    ),
+                  ),
+                )
+
+
+
+              ],
+            ),
           ),
 
           bottomNavigationBar: BottomAppBar(
@@ -338,6 +562,8 @@ Future? userProfile;
     );
   }
 
+
+  //TODO: Profile Update popup builder
   Future<void> _profileUpdatePopUp(BuildContext context) async {
     return showDialog(
         context: context,
@@ -351,66 +577,108 @@ Future? userProfile;
               ),
             )
           ):AlertDialog(
-              title: MediunText(text: "Change Profile", size: 15,),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(32.0))),
               content: Container(
-                height: 200,
+                height: 220,
                 margin: EdgeInsets.only(top: 10),
-                child: Form(
-                  key: changeInfoForm,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        onChanged: (value) {
-                        },
-                        controller: _name,
-                        decoration: InputDecoration(
-                            hintText: "Enter Your Name"
-                        ),
-                        validator: (value){
-                          if(value!.isEmpty && value == null){
-                            return "Name field much not be empty";
-                          }else{
-                            return null;
-                          }
-                        },
+                child: Column(
+                  children: [
+                    BigText(text: "Change Information", size: 12,),
+                    Container(
+                      width: 80,
+                      height: 3,
+                      margin: const EdgeInsets.only(top: 10),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          color: appColors.secondColor
                       ),
-                      TextFormField(
-                        controller: _email,
-                        decoration: InputDecoration(
-                            hintText: "Enter your email"
-                        ),
-                        validator: (value){
-                          if(value!.isEmpty){
-                            return "Email field much not be empty";
-                          }else{
-                            return null;
-                          }
-                        },
+                    ),
+                    Container(
+                      width: 60,
+                      height: 3,
+                      margin: const EdgeInsets.only(top: 5),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          color: appColors.secondColor
                       ),
-
-                      GestureDetector(
-                        onTap: (){
-                          _userInfoUpdate();
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 15),
-                          width: MediaQuery.of(context).size.width/3,
-                          padding: EdgeInsets.only(top: 10, bottom: 10),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              color: appColors.secondColor
-                          ),
-                          child: Center(child: Text("Save Changes",
-                            style: TextStyle(
-                                color: appColors.white,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 11.sp
+                    ),
+                    SizedBox(height: 20,),
+                    Form(
+                      key: changeInfoForm,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            onChanged: (value) {
+                            },
+                            controller: _name,
+                            decoration: InputDecoration(
+                                hintText: "Enter Your Name",
+                              contentPadding: EdgeInsets.only(left: 20, right: 20),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                                  borderSide: BorderSide(
+                                    width: 3,
+                                    color: appColors.bg,
+                                  )
+                              ),
                             ),
-                          )),
-                        ),
+                            validator: (value){
+                              if(value!.isEmpty && value == null){
+                                return "Name field much not be empty";
+                              }else{
+                                return null;
+                              }
+                            },
+                          ),
+                          SizedBox(height: 10,),
+                          TextFormField(
+                            controller: _email,
+                            decoration: InputDecoration(
+                                hintText: "Enter your email",
+                              contentPadding: EdgeInsets.only(left: 20, right: 20),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                                  borderSide: BorderSide(
+                                    width: 3,
+                                    color: appColors.bg,
+                                  )
+                              ),
+                            ),
+                            validator: (value){
+                              if(value!.isEmpty){
+                                return "Email field much not be empty";
+                              }else{
+                                return null;
+                              }
+                            },
+                          ),
+
+                          GestureDetector(
+                            onTap: (){
+                              _userInfoUpdate();
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 15),
+                              width: MediaQuery.of(context).size.width/3,
+                              padding: EdgeInsets.only(top: 10, bottom: 10),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  color: appColors.secondColor
+                              ),
+                              child: Center(child: Text("Save Changes",
+                                style: TextStyle(
+                                    color: appColors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 11.sp
+                                ),
+                              )),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               )
 
@@ -419,7 +687,7 @@ Future? userProfile;
   }
 
 
-
+ //TODO: Show Show Bottom Sheets builder
   void _shoBottomSheet(BuildContext context){
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
@@ -474,7 +742,7 @@ Future? userProfile;
     );
   }
 
-  ///TODO: CHANGE PROFILE PICTURE METHOD
+  //TODO: CHANGE PROFILE PICTURE METHOD
   Future<void> _changeProfilePic(ImageSource imageType) async{
      try{
 
@@ -567,6 +835,194 @@ Future? userProfile;
         _isProfileUpdate = false;
       });
     }
+
+
+
+
+
+
+    //TODO: change password Method
+  Future<void> changepassword() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(32.0))),
+          content: Container(
+            height: 220,
+            margin: EdgeInsets.only(top: 25, bottom: 25, left: 3, right: 3),
+            child: Form(
+                key: _changePassKey,
+                child: Column(
+                  children: [
+                    BigText(text: "Change Password", size: 12,),
+                    Container(
+                      width: 80,
+                      height: 3,
+                      margin: const EdgeInsets.only(top: 10),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          color: appColors.secondColor
+                      ),
+                    ),
+                    Container(
+                      width: 60,
+                      height: 3,
+                      margin: const EdgeInsets.only(top: 5),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          color: appColors.secondColor
+                      ),
+                    ),
+                    const SizedBox(height: 20,),
+
+                    _isChange ? Center(
+                      child: CircularProgressIndicator(strokeWidth: 5, color: appColors.secondColor,),
+                    ) : Column(
+                      children: [
+                        TextFormField(
+                          controller: _newPass,
+                          decoration: InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                                  borderSide: BorderSide(
+                                    width: 3,
+                                    color: appColors.bg,
+                                  )
+                              ),
+                              hintText: "New Password",
+                          ),
+                        ),
+                        const SizedBox(height: 15,),
+                        TextFormField(
+                          controller: _reTypePass,
+                          decoration: InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                                  borderSide: BorderSide(
+                                      width: 3,
+                                      color: appColors.bg
+                                  )
+                              ),
+                              hintText: "Retype Password",
+                          ),
+
+                        ),
+
+                        GestureDetector(
+                          onTap: (){
+                            _changePass();
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(top: 15),
+                            width: MediaQuery.of(context).size.width/3,
+                            padding: EdgeInsets.only(top: 10, bottom: 10),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                color: appColors.secondColor
+                            ),
+                            child: Center(
+                                child: Text("Save Changes",
+                                  style: TextStyle(
+                                      color: appColors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 9.sp
+                                  ),
+                                )
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                )
+            ),
+          ),
+        );
+      },
+    );
+  }
+  void _changePass() async{
+    setState(() {
+      _isChange = true;
+    });
+    if(_newPass.text.isNotEmpty && _newPass.text.isNotEmpty){
+
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+      //Store Data
+      var data = {
+        "current_password" : _newPass.text,
+        "new_password": _newPass.text,
+        "confirm_password": _reTypePass.text,
+      };
+      var token = localStorage.getString('token');
+      var url = Uri.parse(APIService.updateChangePassUrl);
+      final response = await http.post(url,
+        body: data,
+        headers: {
+          "Authorization" : "Bearer $token",
+
+        },
+      );
+      print(jsonEncode(data));
+      if (response.statusCode == 201) {
+        setState(() {
+          _isChange = false;
+          _newPass.clear();
+          _reTypePass.clear();
+          ShowToast("Password Changed").successToast();
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+        });
+
+      } else {
+        ShowToast("Password Changing failed").errorToast();
+        setState(() {
+          _isChange = false;
+        });
+
+      }
+
+    }else{
+      setState(() {
+        ShowToast("Password field failed").errorToast();
+        _isChange = false;
+      });
+    }
+
+  }
+
+  void _logout() async{
+    setState(() {
+      _isLogout = true;
+    });
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    //Store Data
+    var token = localStorage.getString('token');
+
+    final respons = await http.post(Uri.parse(APIService.logoutUrl),
+        body: jsonEncode("object"),
+        headers: {
+          "Authorization" : "Bearer $token"
+        }
+    );
+    if(respons.statusCode == 200){
+      localStorage.remove('token');
+      localStorage.remove('name');
+      localStorage.remove('email');
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+
+    }else{
+      print("faild");
+    }
+
+    setState(() {
+      _isLogout = false;
+    });
+  }
 
 
 

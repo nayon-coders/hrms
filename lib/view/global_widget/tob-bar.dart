@@ -15,72 +15,68 @@ class TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.topCenter,
-      children: [
-        Container(
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height/6,
-          decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: <Color>[
-                  Color(0xff00315E),
-                  Color(0xff580082),
-                ],
-              )),
-        ),
 
-        Padding(
-          padding: EdgeInsets.only(left: 20, right: 20, top: 6.h, bottom: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                children: [
-                  IconButton(
-                      onPressed: (){
-                        goToBack();
-                      },
-                      icon: Icon(
-                        Icons.arrow_back_ios,
-                        color: appColors.white,
-                      )
-                  ),
-                  MediunText(text: text, size: 11.sp, color: appColors.white,),
-                ],
-              ),
-              isIcon ? IconButton(
-                  onPressed: (){
-                    iconNavigate!();
-                  },
-                  icon: Icon(
-                    icon,
-                    color: appColors.white,
-                  )
-              ): const Center(),
-
+    return   Container(
+      width: double.infinity,
+      height: 170,
+      decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: <Color>[
+              Color(0xff00315E),
+              Color(0xff580082),
             ],
-          ),
-        ),
-
-        Container(
-          padding:  EdgeInsets.only(top: 14.h),
-          child: Container(
-            height: 22,
-            decoration:  BoxDecoration(
-                color: bottomRoundedColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
+          )),
+      child: Stack(
+        clipBehavior: Clip.antiAlias,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 20, right: 20, top: 6.h, bottom: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    isIcon ? IconButton(
+                        onPressed: goToBack,
+                          icon: Icon(
+                          icon,
+                          color: appColors.white,
+                        )
+                    ): Center(),
+                    MediunText(text: "$text", size: 11.sp, color: appColors.white,),
+                  ],
+                ),
+                IconButton(
+                    onPressed: iconNavigate,
+                    icon: Icon(
+                      Icons.info_outline,
+                      color: appColors.white,
+                    )
                 )
-            ),
 
+              ],
+            ),
           ),
-        ),
-      ],
+          Positioned(
+            bottom: 0,
+            child:Container(
+              height: 5.h,
+              width: MediaQuery.of(context).size.width,
+              decoration:  BoxDecoration(
+                  color: bottomRoundedColor,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  )
+              ),
+
+            ),
+          )
+        ],
+      ),
     );
   }
 }

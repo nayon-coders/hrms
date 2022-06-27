@@ -4,6 +4,7 @@ import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/global_widget/bottom-navigation-button.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
 import 'package:HRMS/view/global_widget/no-data.dart';
+import 'package:HRMS/view/global_widget/server-error.dart';
 import 'package:HRMS/view/global_widget/show-toast.dart';
 import 'package:HRMS/view/global_widget/tob-bar.dart';
 import 'package:HRMS/view/home_screen/home.dart';
@@ -190,7 +191,7 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
                     }
 
                   }else{
-                    return const Text("some think is wearing");
+                    return ServerError();
                   }
 
                 }
@@ -318,7 +319,10 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
                                ),
                                onChanged: (value) {
                                  setState(() {
-                                   _checkClockTimeWithSelectedDate(value!);
+                                   if(selectedLeaveTypeValue != items[4]){
+                                     _checkClockTimeWithSelectedDate(value!);
+                                   }
+
                                  });
                                },
                                onShowPicker: (context, currentValue) {
@@ -468,7 +472,7 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
                          ),
                        );
                      }else{
-                       return Center(child: Text("some thing is warng"),);
+                       return ServerError();
                      }
                    }
                ),
@@ -567,29 +571,16 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
 
           if(response.statusCode == 201){
             Navigator.pop(context);
-            Notify(
-              title: "Updated",
-              body: "Updated Successfully",
-              color: appColors.successColor,
-            ).notify(context);
+            ShowToast("Update Sucess").successToast();
 
           }else{
             print(response.statusCode);
-            Notify(
-              title: "Application submitted Failed",
-              body: "your leave application submitted failed",
-              color: appColors.secondColor,
-            ).notify(context);
+           ShowToast("Update failed").errorToast();
           }
 
 
         }else{
-          ShowToast("text").errorToast();
-          Notify(
-            title: "Reason Empty",
-            body: "You have to mush select Reason ",
-            color: appColors.secondColor,
-          ).notify(context);
+          ShowToast("Field much not be empty").errorToast();
         }
 
 
