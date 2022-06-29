@@ -53,12 +53,12 @@ class _HomeScreenState extends State<HomeScreen> {
   String greeting() {
     var hour = DateTime.now().hour;
     if (hour <= 12) {
-      return 'GOOD MORNING';
+      return 'Good Morning';
     }
     if (hour <= 17) {
-      return 'GOOD AFTERNOON';
+      return 'Good Afternoon';
     }
-    return 'GOOD EVENING';
+    return 'Good Evening';
   }
   bool _isLogout = false;
 
@@ -84,36 +84,30 @@ class _HomeScreenState extends State<HomeScreen> {
       ): Column(
         children: [
           //TODO:Stack topbar
-          Stack(
-            alignment: Alignment.topCenter,
-            children: [
-              Container(
-                width: double.infinity,
-                height: MediaQuery
-                    .of(context)
-                    .size
-                    .height / 4,
-                decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: <Color>[
-                        Color(0xff00315E),
-                        Color(0xff580082),
-                      ],
-                    )),
-              ),
-
-              Padding(
-                padding: EdgeInsets.only(
-                    left: 20, right: 20, top: 70, bottom: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      children: [
-                        GestureDetector(
+          Container(
+            width: double.infinity,
+            height: 180,
+            decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: <Color>[
+                    Color(0xff00315E),
+                    Color(0xff580082),
+                  ],
+                )),
+            child:  Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: 20, right: 20, top: 70, bottom: 10),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: GestureDetector(
                           onTap: () {
                             Navigator.push(context, MaterialPageRoute(
                                 builder: (context) => Profile()));
@@ -122,12 +116,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             future: _userProfileControllor.getUserProfile(),
                             builder: (context, AsyncSnapshot snapshot){
                               if(snapshot.connectionState == ConnectionState.waiting){
-                                return  Center(
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        backgroundColor: appColors.secondColor,
-                                      ),
-                                    );
+                                return CircularProgressIndicator(
+                                  strokeWidth: 4,
+                                  color: appColors.secondColor,
+                                );
                               }else if(snapshot.hasData) {
                                 var avatar = snapshot.data?.userDetail.avatar;
                                 if (avatar != null) {
@@ -144,55 +136,59 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 );
                               }
-                            return ClipOval(
-                              child: Image.asset("assets/images/user.jpg",
+                              return ClipOval(
+                                child: Image.asset("assets/images/user.jpg",
                                   height: 60,
                                   width: 60,
                                 ),
-                            );
+                              );
                             },
 
                           ),
                         ),
-                        const SizedBox(width: 10,),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            BigText(text: "Hi, ${greeting()}", color: appColors
-                                .white, size: 13,),
-                            SizedBox(height: 5,),
-                            MediunText(
-                              text: "${Name}", size: 10, color: appColors
-                                .white,),
-                          ],
-                        ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 10,),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          BigText(text: "${greeting()}", color: appColors
+                              .white, size: 13,),
+                          SizedBox(height: 5,),
+                          MediunText(
+                            text: "${Name}", size: 10, color: appColors
+                              .white,),
+                        ],
+                      ),
 
-                  ],
-                ),
-              ),
-
-              Container(
-                padding: EdgeInsets.only(top: 20.h),
-                child: Container(
-                  height: 40,
-                  decoration: const BoxDecoration(
-                      color: appColors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
-                      )
+                    ],
                   ),
                 ),
-              ),
-            ],
+
+                Positioned(
+                  bottom: 0,
+                  child:Container(
+                    height: 3.h,
+                    width: MediaQuery.of(context).size.width,
+                    decoration:  BoxDecoration(
+                        color: appColors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        )
+                    ),
+
+                  ),
+                ),
+              ],
+            ),
           ),
+
 
           //TODO: Body part
           Expanded(
-            child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
+              margin: EdgeInsets.only(top: 10),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
@@ -421,6 +417,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     );
   }
+
 
 
 

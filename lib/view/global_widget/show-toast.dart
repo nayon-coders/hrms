@@ -13,7 +13,7 @@ class ShowToast{
         msg: text,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 2,
+        timeInSecForIosWeb: 10,
         backgroundColor: appColors.secondColor,
         textColor: Colors.white,
         fontSize: 16.0,

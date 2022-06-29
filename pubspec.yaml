@@ -110,8 +110,8 @@ flutter:
     - family: LogoFont
       fonts:
         - asset: assets/fonts/FredokaOne-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
+    #       - asset: fonts/Schyler-Italic.ttf
+    #         style: italic
     - family: Roboto
       fonts:
         - asset: assets/fonts/Roboto-Bold.ttf

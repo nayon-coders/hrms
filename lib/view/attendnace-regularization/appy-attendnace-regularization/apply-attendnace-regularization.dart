@@ -4,6 +4,7 @@ import 'package:HRMS/service/api-service.dart';
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/attendnace-regularization/appy-attendnace-regularization/regularaization-form.dart';
 import 'package:HRMS/view/attendnace-regularization/regularization-list/regularization-list.dart';
+import 'package:HRMS/view/home_screen/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
@@ -32,7 +33,10 @@ class _AttendanceRegularizationState extends State<AttendanceRegularization> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          //
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen())),
+          ),
           title: MediunText(text: "Attendance Regularization", color:  appColors.white, size: 10.sp,),
           flexibleSpace: Container(
             decoration: BoxDecoration(

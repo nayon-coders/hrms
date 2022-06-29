@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
+import 'package:HRMS/view/home_screen/home.dart';
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,7 +39,61 @@ class _HomeLeaveReportsState extends State<HomeLeaveReports> {
       return data;
 
     }else{
-      print("error");
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (BuildContext context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(32.0))),
+            contentPadding: EdgeInsets.only(top: 30.0),
+            content: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+
+              ),
+              height: 320,
+              child: Column(
+                children: [
+                  BigText(text: "${response.statusCode}", size: 40.sp, color: appColors.secondColor,),
+                  BigText(text: "Server Error", size: 18.sp, color: appColors.black,),
+                  SizedBox(height: 5.h,),
+                  Padding(
+                      padding: const EdgeInsets.only(left: 40, right: 40),
+                      child: Text("Access to this resource on the server is denied!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12.sp
+                        ),
+                      )
+                  ),
+                  SizedBox(height: 5.h,),
+                  MaterialButton(
+                    onPressed: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+                    },
+                    child: Container(
+                      padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          color: appColors.mainColor,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.8),
+                              spreadRadius: 2,
+                              blurRadius: 20,
+                              offset: Offset(0, 7), // changes position of shadow
+                            ),
+                          ]
+                      ),
+                      child: Center(child: MediunText(text: "Try again", size: 12.sp, color: appColors.white,)),
+                    ),
+                  )
+                ],
+              ),
+            )
+        ),
+      );
       print(response.statusCode);
       throw Exception("Error");
     }
@@ -58,7 +113,7 @@ class _HomeLeaveReportsState extends State<HomeLeaveReports> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 3.h),
       decoration: BoxDecoration(
-        color: appColors.listOfMenuColor,
+        color: appColors.lightSecondColor,
 
         borderRadius: BorderRadius.circular(10),
         boxShadow: [

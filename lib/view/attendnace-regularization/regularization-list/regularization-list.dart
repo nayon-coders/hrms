@@ -173,6 +173,12 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
                                 editStatus: data[index]["status"] == "Pending" ? true : false,
                                 editFunction: (){
                                   setState((){
+                                     _fromDateController.text = date;
+                                    _clockinTimeController.text = data[index]['regularized_in_time'];
+                                    _clockOutTimeController.text = data[index]['regularized_out_time'];
+                                    _ReasonController.text = data[index]['description'];
+                                     selectedLeaveTypeValue = data[index]['reason'];
+
                                     regularaizID =  data[index]['id'].toString();
                                     editRegularaizationList  = getEditRegularaization();
                                   });
@@ -700,7 +706,7 @@ class leaveListItem extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              MediunText(text: "Leave Reason: ", size: 10.sp,),
+              MediunText(text: "Regularization Reason: ", size: 10.sp,),
               Text(description,
                 style: TextStyle(
                     color: appColors.gray,

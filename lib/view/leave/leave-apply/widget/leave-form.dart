@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:math';
 import 'package:HRMS/service/api-service.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
 import 'package:HRMS/view/global_widget/notify.dart';
+import 'package:HRMS/view/global_widget/show-toast.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 import 'package:HRMS/utility/colors.dart';
@@ -12,6 +14,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../controller/Leave/leaveType-controller.dart';
+import '../../../global_widget/big_text.dart';
+import '../../../home_screen/home.dart';
+import '../leave-apply.dart';
 class LeaveForm extends StatefulWidget {
   const LeaveForm({Key? key}) : super(key: key);
 
@@ -20,9 +25,9 @@ class LeaveForm extends StatefulWidget {
 }
 
 class _LeaveFormState extends State<LeaveForm> {
-  final List<String> items = [
-    'CASUAL LEAVE (10)',
-  ];
+  var difference;
+
+  final List<String> items = [];
   String? selectedLeaveTypeValue;
   late DateTime date;
 late dynamic formatingDate =  DateFormat("yyyy-MM");
@@ -35,6 +40,38 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
   final _LeaveFormKey = GlobalKey<FormState>();
 
   bool _isLeaveApply = false;
+
+  Future? leaveList;
+  dynamic? reminingDate;
+  Future<void> getLiveList() async{
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    //Store Data
+    var token = localStorage.getString('token');
+    final response = await http.get(Uri.parse(APIService.leaveCount),
+        headers: {
+          "Authorization" : "Bearer $token"
+        }
+    );
+    if(response.statusCode == 201){
+      var data = jsonDecode(response.body.toString());
+      setState((){
+        reminingDate = data["remaining"];
+        items.add("CASUAL LEAVE (${data["remaining"]})");
+      });
+      return data;
+
+    }else{
+      throw Exception("Error");
+    }
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    ///whatever you want to run on page build
+    leaveList = getLiveList();
+  }
 
    @override
   Widget build(BuildContext context) {
@@ -104,10 +141,10 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
                     fontSize: 10.sp,
                   ),
                   hintText: "Select Form Date",
-                  border: OutlineInputBorder(
+                  border: const OutlineInputBorder(
                       borderSide: BorderSide(width: 1, color: appColors.gray200)
                   ),
-                  suffixIcon: Icon(
+                  suffixIcon: const Icon(
                     Icons.date_range,
                   ),
               ),
@@ -121,7 +158,7 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
               },
               validator: (value){
                 if(value == null){
-                  return "Field must not be empty...";
+                  return "From Date field must not be empty.";
                 }else{
                   return null;
                 }
@@ -156,7 +193,7 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
               },
               validator: (value){
                 if(value == null){
-                  return "Field must not be empty...";
+                  return "To Date field must not be empty.";
                 }else{
                   return null;
                 }
@@ -184,7 +221,7 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
               ),
               validator: (value){
                 if(value == null || value.isEmpty ){
-                  return "Field must not be empty... ";
+                  return "Leave Reason field must not be empty.";
                 }else{
                   return null;
                 }
@@ -213,7 +250,7 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
               ),
               validator: (value){
                 if(value == null || value.isEmpty ){
-                  return "Field must not be empty... ";
+                  return "Remark field must not be empty.";
                 }else{
                   return null;
                 }
@@ -254,42 +291,148 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
   _applyLeaveMethod()async{
 
      if(_LeaveFormKey.currentState!.validate()){
-       setState((){
-         _isLeaveApply = true;
 
+       setState(() {
+           _isLeaveApply = true;
+        difference = "${DateTime.parse(_toDateController.text).difference(DateTime.parse(_fromDateController.text)).inDays}";
        });
-       SharedPreferences localStorage = await SharedPreferences.getInstance();
-       //Store Data
-       var token = localStorage.getString('token');
+       if(reminingDate == difference){
+         SharedPreferences localStorage = await SharedPreferences.getInstance();
+         //Store Data
+         var token = localStorage.getString('token');
 
-       var response = await http.post(Uri.parse(APIService.leaveRequestUrl),
-        body: {
-         "leave_type_id" : "2",
-          "start_date" : _fromDateController.text,
-          "end_date" : _toDateController.text,
-          "leave_reason" : _leaveReasionController.text,
-          "remark" : _RemarkController.text,
-        },
-           headers: {
-             "Authorization" : "Bearer $token",
+         var response = await http.post(Uri.parse(APIService.leaveRequestUrl),
+             body: {
+               "leave_type_id" : "2",
+               "start_date" : _fromDateController.text,
+               "end_date" : _toDateController.text,
+               "leave_reason" : _leaveReasionController.text,
+               "remark" : _RemarkController.text,
+             },
+             headers: {
+               "Authorization" : "Bearer $token",
 
-           }
-       );
+             }
+         );
 
-       if(response.statusCode == 201){
-         Notify(
-             title: "Application submitted",
-             body: "Succesfully you leave application submitted",
-             color: appColors.successColor,
-         ).notify(context);
+         if(response.statusCode == 201){
+           ShowToast("Successfully you leave application submitted").successToast();
+         }else{
+           showDialog<void>(
+             context: context,
+             barrierDismissible: false, // user must tap button!
+             builder: (BuildContext context) => AlertDialog(
+                 shape: RoundedRectangleBorder(
+                     borderRadius: BorderRadius.all(Radius.circular(32.0))),
+                 contentPadding: EdgeInsets.only(top: 30.0),
+                 content: Container(
+                   decoration: BoxDecoration(
+                     borderRadius: BorderRadius.circular(30),
+
+                   ),
+                   height: 330,
+                   child: Column(
+                     children: [
+                       ClipOval(
+                         child: Image.asset("assets/images/server.png",width: 100,height: 100,),
+                       ),
+                       SizedBox(height: 5.h,),
+                       Padding(
+                           padding: const EdgeInsets.only(left: 40, right: 40),
+                           child: Text("Field. Server Error Try after sometimes.",
+                             textAlign: TextAlign.center,
+                             style: TextStyle(
+                                 fontWeight: FontWeight.w600,
+                                 fontSize: 12.sp
+                             ),
+                           )
+                       ),
+                       SizedBox(height: 5.h,),
+                       MaterialButton(
+                         onPressed: (){
+                           Navigator.push(context, MaterialPageRoute(builder: (context)=>LeaveApply(index: 0,)));
+                         },
+                         child: Container(
+                           padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                           decoration: BoxDecoration(
+                               borderRadius: BorderRadius.circular(100),
+                               color: appColors.mainColor,
+                               boxShadow: [
+                                 BoxShadow(
+                                   color: Colors.grey.withOpacity(0.8),
+                                   spreadRadius: 2,
+                                   blurRadius: 20,
+                                   offset: Offset(0, 7), // changes position of shadow
+                                 ),
+                               ]
+                           ),
+                           child: Center(child: MediunText(text: "Try again", size: 12.sp, color: appColors.white,)),
+                         ),
+                       )
+                     ],
+                   ),
+                 )
+             ),
+           );
+         }
        }else{
-         Notify(
-           title: "Application submitted Failed",
-           body: "your leave application submitted failed",
-           color: appColors.secondColor,
-         ).notify(context);
-       }
+         showDialog<void>(
+           context: context,
+           barrierDismissible: false, // user must tap button!
+           builder: (BuildContext context) => AlertDialog(
+               shape: RoundedRectangleBorder(
+                   borderRadius: BorderRadius.all(Radius.circular(32.0))),
+               contentPadding: EdgeInsets.only(top: 30.0),
+               content: Container(
+                 decoration: BoxDecoration(
+                   borderRadius: BorderRadius.circular(30),
 
+                 ),
+                 height: 330,
+                 child: Column(
+                   children: [
+                     ClipOval(
+                       child: Image.asset("assets/images/notoffice.png",width: 100,height: 100,),
+                     ),
+                     SizedBox(height: 5.h,),
+                     Padding(
+                         padding: const EdgeInsets.only(left: 40, right: 40),
+                         child: Text("😒 Oops! You have selected more days than Leave Days.",
+                           textAlign: TextAlign.center,
+                           style: TextStyle(
+                               fontWeight: FontWeight.w600,
+                               fontSize: 12.sp
+                           ),
+                         )
+                     ),
+                     SizedBox(height: 5.h,),
+                     MaterialButton(
+                       onPressed: (){
+                         Navigator.push(context, MaterialPageRoute(builder: (context)=>LeaveApply(index: 0)));
+                       },
+                       child: Container(
+                         padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                         decoration: BoxDecoration(
+                             borderRadius: BorderRadius.circular(100),
+                             color: appColors.mainColor,
+                             boxShadow: [
+                               BoxShadow(
+                                 color: Colors.grey.withOpacity(0.8),
+                                 spreadRadius: 2,
+                                 blurRadius: 20,
+                                 offset: Offset(0, 7), // changes position of shadow
+                               ),
+                             ]
+                         ),
+                         child: Center(child: MediunText(text: "Try again", size: 12.sp, color: appColors.white,)),
+                       ),
+                     )
+                   ],
+                 ),
+               )
+           ),
+         );
+       }
        setState((){
          _isLeaveApply = false;
        });

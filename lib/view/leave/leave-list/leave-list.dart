@@ -141,6 +141,11 @@ var height = MediaQuery.of(context).size.height;
                                   .data['leaves'][index]["status"]}",
                               editFunction: () {
                                 setState((){
+                                  selectedLeaveTypeValue = items[0];
+                                  _fromDateController.text = snapshot.data['leaves'][index]["start_date"];
+                                  _toDateController.text = snapshot.data['leaves'][index]["end_date"];
+                                  _leaveReasionController.text = snapshot.data['leaves'][index]["leave_reason"];
+                                  _RemarkController.text = snapshot.data['leaves'][index]["remark"];
                                   leaveID = snapshot.data['leaves'][index]["id"].toString();
                                   editLeaveData = getEditLiveList();
                                 });
@@ -185,19 +190,33 @@ var height = MediaQuery.of(context).size.height;
           return StatefulBuilder(
             builder: (context, setState) {
               return AlertDialog(
-                content:  _isLeaveApply ? Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 4,
-                        color: appColors.secondColor,
+                content:  _isLeaveApply ? Container(
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
+                  height: 500,
+                  child: Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 4,
+                          color: appColors.secondColor,
+                        ),
                       ),
-                    ) : FutureBuilder(
+                ) : FutureBuilder(
                         future: editLeaveData,
                         builder: (context, AsyncSnapshot<dynamic> snapshot){
                           if(snapshot.connectionState == ConnectionState.waiting){
-                            return Center(
-                              child: CircularProgressIndicator(
-                                strokeWidth: 5,
-                                color: appColors.secondColor,
+                            return Container(
+                              width: MediaQuery
+                                  .of(context)
+                                  .size
+                                  .width,
+                              height: 500,
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 5,
+                                  color: appColors.secondColor,
+                                ),
                               ),
                             );
                           }else if(snapshot.hasData){

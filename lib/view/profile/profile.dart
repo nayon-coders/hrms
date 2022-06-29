@@ -113,7 +113,7 @@ Future? userProfile;
                   child: Stack(
                       clipBehavior: Clip.antiAlias,
                     children: [
-                      Padding(
+                       Padding(
                         padding: EdgeInsets.only(left: 20, right: 20, top: 6.h, bottom: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -147,7 +147,7 @@ Future? userProfile;
                           ],
                         ),
                       ),
-                      Positioned(
+                       Positioned(
                         bottom: 0,
                           child:Container(
                             height: 5.h,
@@ -161,7 +161,7 @@ Future? userProfile;
                             ),
 
                           ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -266,7 +266,7 @@ Future? userProfile;
                                   ),
                                 ],
                                 )
-                              ); 
+                              );
                             }else if(snapshot.hasData){
                               var avatar = snapshot.data?.userDetail.avatar;
                               if(avatar != null){
@@ -278,7 +278,7 @@ Future? userProfile;
                                   Container(
                                     transform: Matrix4.translationValues(
                                         0.0, -5.h, 0.0),
-                                    margin: EdgeInsets.only(left: 10, right: 20),
+                                    margin: EdgeInsets.only(left: 10, right: 10),
                                     width: 100,
                                     height: 150,
                                     decoration: BoxDecoration(
@@ -333,6 +333,7 @@ Future? userProfile;
                                                     style: TextStyle(
                                                       color: appColors.white,
                                                       fontWeight: FontWeight.w400,
+                                                      fontSize: 10.sp
                                                     ),
                                                   ),
                                                 ),
@@ -356,6 +357,7 @@ Future? userProfile;
                                                   style: TextStyle(
                                                     color: appColors.white,
                                                     fontWeight: FontWeight.w400,
+                                                    fontSize: 10.sp
                                                   ),
                                                 ),
                                               ),
@@ -368,11 +370,88 @@ Future? userProfile;
                                 ],
                               );
                             }else{
-                              return Center(
-                                child: ServerError(),
-                              );
+                              return Shimmer.fromColors(
+                                  baseColor: Colors.white,
+                                  highlightColor: Colors.grey,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        margin: const EdgeInsets.all(30),
+                                        width: 100,
+                                        height: 150,
+                                        decoration: BoxDecoration(
+                                          color: appColors.white,
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(
+                                              width: 2, color: appColors.white),
+                                        ),
+                                      ),
+
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 20),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              width: 150,
+                                              height: 30,
+                                              color: appColors.white,
+
+                                            ),
+                                            SizedBox(height: 5,),
+                                            Container(
+                                              width: 100,
+                                              height: 15,
+                                              color: appColors.white,
+                                            ),
+                                            SizedBox(height: 10,),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment
+                                                  .spaceBetween,
+                                              children: [
+                                                InkWell(
+                                                  onTap: () => _shoBottomSheet(context),
+                                                  child: Container(
+                                                    padding: EdgeInsets.only(left: 10,
+                                                        right: 10,
+                                                        top: 5,
+                                                        bottom: 5),
+                                                    width: 60,
+                                                    height: 30,
+                                                    decoration: BoxDecoration(
+                                                        color: appColors.mainColor,
+                                                        borderRadius: BorderRadius
+                                                            .circular(100)
+                                                    ),
+                                                  ),
+                                                ),
+
+
+                                                SizedBox(width: 10,),
+                                                Container(
+                                                  padding: EdgeInsets.only(left: 10,
+                                                      right: 10,
+                                                      top: 5,
+                                                      bottom: 5),
+                                                  width: 60,
+                                                  height: 30,
+                                                  decoration: BoxDecoration(
+                                                      color: appColors.secondColor,
+                                                      borderRadius: BorderRadius
+                                                          .circular(100)
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                              );//mm
                             }
-                            
+
                           }
                   ),
                 ),
@@ -383,7 +462,7 @@ Future? userProfile;
                     _profileUpdatePopUp(context);
                   },
                   child: Container(
-                    transform: Matrix4.translationValues(0.0, -5.h, 0.0),
+                    transform: Matrix4.translationValues(0.0, -2.h, 0.0),
                     margin: EdgeInsets.only(left: 20, right: 20),
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -411,6 +490,7 @@ Future? userProfile;
                     ),
                   ),
                 ),
+                SizedBox(height: 30,),
                 InkWell(
                   onTap: (){
                     changepassword();
@@ -623,13 +703,7 @@ Future? userProfile;
                                   )
                               ),
                             ),
-                            validator: (value){
-                              if(value!.isEmpty && value == null){
-                                return "Name field much not be empty";
-                              }else{
-                                return null;
-                              }
-                            },
+
                           ),
                           SizedBox(height: 10,),
                           TextFormField(
@@ -645,13 +719,7 @@ Future? userProfile;
                                   )
                               ),
                             ),
-                            validator: (value){
-                              if(value!.isEmpty){
-                                return "Email field much not be empty";
-                              }else{
-                                return null;
-                              }
-                            },
+
                           ),
 
                           GestureDetector(
@@ -744,6 +812,7 @@ Future? userProfile;
 
   //TODO: CHANGE PROFILE PICTURE METHOD
   Future<void> _changeProfilePic(ImageSource imageType) async{
+
      try{
 
        final XFile? pickPhoto = await _picker.pickImage(source: imageType);
@@ -784,50 +853,56 @@ Future? userProfile;
      }catch(e){
        debugPrint(e.toString());
      }
+     Navigator.pop(context);
   }
 
 
 ///TODO: CHANGE PROFILE input METHOD
   void _userInfoUpdate() async{
 
-      String name;
-      String email;
-      setState(() {
-        _isProfileUpdate = true;
-        if(_name.text == null && _email.text == null ){
-          check = "check all";
-        }
-      });
-      if(_name.text == null && _email.text == null ){
-        name = Name;
-        email = Email;
-      }else{
-        name = _name.text;
-        email = _email.text;
-      }
-
-
-      SharedPreferences localStorage = await SharedPreferences.getInstance();
-      //Store Data
-      var token = localStorage.getString('token');
-      final response = await http.post(Uri.parse(APIService.updateProfileUrl),
-          body: {
-            "name":name,
-            "email" : email,
-          },
-          headers: {
-            "Authorization" : "Bearer $token",
-            "Accept" : "application/json",
+      if(_name.text.isNotEmpty && _email.text.isNotEmpty){
+        String name;
+        String email;
+        setState(() {
+          _isProfileUpdate = true;
+          if(_name.text == null && _email.text == null ){
+            check = "check all";
           }
-      );
-      if(response.statusCode == 201){
-        Navigator.pop(context);
-        ShowToast(jsonDecode(response.body)["message"]).successToast();
-        localStorage.remove('token');
-        localStorage.remove('name');
-        localStorage.remove('email');
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
-        ShowToast("${jsonDecode(response.body)["message"]} and Your are logout. Please login again with your new credential").successToast();
+        });
+        if(_name.text == null && _email.text == null ){
+          name = Name;
+          email = Email;
+        }else{
+          name = _name.text;
+          email = _email.text;
+        }
+
+
+        SharedPreferences localStorage = await SharedPreferences.getInstance();
+        //Store Data
+        var token = localStorage.getString('token');
+        final response = await http.post(Uri.parse(APIService.updateProfileUrl),
+            body: {
+              "name":name,
+              "email" : email,
+            },
+            headers: {
+              "Authorization" : "Bearer $token",
+              "Accept" : "application/json",
+            }
+        );
+        if(response.statusCode == 201){
+          Navigator.pop(context);
+          ShowToast(jsonDecode(response.body)["message"]).successToast();
+          localStorage.remove('token');
+          localStorage.remove('name');
+          localStorage.remove('email');
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+          ShowToast("${jsonDecode(response.body)["message"]} and Your are logout. Please login again with your new credential").successToast();
+        }else{
+          _Error(response.statusCode);
+        }
+
       }else{
         ShowToast("Field much not be empty.").errorToast();
       }
@@ -974,12 +1049,12 @@ Future? userProfile;
           _isChange = false;
           _newPass.clear();
           _reTypePass.clear();
-          ShowToast("Password Changed").successToast();
+          ShowToast("Password Changed Success").successToast();
           Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
         });
 
       } else {
-        ShowToast("Password Changing failed").errorToast();
+        _Error(response.statusCode);
         setState(() {
           _isChange = false;
         });
@@ -988,7 +1063,7 @@ Future? userProfile;
 
     }else{
       setState(() {
-        ShowToast("Password field failed").errorToast();
+        ShowToast("Field much not be empty.").errorToast();
         _isChange = false;
       });
     }
@@ -1016,6 +1091,7 @@ Future? userProfile;
       Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
 
     }else{
+      _Error(respons.statusCode);
       print("faild");
     }
 
@@ -1023,6 +1099,67 @@ Future? userProfile;
       _isLogout = false;
     });
   }
+
+  Future _Error(StatusCode)async{
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(32.0))),
+          contentPadding: EdgeInsets.only(top: 30.0),
+          content: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+
+            ),
+            height: 320,
+            child: Column(
+              children: [
+                BigText(text: "${StatusCode}", size: 40.sp, color: appColors.secondColor,),
+                BigText(text: "Server Error", size: 15.sp, color: appColors.black,),
+                SizedBox(height: 5.h,),
+                Padding(
+                    padding: const EdgeInsets.only(left: 40, right: 40),
+                    child: Text("Access to this resource on the server is denied!",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12.sp
+                      ),
+                    )
+                ),
+                SizedBox(height: 5.h,),
+                MaterialButton(
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Profile()));
+                  },
+                  child: Container(
+                    padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        color: appColors.mainColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.8),
+                            spreadRadius: 2,
+                            blurRadius: 20,
+                            offset: Offset(0, 7), // changes position of shadow
+                          ),
+                        ]
+                    ),
+                    child: Center(child: MediunText(text: "Try again", size: 12.sp, color: appColors.white,)),
+                  ),
+                )
+              ],
+            ),
+          )
+      ),
+    );
+  }
+
+
+
 
 
 

@@ -4,6 +4,7 @@ import 'package:HRMS/service/api-service.dart';
 import 'package:HRMS/view/attendnace-regularization/appy-attendnace-regularization/apply-attendnace-regularization.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
 import 'package:HRMS/view/global_widget/notify.dart';
+import 'package:HRMS/view/global_widget/show-toast.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 import 'package:HRMS/utility/colors.dart';
@@ -55,6 +56,7 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
   void initState() {
     super.initState();
   }
+  TimeOfDay _time = TimeOfDay(hour: 00, minute: 00);
 
 
   @override
@@ -93,7 +95,7 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
         key: _LeaveFormKey,
         child: ListView(
           children: [
-            MediunText(text: "Apply for Regularization", size: 10.sp, color: appColors.black,),
+            MediunText(text: "Apply for Attendance Regularization", size: 10.sp, color: appColors.black,),
             const SizedBox(height: 20,),
 
             CustomDropdownButton2(
@@ -176,7 +178,7 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
               },
               validator: (value){
                 if(value == null){
-                  return "Field must not be empty...";
+                  return " Date field must not be empty";
                 }else if(_isCurrectDate != true ){
                   return "This date is not available";
 
@@ -208,12 +210,12 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
                             borderSide: BorderSide(width: 1, color: appColors.gray200)
                         ),
                         suffixIcon: Icon(
-                          Icons.date_range,
+                          Icons.calendar_today_rounded,
                         ),
                       ),
                       validator: (value){
                         if(value == null){
-                          return "Field must not be empty...";
+                          return "Clock In field must not be empty";
                         }else{
                           return null;
                         }
@@ -235,12 +237,12 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
                             borderSide: BorderSide(width: 1, color: appColors.gray200)
                         ),
                         suffixIcon: Icon(
-                          Icons.date_range,
+                          Icons.calendar_today_rounded,
                         ),
                       ),
                       validator: (value){
                         if(value == null){
-                          return "Field must not be empty...";
+                          return "Clock Out field must not be empty.";
                         }else{
                           return null;
                         }
@@ -256,7 +258,19 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
                 Expanded(
                   flex: 2,
                   child: TextFormField(
-                    readOnly: _isClockIN,
+                    onTap: ()async{
+                      final TimeOfDay? newTime = await showTimePicker(
+                        context: context,
+                        initialTime: _time,
+                      );
+                      if (newTime != null) {
+                        setState(() {
+                          _time = newTime;
+                          _clockinTimeController.text = _time.format(context);
+                        });
+                      }
+                    },
+                    readOnly: true,
                     controller: _clockinTimeController,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
@@ -267,7 +281,7 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
                           borderSide: BorderSide(width: 1, color: appColors.gray200)
                       ),
                       suffixIcon: Icon(
-                        Icons.date_range,
+                        Icons.watch_later,
                       ),
                     ),
                     validator: (value){
@@ -283,7 +297,19 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
                 Expanded(
                   flex: 2,
                   child: TextFormField(
-                    readOnly: _isClockOut,
+                    onTap: () async {
+                      final TimeOfDay? newTime = await showTimePicker(
+                        context: context,
+                        initialTime: _time,
+                      );
+                      if (newTime != null) {
+                        setState(() {
+                          _time = newTime;
+                          _clockOutTimeController.text = _time.format(context);
+                        });
+                      }
+                    },
+                    readOnly: true,
                     controller: _clockOutTimeController,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
@@ -294,7 +320,7 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
                           borderSide: BorderSide(width: 1, color: appColors.gray200)
                       ),
                       suffixIcon: Icon(
-                        Icons.date_range,
+                        Icons.watch_later,
                       ),
                     ),
                     validator: (value){
@@ -441,17 +467,9 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
       );
 
       if(response.statusCode == 201){
-        Notify(
-          title: "Application submitted",
-          body: "Succesfully you Attendance Regularaization submitted",
-          color: appColors.successColor,
-        ).notify(context);
+        ShowToast("Regularization submitted successfully.").successToast();
       }else{
-        Notify(
-          title: "Application submitted Failed",
-          body: "your leave application submitted failed",
-          color: appColors.secondColor,
-        ).notify(context);
+        ShowToast("😒 Oops! Server is down presently. Please try after some time.").errorToast();
       }
 
       setState((){
@@ -475,16 +493,16 @@ class _RegularaizationFormState extends State<RegularaizationForm> {
               borderRadius: BorderRadius.circular(30),
 
             ),
-            height: 330,
+            height: 350,
             child: Column(
               children: [
                 ClipOval(
-                  child: Image.asset("assets/images/error.png",width: 150,height: 150,),
+                  child: Image.asset("assets/images/error.png",width: 90,height: 90,),
                 ),
                 SizedBox(height: 5.h,),
                 Padding(
                     padding: const EdgeInsets.only(left: 40, right: 40),
-                    child: Text("Sorry...! Attendance date is messing. Try again currect date. ",
+                    child: Text("Sorry...! Attendance date is Missing. Try again with correct date.",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontWeight: FontWeight.w600,

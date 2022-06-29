@@ -29,13 +29,13 @@ class Attendance extends StatefulWidget {
 class _AttendanceState extends State<Attendance> {
 
   var Name;
-@override
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _UserInfo();
     _isOfficeOrNot();
-
+    fromTodayAttendance();
     Timer.periodic(Duration(seconds: 1), (timer){
       if(_timeOfDay.minute != TimeOfDay.now().minute){
         setState(() {
@@ -44,6 +44,29 @@ class _AttendanceState extends State<Attendance> {
       }
     });
   }
+
+  fromTodayAttendance()async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    //Store Data
+    var token = localStorage.getString('token');
+
+
+    final response = await http.get(Uri.parse(APIService.todayAttendanceListURL),
+        headers: {
+          "Authorization" : "Bearer $token"
+        }
+    );
+    if(response.statusCode == 201){
+      var data = jsonDecode(response.body);
+      return data;
+
+    }else{
+      print("error");
+      print(response.statusCode);
+      throw Exception("Error");
+    }
+  }
+
 
   //###### User information #########
   void _UserInfo() async{
@@ -55,18 +78,15 @@ class _AttendanceState extends State<Attendance> {
   }
   ///////////////// User information end = ///////////////
 
-
   //////////// timer ////////////
   TimeOfDay _timeOfDay = TimeOfDay.now();
   //////////// timer ////////////
-
 
   //////////// Date Format ////////////
   String formattedDate = DateFormat('yMMMMEEEEd').format(DateTime.now());
   String todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
   //////////// Date Format ////////////
-
   //////////// Dynamic greeting ////////////
   String greeting() {
     var hour = DateTime.now().hour;
@@ -86,50 +106,50 @@ class _AttendanceState extends State<Attendance> {
   @override
   Widget build(BuildContext context) {
     TodayAttendanceController _todayAttendance = TodayAttendanceController();
-      String _priod = _timeOfDay.period == DayPeriod.am ? "AM" : "PM";
+    String _priod = _timeOfDay.period == DayPeriod.am ? "AM" : "PM";
     return Scaffold(
       backgroundColor: appColors.bg,
-        body: Column(
-          children: [
-            TopBar(
-                text: "Employee Attendance",
-                goToBack: (){
-                  Navigator.pop(context);
-                },
+      body: Column(
+        children: [
+          TopBar(
+            text: "Employee Attendance",
+            goToBack: (){
+              Navigator.pop(context);
+            },
 
-              iconNavigate: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>AttendaceList()));
-              },
-              icon:Icons.arrow_back_ios_rounded,
-                bottomRoundedColor: appColors.bg,
+            iconNavigate: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>AttendaceList()));
+            },
+            icon:Icons.arrow_back_ios_rounded,
+            bottomRoundedColor: appColors.bg,
 
-            ),
-            const SizedBox(height: 30,),
-            Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      //body part
-                      BigText(text: greeting(), size: 20.sp, color: appColors.secondColor,),
-                      MediunText(text: Name!,size: 12.sp, color: appColors.mainColor),
+          ),
+          const SizedBox(height: 30,),
+          Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    //body part
+                    BigText(text: greeting(), size: 20.sp, color: appColors.secondColor,),
+                    MediunText(text: Name!,size: 12.sp, color: appColors.mainColor),
 
-                      const SizedBox(height: 30,),
-                      MediunText(text: formattedDate, color: appColors.gray, size: 9.sp,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          BigText(text: "${_timeOfDay.hour}:${_timeOfDay.minute}", size: 25.sp, color: appColors.black,),
-                          const SizedBox(width: 5,),
-                          BigText(text: _priod, size: 25.sp, color: appColors.black,),
-                        ],
-                      ),
+                    const SizedBox(height: 30,),
+                    MediunText(text: formattedDate, color: appColors.gray, size: 9.sp,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        BigText(text: "${_timeOfDay.hour}:${_timeOfDay.minute}", size: 25.sp, color: appColors.black,),
+                        const SizedBox(width: 5,),
+                        BigText(text: _priod, size: 25.sp, color: appColors.black,),
+                      ],
+                    ),
 
 
-                      const SizedBox(height: 70,),
+                    const SizedBox(height: 70,),
 
-                      FutureBuilder(
-                        future: _todayAttendance.fromTodayAttendance(),
-                          builder: (context, AsyncSnapshot<TodaysAttendanceModel> snapshot){
+                    FutureBuilder(
+                        future: fromTodayAttendance(),
+                        builder: (context, AsyncSnapshot<dynamic> snapshot){
                           if(snapshot.connectionState == ConnectionState.waiting){
                             return Container(
                                 height: 17.h,
@@ -155,25 +175,36 @@ class _AttendanceState extends State<Attendance> {
                                   ),
                                 )
                             );
-                          }else if(snapshot.hasData){
-
-                            //var APIDate = snapshot.data!.todaysAttendance!.date;
-                            var clock_in = snapshot.data?.todaysAttendance?.clockIn;
-                            var clock_out = snapshot.data?.todaysAttendance?.clockOut;
-                            //String APIdateFormet = DateFormat('yyyy-MM-dd').format(APIDate);
-
+                          }else if(snapshot.data == null){
                             //TODO: check office or not office
-
-
                             if(checkIPData?['login_preference'][0] == "ewl") {
                               if((checkIPData?['ip'] == "27.147.205.236") || (checkIPData?['ip'] == "118.179.117.129")){
-                                if(clock_in == "00:00:00"){
-                                  return attendanceButton(
-                                    "Clock In",
-                                    appColors.successColor,
-                                        ()=>_clockIn(),
-                                  );
-                                }else if(clock_out == "00:00:00"){
+                                return attendanceButton(
+                                  "Clock In",
+                                  appColors.successColor,
+                                      ()=>_clockIn(),
+                                );
+                              }else{
+                                _youcantAttend();
+                              }
+
+                            }else if(checkIPData?['login_preference'][0] == "otgl"){
+                              return attendanceButton(
+                                "Clock In",
+                                appColors.successColor,
+                                    ()=>_clockIn(),
+                              );
+                            }
+                            //END: Clocking
+                            //TODO: check in data
+                          }else if(snapshot.data != null){
+                            //var APIDate = snapshot.data!.todaysAttendance!.date;
+                            var clock_in = snapshot.data["todaysAttendance"]?["clock_in"];
+                            var clock_out = snapshot.data["todaysAttendance"]?["clock_out"];
+                            //String APIdateFormet = DateFormat('yyyy-MM-dd').format(APIDate);
+                            if(checkIPData?['login_preference'][0] == "ewl") {
+                              if((checkIPData?['ip'] == "27.147.205.236") || (checkIPData?['ip'] == "118.179.117.129")){
+                                if(clock_out == "00:00:00"){
                                   return attendanceButton(
                                     "Clock Out",
                                     appColors.secondColor,
@@ -218,16 +249,10 @@ class _AttendanceState extends State<Attendance> {
                                 }
                               }else{
                                 _youcantAttend();
-                              }
+                              }//end check office or not
 
-                            }else{
-                              if(clock_in == "00:00:00"){
-                                return attendanceButton(
-                                  "Clock In",
-                                  appColors.successColor,
-                                      ()=>_clockIn(),
-                                );
-                              }else if(clock_out == "00:00:00"){
+                            }else if(checkIPData?['login_preference'][0] == "otgl"){
+                              if(clock_out == "00:00:00"){
                                 return attendanceButton(
                                   "Clock Out",
                                   appColors.secondColor,
@@ -272,26 +297,22 @@ class _AttendanceState extends State<Attendance> {
                               }
                             }
 
-
-
                           }else{
-                            //today no data
-                            // return clock in
                             return  ServerError();
                           }
                           return Center();
 
                         }
 
-                      ),
+                    ),
 
 
-                    ],
-                  ),
-                )
-            )
-          ],
-        ),
+                  ],
+                ),
+              )
+          )
+        ],
+      ),
 
 
 
@@ -437,24 +458,24 @@ class _AttendanceState extends State<Attendance> {
 
   void _clockIn() async{
 
-      SharedPreferences localStorage = await SharedPreferences.getInstance();
-      //Store Data
-      var token = localStorage.getString('token');
-      var url = Uri.parse(APIService.clockInUrl);
-      final response =  await http.post(url,
-          headers: {
-            "Authorization" : "Bearer $token"
-          }
-      );
-      if(response.statusCode == 201){
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext context) => super.widget));
-        ShowToast("Clock In Success").successToast();
-      }else{
-        _waring();
-      }
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    //Store Data
+    var token = localStorage.getString('token');
+    var url = Uri.parse(APIService.clockInUrl);
+    final response =  await http.post(url,
+        headers: {
+          "Authorization" : "Bearer $token"
+        }
+    );
+    if(response.statusCode == 201){
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => super.widget));
+      ShowToast("Clock In Success").successToast();
+    }else{
+      _waring();
+    }
 
 
   }
@@ -479,7 +500,7 @@ class _AttendanceState extends State<Attendance> {
           context,
           MaterialPageRoute(
               builder: (BuildContext context) => super.widget));
-     ShowToast("Clock Out Success",).secounderyToast();
+      ShowToast("Clock Out Success",).secounderyToast();
     }else{
       _waring();
     }
@@ -501,7 +522,7 @@ class _AttendanceState extends State<Attendance> {
 
       return checkIPData = checkIP;
     }else{
-      _youcantAttend();
+      //_youcantAttend();
       print(response.statusCode);
     }
   }
@@ -523,18 +544,18 @@ class _AttendanceState extends State<Attendance> {
             child: Column(
               children: [
                 ClipOval(
-                  child: Image.asset("assets/images/notoffice.png",width: 150,height: 150,),
+                  child: Image.asset("assets/images/notoffice.png",width: 100,height: 100,),
                 ),
                 SizedBox(height: 5.h,),
                 Padding(
-                  padding: const EdgeInsets.only(left: 40, right: 40),
-                  child: Text("You are not in the office now. Come and trying again",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12.sp
-                    ),
-                  )
+                    padding: const EdgeInsets.only(left: 40, right: 40),
+                    child: Text("You are not in the office now. Come and trying again",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12.sp
+                      ),
+                    )
                 ),
                 SizedBox(height: 5.h,),
                 MaterialButton(
@@ -566,11 +587,10 @@ class _AttendanceState extends State<Attendance> {
   }
 
   void _waring(){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: appColors.dangerColor,
         padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
-          content: MediunText(text: "Access to this resource on the server is denied!", color: appColors.white, size: 9.sp,)));
+        content: MediunText(text: "Access to this resource on the server is denied!", color: appColors.white, size: 9.sp,)));
   }
 
 }
-
