@@ -3,6 +3,7 @@ import 'package:HRMS/controller/Leave/leaveType-controller.dart';
 import 'package:HRMS/service/api-service.dart';
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
+import 'package:HRMS/view/home_screen/home.dart';
 import 'package:http/http.dart' as http;
 import 'package:HRMS/view/leave/leave-apply/widget/leave-form.dart';
 import 'package:HRMS/view/leave/leave-list/leave-list.dart';
@@ -31,6 +32,15 @@ class _LeaveApplyState extends State<LeaveApply> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+            },
+            icon: Icon(
+              Icons.arrow_back_ios_rounded,
+              color: appColors.white,
+            ),
+          ),
           //
           title: MediunText(text: "Leave", color:  appColors.white, size: 10.sp,),
           flexibleSpace: Container(

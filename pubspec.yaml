@@ -53,9 +53,9 @@ dependencies:
   intl: ^0.17.0
   toast: ^0.2.9
   fluttertoast: ^8.0.8
-  flutter_easyloading: ^3.0.5
   rating_dialog: ^2.0.4
   pdf: ^3.8.1
+  slide_digital_clock: ^1.0.2
 
 
 

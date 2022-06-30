@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:HRMS/service/api-service.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
-import 'package:HRMS/view/global_widget/notify.dart';
 import 'package:HRMS/view/global_widget/show-toast.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
@@ -13,9 +11,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-import '../../../../controller/Leave/leaveType-controller.dart';
-import '../../../global_widget/big_text.dart';
-import '../../../home_screen/home.dart';
 import '../leave-apply.dart';
 class LeaveForm extends StatefulWidget {
   const LeaveForm({Key? key}) : super(key: key);
@@ -31,7 +26,6 @@ class _LeaveFormState extends State<LeaveForm> {
   String? selectedLeaveTypeValue;
   late DateTime date;
 late dynamic formatingDate =  DateFormat("yyyy-MM");
-  final _selectTypeControler = TextEditingController();
   final _fromDateController = TextEditingController();
   final _toDateController = TextEditingController();
   final _leaveReasionController = TextEditingController();
@@ -388,7 +382,7 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
                    borderRadius: BorderRadius.circular(30),
 
                  ),
-                 height: 330,
+                 height: 320,
                  child: Column(
                    children: [
                      ClipOval(
@@ -397,7 +391,7 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
                      SizedBox(height: 5.h,),
                      Padding(
                          padding: const EdgeInsets.only(left: 40, right: 40),
-                         child: Text("😒 Oops! You have selected more days than Leave Days.",
+                         child: Text("😒 Oops! You are selecting date more than your leave date. You have Remaining: $reminingDate Days",
                            textAlign: TextAlign.center,
                            style: TextStyle(
                                fontWeight: FontWeight.w600,

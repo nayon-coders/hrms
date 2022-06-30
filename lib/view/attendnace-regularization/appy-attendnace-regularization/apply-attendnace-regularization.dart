@@ -34,8 +34,13 @@ class _AttendanceRegularizationState extends State<AttendanceRegularization> {
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen())),
+            onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+            },
+            icon: Icon(
+              Icons.arrow_back_ios_rounded,
+              color: appColors.white,
+            ),
           ),
           title: MediunText(text: "Attendance Regularization", color:  appColors.white, size: 10.sp,),
           flexibleSpace: Container(

@@ -1,26 +1,18 @@
 import 'dart:convert';
-
 import 'package:HRMS/utility/colors.dart';
-import 'package:HRMS/view/global_widget/bottom-navigation-button.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
 import 'package:HRMS/view/global_widget/no-data.dart';
 import 'package:HRMS/view/global_widget/server-error.dart';
 import 'package:HRMS/view/global_widget/show-toast.dart';
-import 'package:HRMS/view/global_widget/tob-bar.dart';
-import 'package:HRMS/view/home_screen/home.dart';
-import 'package:HRMS/view/leave/leave-apply/widget/leave-form.dart';
-import 'package:HRMS/view/leave/leave-list/leave-list.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:dropdown_button2/custom_dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import '../../../service/api-service.dart';
 import 'package:http/http.dart' as http;
-import '../../attendance/attendance.dart';
 import '../../global_widget/big_text.dart';
 import '../../global_widget/notify.dart';
 import '../../profile/profile.dart';
@@ -502,7 +494,6 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
 
 
   _checkClockTimeWithSelectedDate(DateTime selectedDate) async{
-    EasyLoading.show();
     print(DateFormat('yyyy-MM-dd').format(selectedDate));
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     //Store Data
@@ -527,7 +518,6 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
         print("date is match") ;
         _clockinTimeController..text =  data['clock_in'].toString();
         _clockOutTimeController..text = data['clock_out'].toString();
-        EasyLoading.dismiss();
       });
       return checkClockTimeValues = data;
 

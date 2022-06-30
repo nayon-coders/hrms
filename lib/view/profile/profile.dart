@@ -459,6 +459,10 @@ Future? userProfile;
                 //TODO: body
                 InkWell(
                   onTap: (){
+                   setState((){
+                     _name.text = Name;
+                     _email.text = Email;
+                   });
                     _profileUpdatePopUp(context);
                   },
                   child: Container(

@@ -18,6 +18,7 @@ import '../../service/api-service.dart';
 import '../global_widget/tob-bar.dart';
 import '../home_screen/home.dart';
 import '../profile/profile.dart';
+import 'current-time.dart';
 
 class Attendance extends StatefulWidget {
   const Attendance({Key? key}) : super(key: key);
@@ -35,37 +36,9 @@ class _AttendanceState extends State<Attendance> {
     super.initState();
     _UserInfo();
     _isOfficeOrNot();
-    fromTodayAttendance();
-    Timer.periodic(Duration(seconds: 1), (timer){
-      if(_timeOfDay.minute != TimeOfDay.now().minute){
-        setState(() {
-          _timeOfDay = TimeOfDay.now();
-        });
-      }
-    });
   }
 
-  fromTodayAttendance()async {
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    //Store Data
-    var token = localStorage.getString('token');
 
-
-    final response = await http.get(Uri.parse(APIService.todayAttendanceListURL),
-        headers: {
-          "Authorization" : "Bearer $token"
-        }
-    );
-    if(response.statusCode == 201){
-      var data = jsonDecode(response.body);
-      return data;
-
-    }else{
-      print("error");
-      print(response.statusCode);
-      throw Exception("Error");
-    }
-  }
 
 
   //###### User information #########
@@ -106,7 +79,7 @@ class _AttendanceState extends State<Attendance> {
   @override
   Widget build(BuildContext context) {
     TodayAttendanceController _todayAttendance = TodayAttendanceController();
-    String _priod = _timeOfDay.period == DayPeriod.am ? "AM" : "PM";
+
     return Scaffold(
       backgroundColor: appColors.bg,
       body: Column(
@@ -135,20 +108,13 @@ class _AttendanceState extends State<Attendance> {
 
                     const SizedBox(height: 30,),
                     MediunText(text: formattedDate, color: appColors.gray, size: 9.sp,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        BigText(text: "${_timeOfDay.hour}:${_timeOfDay.minute}", size: 25.sp, color: appColors.black,),
-                        const SizedBox(width: 5,),
-                        BigText(text: _priod, size: 25.sp, color: appColors.black,),
-                      ],
-                    ),
+                    CurrentTime(),
 
 
                     const SizedBox(height: 70,),
 
                     FutureBuilder(
-                        future: fromTodayAttendance(),
+                        future: _todayAttendance.fromTodayAttendance(),
                         builder: (context, AsyncSnapshot<dynamic> snapshot){
                           if(snapshot.connectionState == ConnectionState.waiting){
                             return Container(
@@ -175,36 +141,22 @@ class _AttendanceState extends State<Attendance> {
                                   ),
                                 )
                             );
-                          }else if(snapshot.data == null){
+                          }else if(snapshot.hasData){
+                            //var APIDate = snapshot.data!.todaysAttendance!.date;
+                            var clock_in = snapshot.data?.todaysAttendance?.clockIn;
+                            var clock_out = snapshot.data?.todaysAttendance?.clockOut;
+                            //String APIdateFormet = DateFormat('yyyy-MM-dd').format(APIDate);
                             //TODO: check office or not office
                             if(checkIPData?['login_preference'][0] == "ewl") {
                               if((checkIPData?['ip'] == "27.147.205.236") || (checkIPData?['ip'] == "118.179.117.129")){
-                                return attendanceButton(
-                                  "Clock In",
-                                  appColors.successColor,
-                                      ()=>_clockIn(),
-                                );
-                              }else{
-                                _youcantAttend();
-                              }
 
-                            }else if(checkIPData?['login_preference'][0] == "otgl"){
-                              return attendanceButton(
-                                "Clock In",
-                                appColors.successColor,
-                                    ()=>_clockIn(),
-                              );
-                            }
-                            //END: Clocking
-                            //TODO: check in data
-                          }else if(snapshot.data != null){
-                            //var APIDate = snapshot.data!.todaysAttendance!.date;
-                            var clock_in = snapshot.data["todaysAttendance"]?["clock_in"];
-                            var clock_out = snapshot.data["todaysAttendance"]?["clock_out"];
-                            //String APIdateFormet = DateFormat('yyyy-MM-dd').format(APIDate);
-                            if(checkIPData?['login_preference'][0] == "ewl") {
-                              if((checkIPData?['ip'] == "27.147.205.236") || (checkIPData?['ip'] == "118.179.117.129")){
-                                if(clock_out == "00:00:00"){
+                                if(clock_in == "00:00:00"){
+                                  return attendanceButton(
+                                    "Clock In",
+                                    appColors.successColor,
+                                        ()=>_clockIn(),
+                                  );
+                                }else if(clock_out == "00:00:00"){
                                   return attendanceButton(
                                     "Clock Out",
                                     appColors.secondColor,
@@ -249,10 +201,17 @@ class _AttendanceState extends State<Attendance> {
                                 }
                               }else{
                                 _youcantAttend();
-                              }//end check office or not
+                              }
 
                             }else if(checkIPData?['login_preference'][0] == "otgl"){
-                              if(clock_out == "00:00:00"){
+
+                              if(clock_in == "00:00:00"){
+                                return attendanceButton(
+                                  "Clock In",
+                                  appColors.successColor,
+                                      ()=>_clockIn(),
+                                );
+                              }else if(clock_out == "00:00:00"){
                                 return attendanceButton(
                                   "Clock Out",
                                   appColors.secondColor,
@@ -296,9 +255,14 @@ class _AttendanceState extends State<Attendance> {
                                 );
                               }
                             }
-
+                            //END: Clocking
+                            //TODO: check in data
                           }else{
-                            return  ServerError();
+                            return attendanceButton(
+                              "Clock In",
+                              appColors.successColor,
+                                  ()=>_clockIn(),
+                            );
                           }
                           return Center();
 

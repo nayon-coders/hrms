@@ -6,9 +6,6 @@ import 'package:HRMS/view/login_screen/login.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-import 'package:http/http.dart' as http;
-import '../../model/TodayAttendanceModel.dart';
-import '../../service/api-service.dart';
 
 class FlashScreen extends StatefulWidget {
   const FlashScreen({Key? key}) : super(key: key);
@@ -93,7 +90,7 @@ class _FlashScreenState extends State<FlashScreen> with TickerProviderStateMixin
             Container(
               margin: EdgeInsets.only(bottom: 3.h),
               child: (
-                  Text("Version 1.0.1",
+                  Text("Version 1.0.2",
                     style: TextStyle(
                       color: appColors.white,
                       fontSize: 12.sp,
