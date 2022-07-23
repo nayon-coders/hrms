@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:HRMS/view/attendance/attendance-list/attendance-list.dart';
-import 'package:HRMS/view/global_widget/server-error.dart';
 import 'package:HRMS/view/global_widget/show-toast.dart';
 import 'package:http/http.dart' as http;
-import 'package:HRMS/model/TodayAttendanceModel.dart';
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/global_widget/big_text.dart';
 import 'package:HRMS/view/global_widget/mediun_text.dart';
