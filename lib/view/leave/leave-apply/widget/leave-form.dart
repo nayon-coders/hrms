@@ -11,6 +11,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
+import '../../../global_widget/big_text.dart';
+import '../../../home_screen/home.dart';
 import '../leave-apply.dart';
 class LeaveForm extends StatefulWidget {
   const LeaveForm({Key? key}) : super(key: key);
@@ -34,6 +36,7 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
   final _LeaveFormKey = GlobalKey<FormState>();
 
   bool _isLeaveApply = false;
+  bool _isDataLogin = false;
 
   Future? leaveList;
   dynamic? reminingDate;
@@ -49,12 +52,15 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
     if(response.statusCode == 201){
       var data = jsonDecode(response.body.toString());
       setState((){
+        _isDataLogin = true;
         reminingDate = data["remaining"];
         items.add("CASUAL LEAVE (${data["remaining"]})");
       });
       return data;
 
     }else{
+      _errorServer(response.statusCode);
+      print(response.statusCode);
       throw Exception("Error");
     }
 
@@ -70,7 +76,7 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
    @override
   Widget build(BuildContext context) {
 
-     return Container(
+     return _isDataLogin ? Container(
 
       padding: EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 30),
       decoration: BoxDecoration(
@@ -278,7 +284,22 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
           ],
         ),
       ),
-    );
+    )
+     : Column(
+       crossAxisAlignment: CrossAxisAlignment.center,
+       mainAxisAlignment: MainAxisAlignment.center,
+       children: [
+         Center(
+           child: CircularProgressIndicator(
+             strokeWidth: 2,
+           ),
+         ),
+         SizedBox(height: 10,),
+         Center(
+           child: MediunText(text: "Loading..."),
+         ),
+       ],
+     );
   }
 
   //apply menthod
@@ -289,8 +310,9 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
        setState(() {
            _isLeaveApply = true;
         difference = "${DateTime.parse(_toDateController.text).difference(DateTime.parse(_fromDateController.text)).inDays}";
+        print(difference); 
        });
-       if(reminingDate == difference){
+       if(reminingDate >= int.parse(difference)){
          SharedPreferences localStorage = await SharedPreferences.getInstance();
          //Store Data
          var token = localStorage.getString('token');
@@ -312,62 +334,7 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
          if(response.statusCode == 201){
            ShowToast("Successfully you leave application submitted").successToast();
          }else{
-           showDialog<void>(
-             context: context,
-             barrierDismissible: false, // user must tap button!
-             builder: (BuildContext context) => AlertDialog(
-                 shape: RoundedRectangleBorder(
-                     borderRadius: BorderRadius.all(Radius.circular(32.0))),
-                 contentPadding: EdgeInsets.only(top: 30.0),
-                 content: Container(
-                   decoration: BoxDecoration(
-                     borderRadius: BorderRadius.circular(30),
-
-                   ),
-                   height: 330,
-                   child: Column(
-                     children: [
-                       ClipOval(
-                         child: Image.asset("assets/images/server.png",width: 100,height: 100,),
-                       ),
-                       SizedBox(height: 5.h,),
-                       Padding(
-                           padding: const EdgeInsets.only(left: 40, right: 40),
-                           child: Text("Field. Server Error Try after sometimes.",
-                             textAlign: TextAlign.center,
-                             style: TextStyle(
-                                 fontWeight: FontWeight.w600,
-                                 fontSize: 12.sp
-                             ),
-                           )
-                       ),
-                       SizedBox(height: 5.h,),
-                       MaterialButton(
-                         onPressed: (){
-                           Navigator.push(context, MaterialPageRoute(builder: (context)=>LeaveApply(index: 0,)));
-                         },
-                         child: Container(
-                           padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-                           decoration: BoxDecoration(
-                               borderRadius: BorderRadius.circular(100),
-                               color: appColors.mainColor,
-                               boxShadow: [
-                                 BoxShadow(
-                                   color: Colors.grey.withOpacity(0.8),
-                                   spreadRadius: 2,
-                                   blurRadius: 20,
-                                   offset: Offset(0, 7), // changes position of shadow
-                                 ),
-                               ]
-                           ),
-                           child: Center(child: MediunText(text: "Try again", size: 12.sp, color: appColors.white,)),
-                         ),
-                       )
-                     ],
-                   ),
-                 )
-             ),
-           );
+           ShowToast("Something want wearing. Please try after sometimes.").successToast();
          }
        }else{
          showDialog<void>(
@@ -391,7 +358,7 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
                      SizedBox(height: 5.h,),
                      Padding(
                          padding: const EdgeInsets.only(left: 40, right: 40),
-                         child: Text("😒 Oops! You are selecting date more than your leave date. You have Remaining: $reminingDate Days",
+                         child: Text("😒 Oops! You are selecting $difference days that more than your leave days. You have Remaining: $reminingDate Days only",
                            textAlign: TextAlign.center,
                            style: TextStyle(
                                fontWeight: FontWeight.w600,
@@ -402,7 +369,8 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
                      SizedBox(height: 5.h,),
                      MaterialButton(
                        onPressed: (){
-                         Navigator.push(context, MaterialPageRoute(builder: (context)=>LeaveApply(index: 0)));
+                         Navigator.pop(context);
+
                        },
                        child: Container(
                          padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
@@ -434,6 +402,64 @@ late dynamic formatingDate =  DateFormat("yyyy-MM");
      }
   }
 
+
+  _errorServer(response)async{
+    return  showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(32.0))),
+          contentPadding: EdgeInsets.only(top: 30.0),
+          content: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+
+            ),
+            height: 320,
+            child: Column(
+              children: [
+                BigText(text: "${response}", size: 40.sp, color: appColors.secondColor,),
+                BigText(text: "Server Error", size: 18.sp, color: appColors.black,),
+                SizedBox(height: 5.h,),
+                Padding(
+                    padding: const EdgeInsets.only(left: 40, right: 40),
+                    child: Text("Access to this resource on the server is denied!",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12.sp
+                      ),
+                    )
+                ),
+                SizedBox(height: 5.h,),
+                MaterialButton(
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+                  },
+                  child: Container(
+                    padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        color: appColors.mainColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.8),
+                            spreadRadius: 2,
+                            blurRadius: 20,
+                            offset: Offset(0, 7), // changes position of shadow
+                          ),
+                        ]
+                    ),
+                    child: Center(child: MediunText(text: "Try again", size: 12.sp, color: appColors.white,)),
+                  ),
+                )
+              ],
+            ),
+          )
+      ),
+    );
+  }
 
 
 }

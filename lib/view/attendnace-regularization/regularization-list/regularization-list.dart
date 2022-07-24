@@ -22,19 +22,19 @@ class ApplyAttendanceRegularizationList extends StatefulWidget {
   const ApplyAttendanceRegularizationList({Key? key}) : super(key: key);
 
   @override
-  _ApplyAttendanceRegularizationListState createState() => _ApplyAttendanceRegularizationListState();
+  _ApplyAttendanceRegularizationListState createState() =>
+      _ApplyAttendanceRegularizationListState();
 }
 
-class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegularizationList> {
+class _ApplyAttendanceRegularizationListState
+    extends State<ApplyAttendanceRegularizationList> {
   late final monthOfTheYear = DateFormat.yMMM().format(DateTime.now());
   late Color color;
-
 
   @override
   void initState() {
     super.initState();
     regularaizationList = getRegularaization();
-
   }
 
   final List<String> items = [
@@ -51,7 +51,7 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
   String? selectedLeaveTypeValue;
 
   late DateTime date;
-  late dynamic formatingDate =  DateFormat("yyyy-MM");
+  late dynamic formatingDate = DateFormat("yyyy-MM");
   final _fromDateController = TextEditingController();
   final _clockinTimeController = TextEditingController();
   final _clockOutTimeController = TextEditingController();
@@ -69,72 +69,62 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
   Future? regularaizationList;
   Future? editRegularaizationList;
 
-  Future<void> getRegularaization() async{
+  Future<void> getRegularaization() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     //Store Data
     var token = localStorage.getString('token');
     final response = await http.get(Uri.parse(APIService.regularizationList),
-        headers: {
-          "Authorization" : "Bearer $token"
-        }
-    );
-    if(response.statusCode == 201){
+        headers: {"Authorization": "Bearer $token"});
+    if (response.statusCode == 201) {
       var data = jsonDecode(response.body.toString());
 
       var reguList = data;
       return reguList;
-
-    }else{
+    } else {
       print("error");
       print(response.statusCode);
       throw Exception("Error");
     }
-
   }
 
-  Future<void> getEditRegularaization() async{
-
+  Future<void> getEditRegularaization() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     //Store Data
     var token = localStorage.getString('token');
-    final response = await http.get(Uri.parse("${APIService.baseUrl}/regularization/edit/${regularaizID}"),
+    final response = await http.get(
+        Uri.parse("${APIService.baseUrl}/regularization/edit/${regularaizID}"),
         headers: {
-          "Accept" : "application/json",
+          "Accept": "application/json",
           'content-Type': 'application/json',
-          "Authorization" : "Bearer $token"
-        }
-    );
-    if(response.statusCode == 201){
+          "Authorization": "Bearer $token"
+        });
+    if (response.statusCode == 201) {
       var data = jsonDecode(response.body.toString());
       print(response.statusCode);
       var reguList = data;
       return reguList;
-
-    }else{
+    } else {
       print(token);
       print(response.statusCode);
       throw Exception("Error");
     }
-
   }
+
   @override
   Widget build(BuildContext context) {
-
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: appColors.white,
       body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 2.h, vertical: 2.h),
-
-          child:Container(
+          child: Container(
             width: width,
             height: height,
             child: FutureBuilder(
                 future: regularaizationList,
-                builder: (context, AsyncSnapshot<dynamic> snapshot){
-
-                  if(snapshot.connectionState == ConnectionState.waiting) {
+                builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
                       child: CircularProgressIndicator(
                         strokeWidth: 3,
@@ -142,460 +132,425 @@ class _ApplyAttendanceRegularizationListState extends State<ApplyAttendanceRegul
                     );
                   }
 
-                  if(snapshot.hasData){
+                  if (snapshot.hasData) {
                     bool isPending;
                     var data = snapshot.data['regularize_attendance'];
-                    if(snapshot.data['regularize_attendance'].length > 0){
+                    if (snapshot.data['regularize_attendance'].length > 0) {
                       return ListView.builder(
                           itemCount: data.length,
-
-                          itemBuilder: (context, index){
-
-                            if(data[index]["status"] == "Pending"){
+                          itemBuilder: (context, index) {
+                            if (data[index]["status"] == "Pending") {
                               color = appColors.mainColor;
-                                isPending = true;
-                            }else{
+                              isPending = true;
+                            } else {
                               color = appColors.successColor;
-                                isPending = false;
+                              isPending = false;
                             }
-                            var date = DateFormat.yMMMMd().format(DateTime.parse(data[index]["date"]));
+                            var date = DateFormat.yMMMMd()
+                                .format(DateTime.parse(data[index]["date"]));
                             return leaveListItem(
                                 date: date,
                                 status: data[index]["status"].toString(),
-                                editStatus: data[index]["status"] == "Pending" ? true : false,
-                                editFunction: (){
-                                  setState((){
-                                     _fromDateController.text = date;
-                                    _clockinTimeController.text = data[index]['regularized_in_time'];
-                                    _clockOutTimeController.text = data[index]['regularized_out_time'];
-                                    _ReasonController.text = data[index]['description'];
-                                     selectedLeaveTypeValue = data[index]['reason'];
+                                editStatus: data[index]["status"] == "Pending"
+                                    ? true
+                                    : false,
+                                editFunction: () {
+                                  setState(() {
+                                    _fromDateController.text = date;
+                                    _clockinTimeController.text =
+                                        data[index]['regularized_in_time'];
+                                    _clockOutTimeController.text =
+                                        data[index]['regularized_out_time'];
+                                    _ReasonController.text =
+                                        data[index]['description'];
+                                    selectedLeaveTypeValue =
+                                        data[index]['reason'];
 
-                                    regularaizID =  data[index]['id'].toString();
-                                    editRegularaizationList  = getEditRegularaization();
+                                    regularaizID = data[index]['id'].toString();
+                                    editRegularaizationList =
+                                        getEditRegularaization();
                                   });
                                   _editeRegularaization();
                                 },
-                                in_time: data[index]['regularized_in_time'].toString(),
-                                out_time: data[index]['regularized_out_time'].toString(),
+                                in_time: data[index]['regularized_in_time']
+                                    .toString(),
+                                out_time: data[index]['regularized_out_time']
+                                    .toString(),
                                 reason: data[index]['reason'].toString(),
                                 description: data[index]['description'],
-                                color: color
-                            );
-                          }
-                      );
-                    }else{
+                                color: color);
+                          });
+                    } else {
                       return NoDataFound();
                     }
-
-                  }else{
+                  } else {
                     return ServerError();
                   }
-
-                }
-            ),
-
-          )
-      ),
-
-
+                }),
+          )),
     );
   }
 
-  void _editeRegularaization() async{
-
+  void _editeRegularaization() async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: true, // user must tap button!
       builder: (BuildContext context) {
-        return StatefulBuilder(
-         builder: (context, setState) {
-           return AlertDialog(
-             content: Container(
-               width: MediaQuery
-                   .of(context)
-                   .size
-                   .width,
-               height: MediaQuery
-                   .of(context)
-                   .size
-                   .height / 1.8,
-               child: FutureBuilder(
-                 future: editRegularaizationList,
-                 builder: (context, AsyncSnapshot snapshot){
-                     if(snapshot.connectionState == ConnectionState.waiting){
-                       return Container(
-                         width: 50,
-                         height: 50,
-                         child: Center(
-                           child: CircularProgressIndicator(
-                             strokeWidth: 5,
-                           ),
-                         ),
-                       );
-                     }else if(snapshot.hasData){
-                       var data = snapshot.data["regularize_attendance"];
-                       return Form(
-                         key: _LeaveFormKey,
-                         child: ListView(
-                           children: [
-                             MediunText(text: "Update Regularization",
-                               size: 10.sp,
-                               color: appColors.black,),
-                             const SizedBox(height: 20,),
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            content: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height / 1.6,
+              child: FutureBuilder(
+                  future: editRegularaizationList,
+                  builder: (context, AsyncSnapshot snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Container(
+                        width: 50,
+                        height: 50,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 5,
+                          ),
+                        ),
+                      );
+                    } else if (snapshot.hasData) {
+                      var data = snapshot.data["regularize_attendance"];
+                      return Form(
+                        key: _LeaveFormKey,
+                        child: ListView(
+                          children: [
+                            MediunText(
+                              text: "Update Regularization",
+                              size: 10.sp,
+                              color: appColors.black,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
 
-                             CustomDropdownButton2(
-                               hint: "${data["reason"]}",
-                               buttonHeight: 55,
-                               buttonWidth: MediaQuery
-                                   .of(context)
-                                   .size
-                                   .width,
-                               buttonPadding: EdgeInsets.all(10),
-                               dropdownWidth: MediaQuery
-                                   .of(context)
-                                   .size
-                                   .width / 1.1,
-                               buttonDecoration: BoxDecoration(
-                                 border: Border.all(width: 1, color: appColors.gray),
-                                 borderRadius: BorderRadius.circular(5),
-                               ),
-                               dropdownItems: items,
-                               value: selectedLeaveTypeValue,
-                               onChanged: (value) {
-                                 setState(() {
-                                   if (value == items[0]) {
-                                     selectedLeaveTypeValue = value;
-                                     _isClockIN = false;
-                                     _isClockOut = true;
-                                   }
-                                   if (value == items[1]) {
-                                     selectedLeaveTypeValue = value;
-                                     _isClockOut = false;
-                                     _isClockIN = true;
-                                   }
-                                   if (value == items[2]) {
-                                     selectedLeaveTypeValue = value;
-                                     _isClockOut = true;
-                                     _isClockIN = false;
-                                   }
-                                   if (value == items[3]) {
-                                     selectedLeaveTypeValue = value;
-                                     _isClockIN = true;
-                                     _isClockOut = false;
-                                   }
-                                   if (value == items[4]) {
-                                     selectedLeaveTypeValue = value;
-                                     _isClockOut = false;
-                                     _isClockIN = false;
-                                   }
-                                 });
-                               },
-                             ),
+                            CustomDropdownButton2(
+                              hint: "${data["reason"]}",
+                              buttonHeight: 55,
+                              buttonWidth: MediaQuery.of(context).size.width,
+                              buttonPadding: EdgeInsets.all(10),
+                              dropdownWidth:
+                                  MediaQuery.of(context).size.width / 1.1,
+                              buttonDecoration: BoxDecoration(
+                                border:
+                                    Border.all(width: 1, color: appColors.gray),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              dropdownItems: items,
+                              value: selectedLeaveTypeValue,
+                              onChanged: (value) {
+                                setState(() {
+                                  if (value == items[0]) {
+                                    selectedLeaveTypeValue = value;
+                                    _isClockIN = false;
+                                    _isClockOut = true;
+                                  }
+                                  if (value == items[1]) {
+                                    selectedLeaveTypeValue = value;
+                                    _isClockOut = false;
+                                    _isClockIN = true;
+                                  }
+                                  if (value == items[2]) {
+                                    selectedLeaveTypeValue = value;
+                                    _isClockOut = true;
+                                    _isClockIN = false;
+                                  }
+                                  if (value == items[3]) {
+                                    selectedLeaveTypeValue = value;
+                                    _isClockIN = true;
+                                    _isClockOut = false;
+                                  }
+                                  if (value == items[4]) {
+                                    selectedLeaveTypeValue = value;
+                                    _isClockOut = false;
+                                    _isClockIN = false;
+                                  }
+                                });
+                              },
+                            ),
 
-                             //date field
-                             const SizedBox(height: 20,),
-                             DateTimeField(
-                               format: format,
-                               controller: _fromDateController,
-                               decoration: InputDecoration(
-                                 contentPadding: EdgeInsets.only(
-                                     top: 15, bottom: 15, left: 10, right: 10),
-                                 labelStyle: TextStyle(
-                                   fontSize: 10.sp,
-                                 ),
-                                 hintText: data["date"],
-                                 border: OutlineInputBorder(
-                                     borderSide: BorderSide(width: 1,
-                                         color: _isCurrectDate
-                                             ? appColors.gray200
-                                             : appColors.secondColor)
-                                 ),
-                                 suffixIcon: Icon(
-                                   Icons.date_range,
-                                 ),
-                               ),
-                               onChanged: (value) {
-                                 setState(() {
-                                   if(selectedLeaveTypeValue != items[4]){
-                                     _checkClockTimeWithSelectedDate(value!);
-                                   }
+                            //date field
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            DateTimeField(
+                              format: format,
+                              controller: _fromDateController,
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.only(
+                                    top: 15, bottom: 15, left: 10, right: 10),
+                                labelStyle: TextStyle(
+                                  fontSize: 10.sp,
+                                ),
+                                hintText: data["date"],
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 1,
+                                        color: _isCurrectDate
+                                            ? appColors.gray200
+                                            : appColors.secondColor)),
+                                suffixIcon: Icon(
+                                  Icons.date_range,
+                                ),
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  if (selectedLeaveTypeValue != items[4]) {
+                                    if (value != null) {
+                                      _checkClockTimeWithSelectedDate(value);
+                                    }
+                                  }
+                                });
+                              },
+                              onShowPicker: (context, currentValue) {
+                                return showDatePicker(
+                                    context: context,
+                                    firstDate: DateTime(2022),
+                                    initialDate: currentValue ?? DateTime.now(),
+                                    lastDate: DateTime.now());
+                              },
+                              validator: (value) {
+                                if (value == null) {
+                                  return "Field must not be empty...";
+                                } else if (_isCurrectDate != true) {
+                                  return "This date is not available";
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
 
-                                 });
-                               },
-                               onShowPicker: (context, currentValue) {
-                                 return showDatePicker(
-                                     context: context,
-                                     firstDate: DateTime(2022),
-                                     initialDate: currentValue ?? DateTime.now(),
-                                     lastDate: DateTime.now()
-                                 );
-                               },
-                               validator: (value) {
-                                 if (value == null) {
-                                   return "Field must not be empty...";
-                                 } else if (_isCurrectDate != true) {
-                                   return "This date is not available";
-                                 }
-                                 return null;
-                               },
-                             ),
-                             const SizedBox(height: 20,),
-
-                             //time field
-                             Row(
-                               children: [
-                                 //clockin time
-                                 Expanded(
-                                   flex: 2,
-                                   child: TextFormField(
-                                     readOnly: _isClockIN,
-                                     controller: _clockinTimeController,
-                                     decoration: InputDecoration(
-                                       contentPadding: EdgeInsets.only(
-                                           top: 15, bottom: 15, left: 10, right: 10),
-                                       hintText: data["regularized_in_time"],
-                                       filled: true,
-                                       fillColor: _isClockIN
-                                           ? appColors.gray200
-                                           : appColors.white,
-                                       border: OutlineInputBorder(
-                                           borderSide: BorderSide(
-                                               width: 1, color: appColors.gray200)
-                                       ),
-                                       suffixIcon: Icon(
-                                         Icons.date_range,
-                                       ),
-                                     ),
-                                     validator: (value) {
-                                       if (value == null) {
-                                         return "Field must not be empty...";
-                                       } else {
-                                         return null;
-                                       }
-                                     },
-                                   ),
-                                 ),
-                                 const SizedBox(width: 10,),
-                                 Expanded(
-                                   flex: 2,
-                                   child: TextFormField(
-                                     readOnly: _isClockOut,
-                                     controller: _clockOutTimeController,
-                                     decoration: InputDecoration(
-                                       contentPadding: EdgeInsets.only(
-                                           top: 15, bottom: 15, left: 10, right: 10),
-                                       hintText:  data["regularized_out_time"],
-                                       filled: true,
-                                       fillColor: _isClockOut
-                                           ? appColors.gray200
-                                           : appColors.white,
-                                       border: OutlineInputBorder(
-                                           borderSide: BorderSide(
-                                               width: 1, color: appColors.gray200)
-                                       ),
-                                       suffixIcon: Icon(
-                                         Icons.date_range,
-                                       ),
-                                     ),
-                                     validator: (value) {
-                                       if (value == null) {
-                                         return "Field must not be empty...";
-                                       } else {
-                                         return null;
-                                       }
-                                     },
-                                   ),
-                                 ),
-                               ],
-                             ),
-                             const SizedBox(height: 20,),
-                             TextFormField(
-                               keyboardType: TextInputType.multiline,
-                               textInputAction: TextInputAction.newline,
-                               minLines: 2,
-                               maxLines: 10,
-                               controller: _ReasonController,
-                               decoration: InputDecoration(
-                                 contentPadding: EdgeInsets.only(
-                                     top: 15, bottom: 15, left: 10, right: 10),
-                                 labelStyle: TextStyle(
-                                   fontSize: 10.sp,
-                                 ),
-                                 hintText:  data["description"],
-
-                                 border: OutlineInputBorder(
-                                     borderSide: BorderSide(
-                                         width: 1, color: appColors.gray200)
-                                 ),
-
-                               ),
-                               validator: (value) {
-                                 if (value == null || value.isEmpty) {
-                                   return "Field must not be empty... ";
-                                 } else {
-                                   return null;
-                                 }
-                               },
-                             ),
-                             const SizedBox(height: 30,),
-                             GestureDetector(
-                               onTap: () {
-                                 _isCurrectDate ? _applyLeaveMethod() : null;
-                                 //_
-
-                               },
-                               child: Container(
-                                 width: double.infinity,
-                                 padding: EdgeInsets.only(top: 15, bottom: 15),
-                                 decoration: BoxDecoration(
-                                     borderRadius: BorderRadius.circular(100),
-                                     color: _isCurrectDate
-                                         ? appColors.secondColor
-                                         : appColors.gray
-                                 ),
-                                 child: Center(child:
-                                 Text(_isCurrectDate ? "Apply" : "Date is missing",
-                                   style: TextStyle(
-                                       color: appColors.white,
-                                       fontWeight: FontWeight.bold,
-                                       fontSize: 16.sp
-                                   ),
-                                 )),
-                               ),
-                             ),
-
-
-                           ],
-                         ),
-                       );
-                     }else{
-                       return ServerError();
-                     }
-                   }
-               ),
-             ),
-             actions: <Widget>[
-               TextButton(
-                 child: const Text('Close'),
-                 onPressed: () {
-                   Navigator.of(context).pop();
-                 },
-               ),
-             ],
-           );
-         }
-        );
+                            //time field
+                            Row(
+                              children: [
+                                //clockin time
+                                Expanded(
+                                  flex: 2,
+                                  child: TextFormField(
+                                    readOnly: _isClockIN,
+                                    controller: _clockinTimeController,
+                                    decoration: InputDecoration(
+                                      contentPadding: EdgeInsets.only(
+                                          top: 15,
+                                          bottom: 15,
+                                          left: 10,
+                                          right: 10),
+                                      hintText: data["regularized_in_time"],
+                                      filled: true,
+                                      fillColor: _isClockIN
+                                          ? appColors.gray200
+                                          : appColors.white,
+                                      border: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1,
+                                              color: appColors.gray200)),
+                                      suffixIcon: Icon(
+                                        Icons.date_range,
+                                      ),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null) {
+                                        return "Field must not be empty...";
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: TextFormField(
+                                    readOnly: _isClockOut,
+                                    controller: _clockOutTimeController,
+                                    decoration: InputDecoration(
+                                      contentPadding: EdgeInsets.only(
+                                          top: 15,
+                                          bottom: 15,
+                                          left: 10,
+                                          right: 10),
+                                      hintText: data["regularized_out_time"],
+                                      filled: true,
+                                      fillColor: _isClockOut
+                                          ? appColors.gray200
+                                          : appColors.white,
+                                      border: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1,
+                                              color: appColors.gray200)),
+                                      suffixIcon: Icon(
+                                        Icons.date_range,
+                                      ),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null) {
+                                        return "Field must not be empty...";
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            TextFormField(
+                              keyboardType: TextInputType.multiline,
+                              textInputAction: TextInputAction.newline,
+                              minLines: 2,
+                              maxLines: 10,
+                              controller: _ReasonController,
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.only(
+                                    top: 15, bottom: 15, left: 10, right: 10),
+                                labelStyle: TextStyle(
+                                  fontSize: 10.sp,
+                                ),
+                                hintText: data["description"],
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 1, color: appColors.gray200)),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Field must not be empty... ";
+                                } else {
+                                  return null;
+                                }
+                              },
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                _isCurrectDate ? _applyLeaveMethod() : null;
+                                //_
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.only(top: 15, bottom: 15),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(100),
+                                    color: _isCurrectDate
+                                        ? appColors.secondColor
+                                        : appColors.gray),
+                                child: Center(
+                                    child: Text(
+                                  _isCurrectDate ? "Apply" : "Date is missing",
+                                  style: TextStyle(
+                                      color: appColors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.sp),
+                                )),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      return ServerError();
+                    }
+                  }),
+            ),
+          );
+        });
       },
     );
   }
 
-
-
-
-  _checkClockTimeWithSelectedDate(DateTime selectedDate) async{
+  _checkClockTimeWithSelectedDate(DateTime selectedDate) async {
     print(DateFormat('yyyy-MM-dd').format(selectedDate));
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     //Store Data
     var token = localStorage.getString('token');
-    var response = await http.post(Uri.parse(APIService.getInOutClockTime),
-        body: {
-          "date" : DateFormat('yyyy-MM-dd').format(selectedDate),
-        },
-        headers: {
-          "Authorization" : "Bearer $token"
-        }
-    );
-    if(response.statusCode == 200){
-      setState((){
+    var response =
+        await http.post(Uri.parse(APIService.getInOutClockTime), body: {
+      "date": DateFormat('yyyy-MM-dd').format(selectedDate),
+    }, headers: {
+      "Authorization": "Bearer $token"
+    });
+    if (response.statusCode == 200) {
+      setState(() {
         _isCurrectDate = true;
       });
       var data = jsonDecode(response.body.toString());
       print(response.statusCode);
       print(checkClockTimeValues);
-      setState((){
+      setState(() {
         ShowToast("Selected date is Match").successToast();
-        print("date is match") ;
-        _clockinTimeController..text =  data['clock_in'].toString();
+        print("date is match");
+        _clockinTimeController..text = data['clock_in'].toString();
         _clockOutTimeController..text = data['clock_out'].toString();
       });
       return checkClockTimeValues = data;
-
-    }else{
-      setState((){
-        _clockinTimeController..text =  "Clock IN";
+    } else {
+      setState(() {
+        _clockinTimeController..text = "Clock IN";
         _clockOutTimeController..text = "Clock Out";
         _isCurrectDate = false;
-
       });
       ShowToast("Selected date is missing").errorToast();
       print(response.statusCode);
       print(_isCurrectDate);
-      throw Exception("Error");
     }
   }
 
   //update
-  _applyLeaveMethod()async{
-
-    if(_LeaveFormKey.currentState!.validate()){
-      setState(() async {
+  Future<void> _applyLeaveMethod() async {
+    if (_LeaveFormKey.currentState!.validate()) {
+      setState(() {
         _isLeaveApply = true;
         print(regularaizID);
-
-
-        if(selectedLeaveTypeValue != null){
-
-
-          SharedPreferences localStorage = await SharedPreferences.getInstance();
-          //Store Data
-          var token = localStorage.getString('token');
-
-          var response = await http.post(Uri.parse("https://asia.net.in/api/regularization/update/255"),
-              body: {
-                "date" : _fromDateController.text,
-                "reason" : selectedLeaveTypeValue,
-                "in_time" : _clockinTimeController.text,
-                "out_time" : _clockOutTimeController.text,
-                "description" : _ReasonController.text,
-              },
-              headers: {
-                "Authorization" : "Bearer $token",
-
-              }
-          );
-
-          if(response.statusCode == 201){
-            Navigator.pop(context);
-            ShowToast("Update Sucess").successToast();
-
-          }else{
-            print(response.statusCode);
-           ShowToast("Update failed").errorToast();
-          }
-
-
-        }else{
-          ShowToast("Field much not be empty").errorToast();
-        }
-
-
       });
 
+      if (selectedLeaveTypeValue != null) {
+        SharedPreferences localStorage = await SharedPreferences.getInstance();
+        //Store Data
+        var token = localStorage.getString('token');
 
+        var response = await http.post(
+            Uri.parse(
+                "https://asia.net.in/api/regularization/update/$regularaizID"),
+            body: {
+              "date": _fromDateController.text,
+              "reason": selectedLeaveTypeValue,
+              "in_time": _clockinTimeController.text,
+              "out_time": _clockOutTimeController.text,
+              "description": _ReasonController.text,
+            },
+            headers: {
+              "Authorization": "Bearer $token",
+            });
 
-      setState((){
+        if (response.statusCode == 201) {
+          Navigator.pop(context);
+          ShowToast("Update Sucess").successToast();
+        } else {
+          print(response.statusCode);
+          ShowToast("Update failed").errorToast();
+        }
+      } else {
+        ShowToast("Field much not be empty").errorToast();
+      }
+
+      setState(() {
         _isLeaveApply = false;
       });
-
     }
   }
-
-
 }
-
-
-
 
 class leaveListItem extends StatelessWidget {
   final String date;
@@ -646,69 +601,106 @@ class leaveListItem extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              MediunText(text: date, size: 9, color: appColors.gray,),
-
+              MediunText(
+                text: date,
+                size: 9,
+                color: appColors.gray,
+              ),
               Row(
                 children: [
-                  BigText(text: status, size: 12, color: color,),
-                  const SizedBox(width: 10,),
-
-                  editStatus? IconButton(
-                    onPressed: editFunction,
-                    icon: Icon(
-                      Icons.edit,
-                      color: color,
-                      size: 20,
-                    ),
-                  ) : Center(),
+                  BigText(
+                    text: status,
+                    size: 12,
+                    color: color,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  editStatus
+                      ? IconButton(
+                          onPressed: editFunction,
+                          icon: Icon(
+                            Icons.edit,
+                            color: color,
+                            size: 20,
+                          ),
+                        )
+                      : Center(),
                 ],
               )
             ],
           ),
-          const SizedBox(height: 10,),
+          const SizedBox(
+            height: 10,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  BigText(text: "In Time", color: appColors.gray, size: 8.sp,),
-                  MediunText(text: in_time, color: appColors.black, size: 8.sp,)
+                  BigText(
+                    text: "In Time",
+                    color: appColors.gray,
+                    size: 8.sp,
+                  ),
+                  MediunText(
+                    text: in_time,
+                    color: appColors.black,
+                    size: 8.sp,
+                  )
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  BigText(text: "Out Time", color: appColors.gray, size: 8.sp,),
-                  MediunText(text: out_time, color: appColors.black, size: 8.sp,)
+                  BigText(
+                    text: "Out Time",
+                    color: appColors.gray,
+                    size: 8.sp,
+                  ),
+                  MediunText(
+                    text: out_time,
+                    color: appColors.black,
+                    size: 8.sp,
+                  )
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  BigText(text: "Reason", color: appColors.gray, size: 8.sp,),
-                  MediunText(text: reason, color: appColors.black, size: 8.sp,)
+                  BigText(
+                    text: "Reason",
+                    color: appColors.gray,
+                    size: 8.sp,
+                  ),
+                  MediunText(
+                    text: reason,
+                    color: appColors.black,
+                    size: 8.sp,
+                  )
                 ],
               ),
             ],
           ),
-          const SizedBox(height: 10,),
+          const SizedBox(
+            height: 10,
+          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              MediunText(text: "Regularization Reason: ", size: 10.sp,),
-              Text(description,
-                style: TextStyle(
-                    color: appColors.gray,
-                    fontSize: 9.sp
-                ),
+              MediunText(
+                text: "Regularization Reason: ",
+                size: 10.sp,
+              ),
+              Text(
+                description,
+                style: TextStyle(color: appColors.gray, fontSize: 9.sp),
               )
             ],
           ),
-
         ],
       ),
     );
   }
 }
-

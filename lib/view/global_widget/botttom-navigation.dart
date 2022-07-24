@@ -1,7 +1,6 @@
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/home_screen/home.dart';
 import 'package:HRMS/view/profile/profile.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavigation extends StatefulWidget {

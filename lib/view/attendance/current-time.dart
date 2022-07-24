@@ -11,11 +11,14 @@ class CurrentTime extends StatelessWidget {
       width: MediaQuery.of(context).size.width / 1.5,
       padding: const EdgeInsets.only(left: 30, right: 30, top: 20, bottom: 20),
       child: DigitalClock(
+
+
         is24HourTimeFormat: false,
         digitAnimationStyle: Curves.bounceIn,
         amPmDigitTextStyle:  TextStyle(
+
           color: Color(0xFFFF5630),
-          fontSize: 14.sp,
+          fontSize: 20.sp,
           fontWeight: FontWeight.bold,
         ),
         areaDecoration: BoxDecoration(
@@ -27,7 +30,7 @@ class CurrentTime extends StatelessWidget {
           fontWeight: FontWeight.bold,
 
         ),
-        showSecondsDigit : true,
+        showSecondsDigit : false,
         areaWidth : 180.0,
       ),
     );

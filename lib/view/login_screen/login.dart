@@ -54,105 +54,107 @@ class _LoginScreenState extends State<LoginScreen> {
                 child:  Image.asset("assets/images/logo.png"),
             ),
 
-            Padding(
-              padding:  EdgeInsets.symmetric(horizontal: 3.h,),
-              child: Form(
-                key: _loginFormKey,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        controller: _email,
-                        decoration: InputDecoration(
-                          hintText: "User Name",
-                          hintStyle: TextStyle(
-                            fontSize: 12.sp,
-                            color: appColors.mainColor,
-                          ),
-                          // labelText: "Email",
-                          contentPadding: EdgeInsets.symmetric(horizontal: 3.h, vertical: 2.h),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(100),
-                              borderSide: BorderSide(width: 1, color: appColors.white)
-                          ),
-                          filled: true,
-                          fillColor: Colors.white,
-                          focusedBorder:OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                            borderRadius: BorderRadius.circular(25.0),
-                          ),
-                        ),
-                        validator: (value){
-                          if( value != null && value.isEmpty){
-                            return "Email must not be is empty";
-                          }
-                        },
-
-                      ),
-                      SizedBox(height: 15,),
-                      TextFormField(
-                        controller: _pass,
-                        obscureText: !_passwordVisible,
-                        decoration: InputDecoration(
-                          hintText: "Password",
-                          hintStyle: TextStyle(
+            Expanded(
+              child: Padding(
+                padding:  EdgeInsets.symmetric(horizontal: 3.h,),
+                child: Form(
+                  key: _loginFormKey,
+                    child: ListView(
+                      children: [
+                        TextFormField(
+                          controller: _email,
+                          decoration: InputDecoration(
+                            hintText: "User Name",
+                            hintStyle: TextStyle(
                               fontSize: 12.sp,
                               color: appColors.mainColor,
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _passwordVisible ?  Icons.visibility : Icons.visibility_off,
-                              color: appColors.mainColor,
-                            ), onPressed: () {
-                              setState(() {
-                                _passwordVisible = !_passwordVisible;
-                              });
-                          },
-                          ),
-                          // labelText: "Email",
-                          contentPadding: EdgeInsets.symmetric(horizontal: 3.h, vertical: 2.h),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(100),
-                              borderSide: BorderSide(width: 1, color: appColors.white)
-                          ),
-                          filled: true,
-                          fillColor: Colors.white,
-                          focusedBorder:OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                            borderRadius: BorderRadius.circular(25.0),
-                          ),
-                        ),
-                        validator: (value){
-                          if( value != null && value.isEmpty){
-                            return "Password must not be is empty";
-                          }
-                        },
-
-                      ),
-                      SizedBox(height: 3.h,),
-                      GestureDetector(
-                        onTap: (){
-                          login();
-                        },
-                        child: isLogin == false ? Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.only(top: 15, bottom: 15),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100),
-                            color: appColors.secondColor
-                          ),
-                          child: Center(child: Text("Login",
-                            style: TextStyle(
-                              color: appColors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16.sp
                             ),
-                          )),
-                        ): loadingBtn(),
-                      ),
+                            // labelText: "Email",
+                            contentPadding: EdgeInsets.symmetric(horizontal: 3.h, vertical: 2.h),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(100),
+                                borderSide: BorderSide(width: 1, color: appColors.white)
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                            focusedBorder:OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white, width: 2.0),
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
+                          ),
+                          validator: (value){
+                            if( value != null && value.isEmpty){
+                              return "Email must not be is empty";
+                            }
+                          },
 
-                      SizedBox(height: 20,),
-                    ],
-                  )
+                        ),
+                        SizedBox(height: 15,),
+                        TextFormField(
+                          controller: _pass,
+                          obscureText: !_passwordVisible,
+                          decoration: InputDecoration(
+                            hintText: "Password",
+                            hintStyle: TextStyle(
+                                fontSize: 12.sp,
+                                color: appColors.mainColor,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _passwordVisible ?  Icons.visibility : Icons.visibility_off,
+                                color: appColors.mainColor,
+                              ), onPressed: () {
+                                setState(() {
+                                  _passwordVisible = !_passwordVisible;
+                                });
+                            },
+                            ),
+                            // labelText: "Email",
+                            contentPadding: EdgeInsets.symmetric(horizontal: 3.h, vertical: 2.h),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(100),
+                                borderSide: BorderSide(width: 1, color: appColors.white)
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                            focusedBorder:OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white, width: 2.0),
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
+                          ),
+                          validator: (value){
+                            if( value != null && value.isEmpty){
+                              return "Password must not be is empty";
+                            }
+                          },
+
+                        ),
+                        SizedBox(height: 3.h,),
+                        GestureDetector(
+                          onTap: (){
+                            login();
+                          },
+                          child: isLogin == false ? Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.only(top: 15, bottom: 15),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              color: appColors.secondColor
+                            ),
+                            child: Center(child: Text("Login",
+                              style: TextStyle(
+                                color: appColors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.sp
+                              ),
+                            )),
+                          ): loadingBtn(),
+                        ),
+
+                        SizedBox(height: 20,),
+                      ],
+                    )
+                ),
               ),
             )
 

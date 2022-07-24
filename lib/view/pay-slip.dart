@@ -12,6 +12,7 @@ import 'package:sizer/sizer.dart';
 import '../../../service/api-service.dart';
 import 'global_widget/big_text.dart';
 import 'global_widget/mediun_text.dart';
+
 class PaySlip extends StatefulWidget {
   const PaySlip({Key? key}) : super(key: key);
 
@@ -20,34 +21,29 @@ class PaySlip extends StatefulWidget {
 }
 
 class _PaySlipState extends State<PaySlip> {
-
   late DateTime date;
   late final monthOfTheYear = DateFormat.yMMM().format(DateTime.now());
 
-  Future<void> getPaySlip() async{
+  Future<void> getPaySlip() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     //Store Data
     var token = localStorage.getString('token');
     final response = await http.get(Uri.parse(APIService.paySlip),
-        headers: {
-          "Authorization" : "Bearer $token"
-        }
-    );
-    if(response.statusCode == 201){
+        headers: {"Authorization": "Bearer $token"});
+    if (response.statusCode == 201) {
       var data = jsonDecode(response.body.toString());
       var paySlipeList = data;
       return paySlipeList;
-
-    }else{
+    } else {
       print("error");
       print(response.statusCode);
       throw Exception("Error");
     }
-
   }
+
   Future? paySlipList;
   @override
-  void initState(){
+  void initState() {
     paySlipList = getPaySlip();
     _UserInfo();
   }
@@ -64,83 +60,73 @@ class _PaySlipState extends State<PaySlip> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: appColors.white,
       appBar: AppBar(
-        title: MediunText(text: "Pay Slip", color: appColors.white, size: 10.sp,),
+        title: MediunText(
+          text: "Pay Slip",
+          color: appColors.white,
+          size: 10.sp,
+        ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: <Color>[
-                  Color(0xff00315E),
-                  Color(0xff580082),
-                ],
-              )
-          ),
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: <Color>[
+              Color(0xff00315E),
+              Color(0xff580082),
+            ],
+          )),
         ),
-     
       ),
-      body:  Padding(
+      body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 2.h, vertical: 2.h),
-
-          child:Container(
+          child: Container(
             width: width,
             height: height,
             child: FutureBuilder(
                 future: paySlipList,
-                builder: (context, AsyncSnapshot<dynamic> snapshot){
-
-                  if(snapshot.connectionState == ConnectionState.waiting){
+                builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
                       child: CircularProgressIndicator(
                         strokeWidth: 3,
                       ),
                     );
-                  }if(snapshot.hasData){
-                    if( snapshot.data['payslip'].length != 0) {
+                  }
+                  if (snapshot.hasData) {
+                    if (snapshot.data['payslip'].length != 0) {
                       return ListView.builder(
                           itemCount: snapshot.data['payslip'].length,
-
                           itemBuilder: (context, index) {
                             print(snapshot.data['payslip'][index]);
-                                return leaveListItem(
-                                  date: snapshot.data['payslip'][index]["salary_month"],
-                                  name: "$Name",
-                                  slipFunction: () {
-                                    ShowToast("Will be updated soon").successToast();
+                            return leaveListItem(
+                              date: snapshot.data['payslip'][index]
+                                  ["salary_month"],
+                              name: "$Name",
+                              slipFunction: () {
+                                ShowToast("Will be updated soon")
+                                    .successToast();
 
-                                    //createPDF(snapshot.data['payslip'][index]["date"].toString(), snapshot.data["designation"], snapshot.data['payslip'][index]);
-                                  },
-                                    netSalery: "${snapshot
-                                        .data['payslip'][index]["gross_salary"]}",
-                                    Dg: "${snapshot
-                                        .data['designation']["name"]
-                                    }",
-                                );
-
-                          }
-                      );
-                    }else{
+                                //createPDF(snapshot.data['payslip'][index]["date"].toString(), snapshot.data["designation"], snapshot.data['payslip'][index]);
+                              },
+                              netSalery:
+                                  "${snapshot.data['payslip'][index]["gross_salary"]}",
+                            );
+                          });
+                    } else {
                       return NoDataFound();
                     }
-                  }else{
+                  } else {
                     return ServerError();
                   }
-
-                }
-            ),
-
-          )
-      ),
-
+                }),
+          )),
     );
   }
 
@@ -318,21 +304,16 @@ class _PaySlipState extends State<PaySlip> {
 
 }
 
-
-
 class leaveListItem extends StatelessWidget {
   final String date;
   final VoidCallback slipFunction;
   final String netSalery;
-  final String Dg;
   final String name;
-  leaveListItem({
-    required this.date,
-    required this.slipFunction,
-    required this.netSalery,
-    required this.Dg,
-    required this.name
-  });
+  leaveListItem(
+      {required this.date,
+      required this.slipFunction,
+      required this.netSalery,
+      required this.name});
 
   @override
   Widget build(BuildContext context) {
@@ -361,35 +342,49 @@ class leaveListItem extends StatelessWidget {
         children: [
           Row(
             children: [
-              BigText(text: "$date", size: 9.sp, color: appColors.gray,),
+              BigText(
+                text: "$date",
+                size: 9.sp,
+                color: appColors.gray,
+              ),
             ],
           ),
-          const SizedBox(height: 10,),
+          const SizedBox(
+            height: 10,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  BigText(text: "Name", color: appColors.gray, size: 8.sp,),
-                  MediunText(text: name, color: appColors.black, size: 8.sp,)
+                  BigText(
+                    text: "Name",
+                    color: appColors.gray,
+                    size: 8.sp,
+                  ),
+                  MediunText(
+                    text: name,
+                    color: appColors.black,
+                    size: 8.sp,
+                  )
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  BigText(text: "Designation", color: appColors.gray, size: 8.sp,),
-                  MediunText(text: Dg, color: appColors.black, size: 8.sp,)
+                  BigText(
+                    text: "Net Salary	",
+                    color: appColors.gray,
+                    size: 8.sp,
+                  ),
+                  MediunText(
+                    text: netSalery,
+                    color: appColors.black,
+                    size: 8.sp,
+                  )
                 ],
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  BigText(text: "Net Salary	", color: appColors.gray, size: 8.sp,),
-                  MediunText(text: netSalery, color: appColors.black, size: 8.sp,)
-                ],
-              ),
-
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -398,16 +393,16 @@ class leaveListItem extends StatelessWidget {
                       icon: Icon(
                         Icons.file_copy,
                         color: Colors.amber,
-                      )
-                  ),
+                      )),
                 ],
               ),
             ],
           ),
-          const SizedBox(height: 10,),
+          const SizedBox(
+            height: 10,
+          ),
         ],
       ),
     );
   }
 }
-
