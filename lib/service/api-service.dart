@@ -19,4 +19,5 @@ class APIService{
     static const String editLeave = "$baseUrl/leave/update/125";
     static const String paySlip = "$baseUrl/employee/payslip";
     static const String checkIP = "$baseUrl/login/preference";
+    static const String userMonitoring = "$baseUrl/app/user/data";
 }

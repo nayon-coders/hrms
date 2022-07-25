@@ -7,6 +7,7 @@ import 'package:HRMS/view/global_widget/notify.dart';
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/home_screen/home.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -28,7 +29,9 @@ class _LoginScreenState extends State<LoginScreen> {
     // TODO: implement initState
     _passwordVisible = false;
   }
-
+  static final DateTime now = DateTime.now();
+  static final DateFormat formatter = DateFormat('yyyy-MM-dd h:m:s');
+  final String formatted = formatter.format(now);
   //controller
   final _email = TextEditingController();
   final _pass = TextEditingController();
@@ -198,11 +201,18 @@ class _LoginScreenState extends State<LoginScreen> {
         );
         var body = jsonDecode(response.body);
         if (response.statusCode == 201) {
+
           SharedPreferences localStorage = await SharedPreferences.getInstance();
           localStorage.setString('token', body['api_token']);
           localStorage.setString('name', body['name']);
           localStorage.setString('email', body['email']);
-           Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+          localStorage.setInt("install", 1);
+          if(localStorage.getInt("install") == 1){
+            //User monitoring method
+            userMonitor(body['name'], body['email']);
+          }
+
+          Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
 
           print(body['email']);
 
@@ -227,7 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderRadius: BorderRadius.circular(30),
 
                 ),
-                height: 330,
+                height: 280,
                 child: Column(
                   children: [
                     ClipOval(
@@ -279,6 +289,23 @@ class _LoginScreenState extends State<LoginScreen> {
      }
     }//end login method
 
+  userMonitor(String name, String email)async{
+    print(formatted);
+    print(name);
+    var response = await http.post(Uri.parse(APIService.userMonitoring),
+        body: {
+          "user_name": name,
+          "user_email": email,
+          "first_login_at": formatted.toString(),
+        },
+        headers: {
+          "Accept":"application/json"
+        }
+    );
+    var body = jsonDecode(response.body);
+
+    print(response.statusCode);
+  }
 
 
 
