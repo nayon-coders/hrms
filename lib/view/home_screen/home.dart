@@ -1,10 +1,5 @@
-import 'dart:convert';
 import 'package:HRMS/controller/profile/profile-coltroller.dart';
-import 'package:HRMS/service/api-service.dart';
-import 'package:HRMS/view/global_widget/notify.dart';
 import 'package:HRMS/view/pay-slip.dart';
-import 'package:http/http.dart' as http;
-import 'package:HRMS/controller/auth-controller/logout-controller.dart';
 import 'package:HRMS/utility/colors.dart';
 import 'package:HRMS/view/attendance/attendance-list/attendance-list.dart';
 import 'package:HRMS/view/attendance/attendance.dart';
@@ -15,13 +10,10 @@ import 'package:HRMS/view/home_screen/widget/home-leave-report.dart';
 import 'package:HRMS/view/home_screen/widget/home-attendance-reports.dart';
 import 'package:HRMS/view/home_screen/widget/list-of-menu.dart';
 import 'package:HRMS/view/leave/leave-apply/leave-apply.dart';
-import 'package:HRMS/view/leave/leave-list/leave-list.dart';
 import 'package:HRMS/view/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-
-import '../login_screen/login.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -86,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
           //TODO:Stack topbar
           Container(
             width: double.infinity,
-            height: 180,
+            height: 165,
             decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,

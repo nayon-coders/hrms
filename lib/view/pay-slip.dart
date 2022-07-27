@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:HRMS/view/global_widget/no-data.dart';
 import 'package:HRMS/view/global_widget/server-error.dart';
 import 'package:HRMS/view/global_widget/show-toast.dart';
+import 'package:HRMS/view/salary-item.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:HRMS/utility/colors.dart';
@@ -12,6 +13,8 @@ import 'package:sizer/sizer.dart';
 import '../../../service/api-service.dart';
 import 'global_widget/big_text.dart';
 import 'global_widget/mediun_text.dart';
+import 'invoice.dart';
+
 
 class PaySlip extends StatefulWidget {
   const PaySlip({Key? key}) : super(key: key);
@@ -24,6 +27,9 @@ class _PaySlipState extends State<PaySlip> {
   late DateTime date;
   late final monthOfTheYear = DateFormat.yMMM().format(DateTime.now());
 
+  int number = 0;
+  final PdfInvoiceService service = PdfInvoiceService();
+  
   Future<void> getPaySlip() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     //Store Data
@@ -59,6 +65,34 @@ class _PaySlipState extends State<PaySlip> {
       Email = email!;
     });
   }
+
+  List<Payslip> payslipItem = [];
+  List? genaretFileList( payslipList, employeesName, designationName) {
+    print(payslipList["gross_salary"]);
+    return payslipItem = [
+      Payslip(
+        employeesName,
+        designationName,
+          payslipList["gross_salary"],
+          payslipList["net_payble"],
+          payslipList["salary_month"],
+          payslipList["salary_month"],
+          payslipList["status"],
+          payslipList["basic_pay"],
+          payslipList["hra"],
+          payslipList["da"],
+          payslipList["ta"],
+          payslipList["medical_allowance"],
+          payslipList["city_allowance"],
+          payslipList["special_allowance"],
+          payslipList["ait"],
+          payslipList["provident_fund"],
+          payslipList["gratuity"],
+          payslipList["advance_salary"],
+      )
+    ];
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -104,14 +138,17 @@ class _PaySlipState extends State<PaySlip> {
                       return ListView.builder(
                           itemCount: snapshot.data['payslip'].length,
                           itemBuilder: (context, index) {
-                            print(snapshot.data['payslip'][index]);
                             return leaveListItem(
                               date: snapshot.data['payslip'][index]
                                   ["salary_month"],
                               name: "$Name",
-                              slipFunction: () {
-                                ShowToast("Will be updated soon")
+                              slipFunction: () async{
+                                ShowToast("Payslip is generated")
                                     .successToast();
+                                genaretFileList(snapshot.data['payslip'][index], snapshot.data['employees']['name'],snapshot.data['designation']['name'], );
+                                 final data = await service.createInvoice(payslipItem);
+                                  service.savePdfFile("invoice_$number", data);
+                                  number++;
 
                                 //createPDF(snapshot.data['payslip'][index]["date"].toString(), snapshot.data["designation"], snapshot.data['payslip'][index]);
                               },
@@ -129,6 +166,7 @@ class _PaySlipState extends State<PaySlip> {
           )),
     );
   }
+
 
 //   //TODO: Crete PDF
 // Future createPDF(date, designation, index)async{
