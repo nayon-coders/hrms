@@ -26,6 +26,8 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Please grant camera access</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -49,8 +51,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-
-	<key>LSSupportsOpeningDocumentsInPlace</key>
-        <true/>
 </dict>
 </plist>
